@@ -2,18 +2,18 @@ using Crestron.SimplSharpPro;
 
 namespace AVCoders.Crestron.SmartGraphics;
 
-public record SubpageReferenceListJoinData(int Index, uint Join);
+public record SubpageReferenceListJoinData(uint Index, uint Join);
 
 public class SubpageReferenceListHelper
 {
-    private readonly int _digitalJoinOffset;
-    private readonly int _analogJoinOffset;
-    private readonly int _serialJoinOffset;
+    private readonly uint _digitalJoinOffset;
+    private readonly uint _analogJoinOffset;
+    private readonly uint _serialJoinOffset;
 
-    public static readonly int DigitalJoinOffset = 4010;
-    public static readonly int OtherJoinOffset = 10;
+    public static readonly uint DigitalJoinOffset = 4010;
+    public static readonly uint OtherJoinOffset = 10;
 
-    public SubpageReferenceListHelper(int digitalJoinOffset, int analogJoinOffset, int serialJoinOffset)
+    public SubpageReferenceListHelper(uint digitalJoinOffset, uint analogJoinOffset, uint serialJoinOffset)
     {
         _digitalJoinOffset = digitalJoinOffset;
         _analogJoinOffset = analogJoinOffset;
@@ -61,11 +61,48 @@ public class SubpageReferenceListHelper
     public SubpageReferenceListJoinData GetBooleanSigInfo(uint sigNumber) =>
         CalculateIndexAndJoin(sigNumber, _digitalJoinOffset, DigitalJoinOffset);
 
-    private SubpageReferenceListJoinData CalculateIndexAndJoin(uint sigNumber, int joinOffset, int sigOffset)
+    private SubpageReferenceListJoinData CalculateIndexAndJoin(uint sigNumber, uint joinOffset, uint sigOffset)
     {
         var rawNumber = sigNumber - sigOffset;
-        int index = (int)(rawNumber - 1) / joinOffset;
+        uint index = (uint)(rawNumber - 1) / joinOffset;
         uint join = (uint)(rawNumber - (index * joinOffset));
         return new SubpageReferenceListJoinData(index, join);
+    }
+
+    /// <summary>
+    /// Returns the BooleanInput for a Subpage reference list, based on the VT Pro join number and the instance
+    /// </summary>
+    /// <param name="index">The zero-based index of the Subpage reference list.</param>
+    /// <param name="join">The digital join from VT Pro.</param>
+    /// <returns>A uint to be used as the BooleanInput index for a Subpage reference list.</returns>
+    public uint BooleanJoinFor(int index, uint join) =>
+        CalculateSmartGraphicsJoin(index, join, _digitalJoinOffset, DigitalJoinOffset);
+
+    
+
+    /// <summary>
+    /// Returns the UShortInput for a Subpage reference list, based on the VT Pro join number and the instance
+    /// </summary>
+    /// <param name="index">The zero-based index of the Subpage reference list.</param>
+    /// <param name="join">The analog join from VT Pro.</param>
+    /// <returns>A uint to be used as the UShortInput index for a Subpage reference list.</returns>
+    public uint AnalogJoinFor(int index, uint join) =>
+        CalculateSmartGraphicsJoin(index, join, _analogJoinOffset, OtherJoinOffset);
+    
+    
+
+    /// <summary>
+    /// Returns the StringInput for a Subpage reference list, based on the VT Pro join number and the instance
+    /// </summary>
+    /// <param name="index">The zero-based index of the Subpage reference list.</param>
+    /// <param name="join">The serial join from VT Pro.</param>
+    /// <returns>A uint to be used as the StringInput index for a Subpage reference list.</returns>
+    public uint SerialJoinFor(int index, uint join) =>
+        CalculateSmartGraphicsJoin(index, join, _serialJoinOffset, OtherJoinOffset);
+    
+    private uint CalculateSmartGraphicsJoin(int index, uint join, uint joinOffset, uint sigOffset)
+    {
+        uint rawNumber = (uint)(index * joinOffset) + join;
+        return rawNumber + sigOffset;
     }
 }
