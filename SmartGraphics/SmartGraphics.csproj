@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <AssemblyName>AVCoders.Crestron.SmartGraphics</AssemblyName>
+        <RootNamespace>AVCoders.Crestron.SmartGraphics</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Crestron.SimplSharp.SDK.Program" Version="2.20.52" />
+    </ItemGroup>
+
+</Project>
