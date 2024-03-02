@@ -1,0 +1,9 @@
+**/.vs/*
+**/Debug/*
+**/packages/*
+**/bin/*
+**/obj/*
+.idea/*
+.DS_Store
+*.user
+*.nupkg
