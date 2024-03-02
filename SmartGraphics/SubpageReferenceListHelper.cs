@@ -2,7 +2,7 @@ using Crestron.SimplSharpPro;
 
 namespace AVCoders.Crestron.SmartGraphics;
 
-public record SubpageReferenceListJoinData(uint Index, uint Join);
+public record SubpageReferenceListJoinData(int Index, uint Join);
 
 public class SubpageReferenceListHelper
 {
@@ -64,7 +64,7 @@ public class SubpageReferenceListHelper
     private SubpageReferenceListJoinData CalculateIndexAndJoin(uint sigNumber, uint joinOffset, uint sigOffset)
     {
         var rawNumber = sigNumber - sigOffset;
-        uint index = (uint)(rawNumber - 1) / joinOffset;
+        int index = (int)((rawNumber - 1) / joinOffset);
         uint join = (uint)(rawNumber - (index * joinOffset));
         return new SubpageReferenceListJoinData(index, join);
     }

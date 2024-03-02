@@ -10,7 +10,7 @@ public class SubpageReferenceListHelperTest
     [InlineData(4020, 0, 10)]
     [InlineData(4021, 1, 1)]
     [InlineData(4031, 2, 1)]
-    public void GetBooleanSigInfo_ReturnsTheCorrectSignalAndIndex(uint join, uint expectedIndex, uint expectedJoin)
+    public void GetBooleanSigInfo_ReturnsTheCorrectSignalAndIndex(uint join, int expectedIndex, uint expectedJoin)
     {
         var actual = _subpageReferenceListHelper.GetBooleanSigInfo(join);
         
@@ -23,7 +23,7 @@ public class SubpageReferenceListHelperTest
     [InlineData(25, 0, 15)]
     [InlineData(31, 1, 6)]
     [InlineData(41, 2, 1)]
-    public void GetAnalogSigInfo_ReturnsTheCorrectSignalAndIndex(uint join, uint expectedIndex, uint expectedJoin)
+    public void GetAnalogSigInfo_ReturnsTheCorrectSignalAndIndex(uint join, int expectedIndex, uint expectedJoin)
     {
         var actual = _subpageReferenceListHelper.GetAnalogSigInfo(join);
         
@@ -36,7 +36,7 @@ public class SubpageReferenceListHelperTest
     [InlineData(25, 0, 15)]
     [InlineData(33, 1, 1)]
     [InlineData(54, 1, 22)]
-    public void GetSerialSigInfo_ReturnsTheCorrectSignalAndIndex(uint join, uint expectedIndex, uint expectedJoin)
+    public void GetSerialSigInfo_ReturnsTheCorrectSignalAndIndex(uint join, int expectedIndex, uint expectedJoin)
     {
         var actual = _subpageReferenceListHelper.GetSerialSigInfo(join);
         
