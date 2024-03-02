@@ -1,0 +1,36 @@
+# This workflow will build a .NET project
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
+
+name: GetToStaging
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 6.0.x
+    - name: Restore dependencies
+      run: dotnet restore
+    - name: Build
+      run: dotnet build --no-restore --configuration release
+    - name: Test
+      run: dotnet test --no-build --verbosity normal
+    - name: Setup Github Packages
+      run: dotnet nuget add source --username ant-car --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/AV-Coders/index.json"
+
+    - name: Create SmartGraphics Nuget Package
+      run: dotnet pack /home/runner/work/crestron-components/crestron-components/SmartGraphics/SmartGraphics.csproj --output /home/runner/work/crestron-components/package /p:Version=2024.3.0+${{ github.run_number }} --configuration PackRelease
+      
+    - name: Publish to GitHub Packages 
+      run: dotnet nuget push /home/runner/work/crestron-components/package/*.nupkg --api-key ${{ secrets.GITHUB_TOKEN }}  --source "github"
