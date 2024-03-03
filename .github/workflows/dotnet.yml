@@ -29,6 +29,9 @@ jobs:
     - name: Setup Github Packages
       run: dotnet nuget add source --username ant-car --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/AV-Coders/index.json"
 
+    - name: Create Core Nuget Package
+      run: dotnet pack /home/runner/work/crestron-components/crestron-components/Core/Core.csproj --output /home/runner/work/crestron-components/package /p:Version=2024.3.${{ github.run_number }} --configuration PackRelease
+
     - name: Create SmartGraphics Nuget Package
       run: dotnet pack /home/runner/work/crestron-components/crestron-components/SmartGraphics/SmartGraphics.csproj --output /home/runner/work/crestron-components/package /p:Version=2024.3.${{ github.run_number }} --configuration PackRelease
 
