@@ -4,17 +4,13 @@
         <TargetFramework>net6.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <AssemblyName>AVCoders.Crestron.TouchPanel</AssemblyName>
-        <RootNamespace>AVCoders.Crestron.TouchPanel</RootNamespace>
+        <AssemblyName>AVCoders.Crestron.Core</AssemblyName>
+        <RootNamespace>AVCoders.Crestron.Core</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
       <PackageReference Include="Crestron.SimplSharp.SDK.Program" Version="2.20.52" />
       <PackageReference Include="SSH.NET" Version="2024.0.0" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <ProjectReference Include="..\Core\Core.csproj" />
     </ItemGroup>
 
 </Project>
