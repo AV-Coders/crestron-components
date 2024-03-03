@@ -4,8 +4,6 @@ using Renci.SshNet.Common;
 
 namespace AVCoders.Crestron.Core;
 
-using SocketException = System.Net.Sockets.SocketException;
-
 public class SSH
 {
     public static string RunCommand(SshClient sshClient, string command, string name)
@@ -41,50 +39,6 @@ public class SSH
             Log(e.ToString());
             return e.ToString();
         }
-    }
-    public static Dictionary<string, string> RunCommands(SshClient sshClient, List<string> commands, string name)
-    {
-        var dictionary = new Dictionary<string, string>();
-
-        try
-        {
-            Log($"{name} - Connecting SSH");
-
-            sshClient.Connect();
-
-            foreach (var command in commands)
-            {
-                Log($"{name} - Running SSH command: {command}");
-
-                var result = sshClient.RunCommand(command).Result;
-                dictionary.Add(command, result);
-            }
-
-            Log($"{name} - Disconnecting");
-            sshClient.Disconnect();
-        }
-        catch (SshAuthenticationException e)
-        {
-            Log($"{name} - Authentication Error");
-            Log(e.ToString());
-            dictionary.Add("Error", e.ToString());
-
-        }
-        catch (SocketException e)
-        {
-            
-            Log($"{name} - Socket Exception");
-            Log(e.ToString());
-            dictionary.Add("Error", e.ToString());
-        }
-        catch (SshException e)
-        {
-            Log($"{name} - Unhandled SSH Exception");
-            Log(e.ToString());
-            dictionary.Add("Error", e.ToString());
-        }
-        
-        return dictionary;
     }
 
     public static bool UploadFile(SftpClient sftpClient, string localFile, string remotePath, string name)
