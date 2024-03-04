@@ -19,6 +19,7 @@ public class DisplayListLoader
     private readonly string _password;
     private readonly string _name;
     private readonly string _filePath;
+    private bool _enableLogs;
 
     /// <summary>
     /// Creates an instance of the file uploader that's automatically loads the file
@@ -68,5 +69,12 @@ public class DisplayListLoader
         _ethernetExtender.DeviceExtenderSigChange -= EthernetExtenderSigChange;
     }
 
-    private void Log(string message) => CrestronConsole.PrintLine($"{DateTime.Now} - {_name} - DisplayListLoader - {message}");
+
+    public void EnableLogs(bool enable) => _enableLogs = enable;
+
+    private void Log(string message)
+    {
+        if(_enableLogs)
+            CrestronConsole.PrintLine($"{DateTime.Now} - {_name} - DisplayListLoader - {message}");
+    }
 }
