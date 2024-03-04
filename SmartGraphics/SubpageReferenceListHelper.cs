@@ -26,7 +26,7 @@ public class SubpageReferenceListHelper
     /// <param name="sig">The Sig object from which to extract the list join number.</param>
     /// <returns>The SubpageReferenceListJoinData containing the extracted index and join number.</returns>
     /// <exception cref="InvalidDataException">Thrown when encountering an unsupported Sig type.</exception>
-    public SubpageReferenceListJoinData ExtractListJoinNumberFrom(Sig sig)
+    public SubpageReferenceListJoinData GetSigInfo(Sig sig)
     {
         return sig.Type switch
         { 

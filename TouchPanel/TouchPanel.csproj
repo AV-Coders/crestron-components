@@ -9,8 +9,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="avcoders.core" Version="2024.3.5" />
-      <PackageReference Include="AVCoders.Display" Version="2024.3.5" />
+      <PackageReference Include="avcoders.core" Version="2024.3.10" />
+      <PackageReference Include="AVCoders.Display" Version="2024.3.10" />
+      <PackageReference Include="AVCoders.Dsp" Version="2024.3.10" />
       <PackageReference Include="Crestron.SimplSharp.SDK.Program" Version="2.20.52" />
       <PackageReference Include="SSH.NET" Version="2024.0.0" />
     </ItemGroup>

@@ -80,8 +80,8 @@ public class DisplayMenu
             return;
         if (args.Sig.BoolValue == false)
             return;
-        Log($"Button {args.Sig.Number} pressed");
         var selectionInfo = _srlHelper.GetBooleanSigInfo(args.Sig.Number);
+        Log($"Volume Button pressed, id {args.Sig.Number}.  Index {selectionInfo.Index}, Join: {selectionInfo.Join}");
 
         if (selectionInfo.Join == PowerOnJoin)
         {
