@@ -10,33 +10,33 @@ public class SSH
     {
         try
         {
-            Log($"{name} - Connecting SSH");
+            Log(name, $"Connecting SSH");
             
             sshClient.Connect();
             
-            Log($"{name} - Running SSH command: {command}");
+            Log(name, $"Running SSH command: {command}");
             var result = sshClient.RunCommand(command).Result;
             
-            Log($"{name} - Disconnecting");
+            Log(name, $"Disconnecting");
             sshClient.Disconnect();
             return result;
         }
         catch (SshAuthenticationException e)
         {
-            Log($"{name} - Authentication Error");
-            Log(e.ToString());
+            Log(name, $"Authentication Error");
+            Log(name, e.ToString());
             return e.ToString();
         }
         catch (SshException e)
         {
-            Log($"{name} - Unhandled SSH Exception");
-            Log(e.ToString());
+            Log(name, $"Unhandled SSH Exception");
+            Log(name, e.ToString());
             return e.ToString();
         }
         catch (SocketException e)
         {
-            Log($"{name} - Socket Exception");
-            Log(e.ToString());
+            Log(name, $"Socket Exception");
+            Log(name, e.ToString());
             return e.ToString();
         }
     }
@@ -45,24 +45,24 @@ public class SSH
     {
         try
         {
-            Log($"{name} - Connecting SFTP");
+            Log(name, $"Connecting SFTP");
             sftpClient.Connect();
-            Log($"{name} - Sending {localFile} to {remotePath}");
+            Log(name, $"Sending {localFile} to {remotePath}");
             var fileStream = File.OpenRead(localFile);
             sftpClient.UploadFile(fileStream, remotePath);
             fileStream.Close();
-            Log($"{name} - Disconnecting SFTP");
+            Log(name, $"Disconnecting SFTP");
             sftpClient.Disconnect();
         }
         catch (Exception e)
         {
-            Log($"{name} - Error uploading files: {e.GetType()}");
-            Log(e.Message);
-            Log(e.StackTrace ?? string.Empty);
+            Log(name, $"Error uploading files: {e.GetType()}");
+            Log(name, e.Message);
+            Log(name, e.StackTrace ?? "There is no stack trace");
             return false;
         }
         return true;
     }
     
-    private static void Log(string message) => CrestronConsole.PrintLine($"{DateTime.Now} - SSH - {message}");
+    private static void Log(string name, string message) => CrestronConsole.PrintLine($"{DateTime.Now} - {name} - SSH - {message}");
 }
