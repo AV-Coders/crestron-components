@@ -5,7 +5,7 @@ using Crestron.SimplSharpPro;
 
 namespace AVCoders.Crestron.TouchPanel;
 
-public class Shutdown : SubPage
+public class Shutdown : SubPage, IDevice
 {
     public SubpageSelection? Controller = null;
     public PowerStateHandler? PowerStateHandlers;
@@ -117,4 +117,12 @@ public class Shutdown : SubPage
         if(_enableLogs)
             CrestronConsole.PrintLine($"{DateTime.Now} - {_name} - Shutdown - {message}");
     }
+
+    public void PowerOn() => UpdateRemainingTimeString();
+
+    public void PowerOff() => UpdateRemainingTimeString();
+
+    public PowerState GetCurrentPowerState() => PowerState.On;
+
+    public CommunicationState GetCurrentCommunicationState() => CommunicationState.Okay;
 }

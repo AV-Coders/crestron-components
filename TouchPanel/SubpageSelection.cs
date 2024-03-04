@@ -1,4 +1,5 @@
-﻿using AVCoders.Crestron.Core;
+﻿using AVCoders.Core;
+using AVCoders.Crestron.Core;
 using AVCoders.Crestron.SmartGraphics;
 using Crestron.SimplSharp;
 using Crestron.SimplSharpPro;
@@ -13,7 +14,7 @@ public enum SubpageSelectionType
 }
 public record SubpageButtonConfig(ushort ButtonMode, uint PopupPageJoin, VisibilityChanged? VisibilityEvent = null, string? Pin = null);
 
-public class SubpageSelection
+public class SubpageSelection : IDevice
 {
     private readonly string _name;
     private readonly List<BasicTriListWithSmartObject> _panels;
@@ -149,5 +150,10 @@ public class SubpageSelection
             CrestronConsole.PrintLine($"{DateTime.Now} - {_name} - SubPageSelection - {message}");
     }
 
+    public void PowerOn() { }
+
     public void PowerOff() => ClearSubpages();
+    public PowerState GetCurrentPowerState() => PowerState.On;
+
+    public CommunicationState GetCurrentCommunicationState() => CommunicationState.Okay;
 }
