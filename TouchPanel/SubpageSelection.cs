@@ -32,7 +32,7 @@ public class SubpageSelection : IDevice
 
     private const uint ModeJoin = 1;
 
-    public static readonly uint JoinIncrement = 120;
+    public static readonly uint JoinIncrement = 10;
 
     public SubpageSelection(string name, List<BasicTriListWithSmartObject> panels, SubpageSelectionType subpageSelectionType,
         List<SubpageButtonConfig> buttonConfig, uint[] pages, List<SubpageSelection> subMenus, uint smartObjectId, uint closeJoin,
