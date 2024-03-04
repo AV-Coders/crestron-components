@@ -1,6 +1,4 @@
-﻿using AVCoders.Crestron.Core;
-
-namespace AVCoders.Crestron.TouchPanel;
+﻿namespace AVCoders.Crestron.TouchPanel;
 
 public abstract class SubPage
 {

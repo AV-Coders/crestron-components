@@ -1,8 +1,5 @@
 ﻿using AVCoders.Core;
-using AVCoders.Crestron.Core;
 using AVCoders.Crestron.SmartGraphics;
-using Crestron.SimplSharp;
-using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DeviceSupport;
 
 namespace AVCoders.Crestron.TouchPanel;

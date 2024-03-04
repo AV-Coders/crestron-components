@@ -1,6 +1,4 @@
-﻿using Crestron.SimplSharp;
-using Crestron.SimplSharpPro;
-using Crestron.SimplSharpPro.DeviceSupport;
+﻿using Crestron.SimplSharpPro.DeviceSupport;
 
 namespace AVCoders.Crestron.TouchPanel;
 public class Pin

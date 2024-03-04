@@ -1,7 +1,4 @@
-﻿using AVCoders.Crestron.Core;
-using Crestron.SimplSharp;
-using Crestron.SimplSharpPro;
-using Crestron.SimplSharpPro.DeviceSupport;
+﻿using Crestron.SimplSharpPro.DeviceSupport;
 using Renci.SshNet;
 using Directory = Crestron.SimplSharp.CrestronIO.Directory;
 
