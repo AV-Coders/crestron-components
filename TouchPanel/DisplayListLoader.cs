@@ -49,7 +49,7 @@ public class DisplayListLoader
             return;
         
         Log($"Uploading - Local path: {_filePath}, TP Path: {RemoteTpPath}, TP IP: {_ethernetExtender.IpAddressFeedback.StringValue}");
-        var uploadSuccess = SSH.UploadFile(
+        var uploadSuccess = Ssh.UploadFile(
             new SftpClient(_ethernetExtender.IpAddressFeedback.StringValue, 22, _username, _password),
             _filePath, RemoteTpPath, _name);
 
@@ -59,7 +59,7 @@ public class DisplayListLoader
             return;
         }
         Log("Issuing project load");
-        SSH.RunCommand(
+        Ssh.RunCommand(
             new SshClient(_ethernetExtender.IpAddressFeedback.StringValue, 22, _username, _password), 
             "PROJECTLOAD", _name);
         Log("Done!");

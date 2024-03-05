@@ -47,7 +47,7 @@ public class Notifications
     {
         if (args.Sig.Type != eSigType.Bool)
             return;
-        if (args.Sig.BoolValue == false)
+        if (!args.Sig.BoolValue)
             return;
         if (args.Sig.Number == _joins.Close)
         {

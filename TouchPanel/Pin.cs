@@ -43,7 +43,7 @@ public class Pin
     {
         if (args.Sig.Type != eSigType.Bool)
             return;
-        if (args.Sig.BoolValue != true)
+        if (!args.Sig.BoolValue)
             return;
         if(args.Sig.Number == _cancelJoin)
             CrestronPanel.Interlock(_panels, 0, _relatedPages);
@@ -53,7 +53,7 @@ public class Pin
     {
         if (args.Sig.Type != eSigType.Bool)
             return;
-        if (args.Sig.BoolValue != true)
+        if (!args.Sig.BoolValue)
             return;
         Log($"Button {args.Sig.Number} pressed");
         uint buttonNumber = args.Sig.Number - 4010;

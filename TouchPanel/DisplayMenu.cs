@@ -78,7 +78,7 @@ public class DisplayMenu
     {
         if (args.Sig.Type != eSigType.Bool)
             return;
-        if (args.Sig.BoolValue == false)
+        if (!args.Sig.BoolValue)
             return;
         var selectionInfo = _srlHelper.GetBooleanSigInfo(args.Sig.Number);
         Log($"Volume Button pressed, id {args.Sig.Number}.  Index {selectionInfo.Index}, Join: {selectionInfo.Join}");

@@ -4,7 +4,7 @@ using Renci.SshNet.Common;
 
 namespace AVCoders.Crestron.Core;
 
-public static class SSH
+public static class Ssh
 {
     public static string RunCommand(SshClient sshClient, string command, string name)
     {

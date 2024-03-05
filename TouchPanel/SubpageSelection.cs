@@ -70,7 +70,7 @@ public class SubpageSelection : IDevice
             return;
         if (args.Sig.Type != eSigType.Bool)
             return;
-        if (args.Sig.BoolValue != true)
+        if (!args.Sig.BoolValue)
             return;
         ClearSubpages();
     }
@@ -79,7 +79,7 @@ public class SubpageSelection : IDevice
     {
         if (args.Sig.Type != eSigType.Bool)
             return;
-        if (args.Sig.BoolValue != true)
+        if (!args.Sig.BoolValue)
             return;
         Log($"Modal button {args.Sig.Number} pressed");
         HandleSubpages(args.Sig.Number);
@@ -147,7 +147,10 @@ public class SubpageSelection : IDevice
             CrestronConsole.PrintLine($"{DateTime.Now} - {_name} - SubPageSelection - {message}");
     }
 
-    public void PowerOn() { }
+    public void PowerOn()
+    {
+        // There's nothing to do on power on
+    }
 
     public void PowerOff() => ClearSubpages();
     public PowerState GetCurrentPowerState() => PowerState.On;

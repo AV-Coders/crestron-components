@@ -12,39 +12,11 @@ public static class CrestronPanel
         }
     }
 
-    public static void TogglingInterlock(BasicTriList panel, uint active, uint[] all)
-    {
-        foreach (uint join in all)
-        {
-            if (join == active)
-                panel.BooleanInput[join].BoolValue = !panel.BooleanInput[join].BoolValue;
-            else
-                panel.BooleanInput[join].BoolValue = join == active;
-        }
-    }
-
     public static void Interlock(SmartObject smartObject, uint active, uint[] all)
     {
-        foreach (uint join in all)
+        foreach (uint join in all.Where(x => smartObject.BooleanInput.Contains(x)))
         {
-            if (smartObject.BooleanInput.Contains(join))
-            {
-                smartObject.BooleanInput[join].BoolValue = join == active;
-            }
-        }
-    }
-
-    public static void TogglingInterlock(SmartObject smartObject, uint active, uint[] all)
-    {
-        foreach (uint join in all)
-        {
-            if (smartObject.BooleanInput.Contains(join))
-            {
-                if (join == active)
-                    smartObject.BooleanInput[join].BoolValue = !smartObject.BooleanInput[join].BoolValue;
-                else
-                    smartObject.BooleanInput[join].BoolValue = join == active;
-            }
+            smartObject.BooleanInput[join].BoolValue = join == active;
         }
     }
 
@@ -61,6 +33,28 @@ public static class CrestronPanel
     public static void Interlock(List<BasicTriList> panels , uint active, uint[] all)
     {
         panels.ForEach(panel => Interlock(panel, active, all));
+    }
+
+    public static void TogglingInterlock(BasicTriList panel, uint active, uint[] all)
+    {
+        foreach (uint join in all)
+        {
+            if (join == active)
+                panel.BooleanInput[join].BoolValue = !panel.BooleanInput[join].BoolValue;
+            else
+                panel.BooleanInput[join].BoolValue = join == active;
+        }
+    }
+
+    public static void TogglingInterlock(SmartObject smartObject, uint active, uint[] all)
+    {
+        foreach (uint join in all.Where(x => smartObject.BooleanInput.Contains(x)))
+        {
+            if (join == active)
+                smartObject.BooleanInput[join].BoolValue = !smartObject.BooleanInput[join].BoolValue;
+            else
+                smartObject.BooleanInput[join].BoolValue = join == active;
+        }
     }
 
     public static void TogglingInterlock(List<BasicTriList> panels, uint active, uint[] all)
