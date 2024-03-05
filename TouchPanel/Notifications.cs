@@ -21,8 +21,10 @@ public class Notifications
     {
         _panel.StringInput[_joins.MessageText].StringValue = message;
         SetBanner(_joins.Notify);
-        new CTimer(x => SetBanner(0), timeout);
+        ClearTimer(x => SetBanner(0), timeout);
     }
+
+    private static void ClearTimer(CTimerCallbackFunction action, int timeout) => new CTimer(action, timeout);
 
     public Guid Warn(string message)
     {
