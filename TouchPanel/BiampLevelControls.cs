@@ -48,7 +48,7 @@ public class BiampLevelControls : IVolumePage
         var selectionInfo = _srlHelper.GetSigInfo(args.Sig);
         if (args.Sig.Type == eSigType.Bool)
         {
-            if (args.Sig.BoolValue == false)
+            if (!args.Sig.BoolValue)
             {
                 _buttonHeld = false;
                 return;
