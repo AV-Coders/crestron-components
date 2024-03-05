@@ -1,56 +1,46 @@
-﻿using AVCoders.Core;
-using AVCoders.Crestron.SmartGraphics;
-using AVCoders.Dsp;
+﻿using AVCoders.Dsp;
 
 namespace AVCoders.Crestron.TouchPanel;
 
 public record QscAudioBlockInfo(string Name, string LevelInstanceTag, string MuteInstanceTag);
 
-public class QscLevelControls : IVolumePage
+public class QscLevelControls : LevelControls
 {
     private readonly QscAudioBlockInfo[] _audioBlocks;
     private readonly QsysEcp _dsp;
-    private readonly List<SmartObject> _smartObjects;
-    private readonly SubpageReferenceListHelper _srlHelper;
-    private readonly string _name;
-    private bool _buttonHeld;
-    private bool _enableLogs;
 
-    public const uint VolumeUpJoin = 1;
-    public const uint VolumeDownJoin = 2;
-    public const uint MuteJoin = 3;
-
-    public const uint VolumeLevelJoin = 1;
-
-    public const uint NameJoin = 1;
-
-    public static readonly uint JoinIncrement = 10;
-
-    public QscLevelControls(string name, QscAudioBlockInfo[] audioBlocks, QsysEcp dsp, List<SmartObject> smartObjects)
+    public QscLevelControls(string name, QscAudioBlockInfo[] audioBlocks, QsysEcp dsp, List<SmartObject> smartObjects) :
+        base(name, (ushort)audioBlocks.Length, smartObjects)
     {
         _audioBlocks = audioBlocks;
         _dsp = dsp;
-        _srlHelper = new SubpageReferenceListHelper(JoinIncrement, JoinIncrement, JoinIncrement);
-        _smartObjects = smartObjects;
-        _name = name;
 
-        _smartObjects.ForEach(smartObject =>
+        SmartObjects.ForEach(smartObject =>
         {
             smartObject.SigChange += HandleVolumePress;
             smartObject.UShortInput["Set Number of Items"].ShortValue = (short)_audioBlocks.Length;
         });
 
-        ConfigureSmartObject();
+        for (int i = 0; i < _audioBlocks.Length; i++)
+        {
+            Log($"Setting up fader {i}");
+            var faderIndex = i;
+            _dsp.AddControl(volumeLevel => HandleVolumeLevel(volumeLevel, faderIndex),
+                _audioBlocks[i].LevelInstanceTag);
+            _dsp.AddControl(muteState => HandleMuteState(muteState, faderIndex), _audioBlocks[i].MuteInstanceTag);
+            SmartObjects.ForEach(smartObject =>
+                smartObject.StringInput[SrlHelper.SerialJoinFor(i, NameJoin)].StringValue = _audioBlocks[i].Name);
+        }
     }
 
-    private void HandleVolumePress(GenericBase currentDevice, SmartObjectEventArgs args)
+    protected override void HandleVolumePress(GenericBase currentDevice, SmartObjectEventArgs args)
     {
-        var selectionInfo = _srlHelper.GetSigInfo(args.Sig);
+        var selectionInfo = SrlHelper.GetSigInfo(args.Sig);
         if (args.Sig.Type == eSigType.Bool)
         {
             if (!args.Sig.BoolValue)
             {
-                _buttonHeld = false;
+                ButtonHeld = false;
                 return;
             }
 
@@ -81,50 +71,5 @@ public class QscLevelControls : IVolumePage
         {
             _dsp.SetLevel(_audioBlocks[selectionInfo.Index].LevelInstanceTag, args.Sig.ShortValue);
         }
-    }
-
-    private void VolumeControl(Action action)
-    {
-        _buttonHeld = true;
-        new Thread(_ =>
-        {
-            while (_buttonHeld)
-            {
-                action.Invoke();
-                Log("Volume command sent");
-                Thread.Sleep(250);
-            }
-        }).Start();
-    }
-
-    private void ConfigureSmartObject()
-    {
-        Log("Configuring smart object");
-
-
-        for (int i = 0; i < _audioBlocks.Length; i++)
-        {
-            Log($"Setting up fader {i}");
-            var faderIndex = i;
-            _dsp.AddControl(volumeLevel => HandleVolumeLevel(volumeLevel, faderIndex),
-                _audioBlocks[i].LevelInstanceTag);
-            _dsp.AddControl(muteState => HandleMuteState(muteState, faderIndex), _audioBlocks[i].MuteInstanceTag);
-            _smartObjects.ForEach(smartObject =>
-                smartObject.StringInput[_srlHelper.SerialJoinFor(i, NameJoin)].StringValue = _audioBlocks[i].Name);
-        }
-    }
-
-    private void HandleMuteState(MuteState state, int faderIndex) => _smartObjects.ForEach(x =>
-        x.BooleanInput[_srlHelper.BooleanJoinFor(faderIndex, MuteJoin)].BoolValue = state == MuteState.On);
-
-    private void HandleVolumeLevel(int volumeLevel, int faderIndex) => _smartObjects.ForEach(x =>
-        x.UShortInput[_srlHelper.AnalogJoinFor(faderIndex, VolumeLevelJoin)].ShortValue = (short)volumeLevel);
-
-    public void EnableLogs(bool enable) => _enableLogs = enable;
-
-    private void Log(string message)
-    {
-        if (_enableLogs)
-            CrestronConsole.PrintLine($"{DateTime.Now} - {_name} - QscLevelControls - {message}");
     }
 }
