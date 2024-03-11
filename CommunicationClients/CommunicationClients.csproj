@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <AssemblyName>AVCoders.Crestron.CommunicationClients</AssemblyName>
+        <RootNamespace>AVCoders.Crestron.CommunicationClients</RootNamespace>
+        <LangVersion>11</LangVersion>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="AVCoders.Core" Version="2024.3.10" />
+      <PackageReference Include="Crestron.SimplSharp.SDK.Program" Version="2.20.52" />
+    </ItemGroup>
+
+</Project>

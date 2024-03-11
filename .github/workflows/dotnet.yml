@@ -33,7 +33,10 @@ jobs:
       
     - name: Test
       run: dotnet test --no-build --verbosity normal
-    
+
+    - name: Create Communication Clients Nuget Package
+      run: dotnet pack /home/runner/work/crestron-components/crestron-components/CommunicationClients/CommunicationClients.csproj --output /home/runner/work/crestron-components/package /p:Version=2024.3.${{ github.run_number }} --configuration PackRelease
+
     - name: Create Core Nuget Package
       run: dotnet pack /home/runner/work/crestron-components/crestron-components/Core/Core.csproj --output /home/runner/work/crestron-components/package /p:Version=2024.3.${{ github.run_number }} --configuration PackRelease
 
