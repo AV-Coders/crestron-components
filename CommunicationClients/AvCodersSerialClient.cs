@@ -7,42 +7,48 @@ public class AvCodersSerialClient : SerialClient
 {
     private readonly ComPort _comPort;
 
-        private readonly Dictionary<SerialBaud, ComPort.eComBaudRates> _baudRatesMap;
-        private readonly Dictionary<SerialDataBits, ComPort.eComDataBits> _dataBitsMap;
-        private readonly Dictionary<SerialParity, ComPort.eComParityType> _parityMap;
-        private readonly Dictionary<SerialStopBits, ComPort.eComStopBits> _stopBitsMap;
-        private readonly Dictionary<SerialProtocol, ComPort.eComProtocolType> _protocolMap;
+        private readonly Dictionary<SerialBaud, ComPort.eComBaudRates> _baudRatesMap = new()
+        {
+            { SerialBaud.Rate9600, ComPort.eComBaudRates.ComspecBaudRate9600 },
+            { SerialBaud.Rate19200, ComPort.eComBaudRates.ComspecBaudRate19200 },
+            { SerialBaud.Rate38400, ComPort.eComBaudRates.ComspecBaudRate38400 },
+            { SerialBaud.Rate115200, ComPort.eComBaudRates.ComspecBaudRate115200 }
+        };
+
+        private readonly Dictionary<SerialDataBits, ComPort.eComDataBits> _dataBitsMap = new()
+        {
+            { SerialDataBits.DataBits7, ComPort.eComDataBits.ComspecDataBits7 }, 
+            { SerialDataBits.DataBits8, ComPort.eComDataBits.ComspecDataBits8 }
+        };
+
+
+        private readonly Dictionary<SerialParity, ComPort.eComParityType> _parityMap = new()
+        {
+            { SerialParity.Even, ComPort.eComParityType.ComspecParityEven },
+            { SerialParity.None, ComPort.eComParityType.ComspecParityNone },
+            { SerialParity.Odd, ComPort.eComParityType.ComspecParityOdd }
+        };
+        
+
+        private readonly Dictionary<SerialStopBits, ComPort.eComStopBits> _stopBitsMap = new() 
+        {
+            { SerialStopBits.Bits1, ComPort.eComStopBits.ComspecStopBits1 },
+            { SerialStopBits.Bits2, ComPort.eComStopBits.ComspecStopBits2 },
+        };
+
+        private readonly Dictionary<SerialProtocol, ComPort.eComProtocolType> _protocolMap = new()
+        {
+            { SerialProtocol.Rs232, ComPort.eComProtocolType.ComspecProtocolRS232 },
+            { SerialProtocol.Rs422, ComPort.eComProtocolType.ComspecProtocolRS422 },
+            { SerialProtocol.Rs485, ComPort.eComProtocolType.ComspecProtocolRS485 },
+        };
 
         public AvCodersSerialClient(ComPort comPort, SerialSpec serialSpec)
         {
             _comPort = comPort;
-            
-            _baudRatesMap = new Dictionary<SerialBaud, ComPort.eComBaudRates>();
-            _baudRatesMap.Add(SerialBaud.Rate9600, ComPort.eComBaudRates.ComspecBaudRate9600);
-            _baudRatesMap.Add(SerialBaud.Rate19200, ComPort.eComBaudRates.ComspecBaudRate19200);
-            _baudRatesMap.Add(SerialBaud.Rate38400, ComPort.eComBaudRates.ComspecBaudRate38400);
-            _baudRatesMap.Add(SerialBaud.Rate115200, ComPort.eComBaudRates.ComspecBaudRate115200);
-
-            _dataBitsMap = new Dictionary<SerialDataBits, ComPort.eComDataBits>();
-            _dataBitsMap.Add(SerialDataBits.DataBits7, ComPort.eComDataBits.ComspecDataBits7);
-            _dataBitsMap.Add(SerialDataBits.DataBits8, ComPort.eComDataBits.ComspecDataBits8);
-
-            _parityMap = new Dictionary<SerialParity, ComPort.eComParityType>();
-            _parityMap.Add(SerialParity.Even, ComPort.eComParityType.ComspecParityEven);
-            _parityMap.Add(SerialParity.None, ComPort.eComParityType.ComspecParityNone);
-            _parityMap.Add(SerialParity.Odd, ComPort.eComParityType.ComspecParityOdd);
-
-            _stopBitsMap = new Dictionary<SerialStopBits, ComPort.eComStopBits>();
-            _stopBitsMap.Add(SerialStopBits.Bits1, ComPort.eComStopBits.ComspecStopBits1);
-            _stopBitsMap.Add(SerialStopBits.Bits2, ComPort.eComStopBits.ComspecStopBits2);
-
-            _protocolMap = new Dictionary<SerialProtocol, ComPort.eComProtocolType>();
-            _protocolMap.Add(SerialProtocol.Rs232, ComPort.eComProtocolType.ComspecProtocolRS232);
-            _protocolMap.Add(SerialProtocol.Rs422, ComPort.eComProtocolType.ComspecProtocolRS422);
-            _protocolMap.Add(SerialProtocol.Rs485, ComPort.eComProtocolType.ComspecProtocolRS485);
-            
             ConfigurePort(serialSpec);
             _comPort.SerialDataReceived += ComPortOnSerialDataReceived;
+            _comPort.Register();
         }
 
         private void ComPortOnSerialDataReceived(ComPort receivingComPort, ComPortSerialDataEventArgs args)
@@ -57,8 +63,7 @@ public class AvCodersSerialClient : SerialClient
 
         public override void Send(byte[] bytes)
         {
-            if(bytes.ToString() != null)
-                _comPort.Send(bytes.ToString());
+            Send(bytes.ToString() ?? throw new InvalidCastException("Bytes can't be a string"));
         }
 
         public sealed override void ConfigurePort(SerialSpec serialSpec)
