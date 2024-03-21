@@ -15,12 +15,6 @@ public class QscLevelControls : LevelControls
         _audioBlocks = audioBlocks;
         _dsp = dsp;
 
-        SmartObjects.ForEach(smartObject =>
-        {
-            smartObject.SigChange += HandleVolumePress;
-            smartObject.UShortInput["Set Number of Items"].ShortValue = (short)_audioBlocks.Length;
-        });
-
         for (int i = 0; i < _audioBlocks.Length; i++)
         {
             Log($"Setting up fader {i}");

@@ -63,6 +63,6 @@ public abstract class LevelControls
     protected void Log(string message)
     {
         if (_enableLogs)
-            CrestronConsole.PrintLine($"{DateTime.Now} - {_name} - QscLevelControls - {message}");
+            CrestronConsole.PrintLine($"{DateTime.Now} - {_name} - LevelControls - {message}");
     }
 }

@@ -11,12 +11,6 @@ public class DisplayLevelControls : LevelControls
         base(name, (ushort)displays.Count, smartObjects)
     {
         _displays = displays;
-
-        SmartObjects.ForEach(smartObject =>
-        {
-            smartObject.SigChange += HandleVolumePress;
-            smartObject.UShortInput["Set Number of Items"].ShortValue = (short)displays.Count;
-        });
         
         for (int i = 0; i < _displays.Count; i++)
         {
@@ -31,38 +25,37 @@ public class DisplayLevelControls : LevelControls
     protected override void HandleVolumePress(GenericBase currentDevice, SmartObjectEventArgs args)
     {
         var foo = SrlHelper.GetSigInfo(args.Sig);
-        if (args.Sig.Type == eSigType.Bool)
+        switch (args.Sig.Type)
         {
-            if (args.Sig.BoolValue == false)
-            {
+            case eSigType.Bool when args.Sig.BoolValue == false:
                 ButtonHeld = false;
                 return;
-            }
-            Log($"Volume Button pressed, id {args.Sig.Number}");
+            case eSigType.Bool:
+                Log($"Volume Button pressed, id {args.Sig.Number}");
             
-            switch (foo.Join)
-            {
-                case VolumeUpJoin:
-                    void VolumeUp() => _displays[foo.Index].Display.SetVolume(_displays[foo.Index].Display.GetCurrentVolume() + 1);
-                    VolumeControl(VolumeUp);
-                    Log($"Queued volume up on display {foo.Index}");
-                    break;
-                case VolumeDownJoin:
-                    void VolumeDown() => _displays[foo.Index].Display.SetVolume(_displays[foo.Index].Display.GetCurrentVolume() - 1);
-                    VolumeControl(VolumeDown);
-                    Log($"Queued volume down on display {foo.Index}");
-                    break;
-                case MuteJoin:
-                    _displays[foo.Index].Display.ToggleAudioMute();
-                    Log($"Toggled mute for display {foo.Index}");
-                    break;
-            }
-        }
-        else if (args.Sig.Type == eSigType.UShort)
-        {
-            if (args.Sig.Number <= 10)
+                switch (foo.Join)
+                {
+                    case VolumeUpJoin:
+                        void VolumeUp() => _displays[foo.Index].Display.SetVolume(_displays[foo.Index].Display.GetCurrentVolume() + 1);
+                        VolumeControl(VolumeUp);
+                        Log($"Queued volume up on display {foo.Index}");
+                        break;
+                    case VolumeDownJoin:
+                        void VolumeDown() => _displays[foo.Index].Display.SetVolume(_displays[foo.Index].Display.GetCurrentVolume() - 1);
+                        VolumeControl(VolumeDown);
+                        Log($"Queued volume down on display {foo.Index}");
+                        break;
+                    case MuteJoin:
+                        _displays[foo.Index].Display.ToggleAudioMute();
+                        Log($"Toggled mute for display {foo.Index}");
+                        break;
+                }
+                break;
+            case eSigType.UShort when args.Sig.Number <= 10:
                 return;
-            _displays[foo.Index].Display.SetVolume(args.Sig.UShortValue);
+            case eSigType.UShort:
+                _displays[foo.Index].Display.SetVolume(args.Sig.UShortValue);
+                break;
         }
     }
 
