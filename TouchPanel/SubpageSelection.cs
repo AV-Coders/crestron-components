@@ -9,7 +9,7 @@ public enum SubpageSelectionType
     Toggling,
     Interlocked
 }
-public record SubpageButtonConfig(ushort ButtonMode, uint PopupPageJoin, VisibilityChanged? VisibilityEvent = null, string? Pin = null);
+public record SubpageButtonConfig(ushort ButtonMode, uint PopupPageJoin, string Title, VisibilityChanged? VisibilityEvent = null, string? Pin = null);
 
 public class SubpageSelection : IDevice
 {
@@ -31,6 +31,8 @@ public class SubpageSelection : IDevice
     private const uint VisibilityJoin = 2;
 
     private const uint ModeJoin = 1;
+
+    private const uint TitleJoin = 1;
 
     public static readonly uint JoinIncrement = 10;
 
@@ -95,6 +97,7 @@ public class SubpageSelection : IDevice
         {
             _smartObjects.ForEach(x => x.BooleanInput[_srlHelper.BooleanJoinFor(i, VisibilityJoin)].BoolValue = true);
             _smartObjects.ForEach(x => x.UShortInput[_srlHelper.AnalogJoinFor(i, ModeJoin)].UShortValue = _buttonConfig[i].ButtonMode);
+            _smartObjects.ForEach(x => x.StringInput[_srlHelper.SerialJoinFor(i, TitleJoin)].StringValue = _buttonConfig[i].Title);
         }
     }
 
