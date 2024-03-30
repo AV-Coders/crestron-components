@@ -7,11 +7,12 @@ namespace AVCoders.Crestron.CommunicationClients;
 public class AvCodersIrAsSerialClient : SerialClient
 {
     private readonly IROutputPort _irPort;
+    private readonly Encoding _encoding;
 
-
-    public AvCodersIrAsSerialClient(IROutputPort irPort, SerialSpec serialSpec)
+    public AvCodersIrAsSerialClient(IROutputPort irPort, SerialSpec serialSpec, Encoding? encoding)
     {
         _irPort = irPort;
+        _encoding = encoding ?? Encoding.ASCII;
         ConfigurePort(serialSpec);
         _irPort.Register();
     }
@@ -27,7 +28,7 @@ public class AvCodersIrAsSerialClient : SerialClient
             SerialMappings.IrDataBitsMap[serialSpec.DataBits],
             SerialMappings.IrParityMap[serialSpec.Parity],
             SerialMappings.IrStopBitsMap[serialSpec.StopBits],
-            Encoding.Default
+            _encoding
             );
     }
 }
