@@ -6,16 +6,16 @@ public record BiampAudioBlockInfo(string Name, string InstanceTag, int BlockInde
 
 public class BiampLevelControls : LevelControls
 {
-    private readonly BiampAudioBlockInfo[] _audioBlocks;
+    private readonly List<BiampAudioBlockInfo> _audioBlocks;
     private readonly BiampTtp _dsp;
 
-    public BiampLevelControls(string name, BiampAudioBlockInfo[] audioBlocks, BiampTtp dsp, List<SmartObject> smartObjects) :
-        base(name, (ushort)audioBlocks.Length, smartObjects)
+    public BiampLevelControls(string name, List<BiampAudioBlockInfo> audioBlocks, BiampTtp dsp, List<SmartObject> smartObjects) :
+        base(name, (ushort)audioBlocks.Count, smartObjects)
     {
         _audioBlocks = audioBlocks;
         _dsp = dsp;
 
-        for (int i = 0; i < _audioBlocks.Length; i++)
+        for (int i = 0; i < _audioBlocks.Count; i++)
         {
             Log($"Setting up fader {i}");
             var faderIndex = i;

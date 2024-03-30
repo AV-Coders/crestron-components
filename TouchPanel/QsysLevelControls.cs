@@ -6,16 +6,16 @@ public record QscAudioBlockInfo(string Name, string LevelInstanceTag, string Mut
 
 public class QscLevelControls : LevelControls
 {
-    private readonly QscAudioBlockInfo[] _audioBlocks;
+    private readonly List<QscAudioBlockInfo> _audioBlocks;
     private readonly QsysEcp _dsp;
 
-    public QscLevelControls(string name, QscAudioBlockInfo[] audioBlocks, QsysEcp dsp, List<SmartObject> smartObjects) :
-        base(name, (ushort)audioBlocks.Length, smartObjects)
+    public QscLevelControls(string name, List<QscAudioBlockInfo> audioBlocks, QsysEcp dsp, List<SmartObject> smartObjects) :
+        base(name, (ushort)audioBlocks.Count, smartObjects)
     {
         _audioBlocks = audioBlocks;
         _dsp = dsp;
 
-        for (int i = 0; i < _audioBlocks.Length; i++)
+        for (int i = 0; i < _audioBlocks.Count; i++)
         {
             Log($"Setting up fader {i}");
             var faderIndex = i;
