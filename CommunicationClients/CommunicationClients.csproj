@@ -10,7 +10,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="AVCoders.Core" Version="2024.3.27" />
+      <PackageReference Include="AVCoders.Core" Version="2024.3.35" />
       <PackageReference Include="Crestron.SimplSharp.SDK.Program" Version="2.20.52" />
     </ItemGroup>
 

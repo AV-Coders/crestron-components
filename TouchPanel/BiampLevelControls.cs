@@ -2,14 +2,14 @@
 
 namespace AVCoders.Crestron.TouchPanel;
 
-public record AudioBlockInfo(string Name, string InstanceTag, int BlockIndex);
+public record BiampAudioBlockInfo(string Name, string InstanceTag, int BlockIndex);
 
 public class BiampLevelControls : LevelControls
 {
-    private readonly AudioBlockInfo[] _audioBlocks;
+    private readonly BiampAudioBlockInfo[] _audioBlocks;
     private readonly BiampTtp _dsp;
 
-    public BiampLevelControls(string name, AudioBlockInfo[] audioBlocks, BiampTtp dsp, List<SmartObject> smartObjects) :
+    public BiampLevelControls(string name, BiampAudioBlockInfo[] audioBlocks, BiampTtp dsp, List<SmartObject> smartObjects) :
         base(name, (ushort)audioBlocks.Length, smartObjects)
     {
         _audioBlocks = audioBlocks;
