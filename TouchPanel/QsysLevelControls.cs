@@ -32,14 +32,16 @@ public class QscLevelControls : LevelControls
         var selectionInfo = SrlHelper.GetSigInfo(args.Sig);
         if (args.Sig.Type == eSigType.Bool)
         {
+            if (args.Sig.Number < 4000) // Some touch panels send a sig 1 event as well as the button press event.
+                return;
+            
             if (!args.Sig.BoolValue)
             {
                 ButtonHeld = false;
                 return;
             }
 
-            Log(
-                $"Volume Button pressed, id {args.Sig.Number}.  Index {selectionInfo.Index}, Join: {selectionInfo.Join}");
+            Log($"Volume Button pressed, id {args.Sig.Number}.  Index {selectionInfo.Index}, Join: {selectionInfo.Join}");
             if (selectionInfo.Join == VolumeUpJoin)
             {
                 string instanceTag = _audioBlocks[selectionInfo.Index].LevelInstanceTag;
