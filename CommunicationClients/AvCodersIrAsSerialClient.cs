@@ -12,9 +12,9 @@ public class AvCodersIrAsSerialClient : SerialClient
     public AvCodersIrAsSerialClient(IROutputPort irPort, SerialSpec serialSpec, Encoding? encoding)
     {
         _irPort = irPort;
+        _irPort.Register();
         _encoding = encoding ?? Encoding.ASCII;
         ConfigurePort(serialSpec);
-        _irPort.Register();
     }
 
     public override void Send(String message) => _irPort.SendSerialData(message);

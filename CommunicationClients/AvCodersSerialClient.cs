@@ -10,9 +10,9 @@ public class AvCodersSerialClient : SerialClient
     public AvCodersSerialClient(ComPort comPort, SerialSpec serialSpec)
     {
         _comPort = comPort;
+        _comPort.Register();
         ConfigurePort(serialSpec);
         _comPort.SerialDataReceived += ComPortOnSerialDataReceived;
-        _comPort.Register();
     }
 
     private void ComPortOnSerialDataReceived(ComPort receivingComPort, ComPortSerialDataEventArgs args) => ResponseHandlers?.Invoke(args.SerialData);
