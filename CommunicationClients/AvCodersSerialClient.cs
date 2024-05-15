@@ -19,15 +19,7 @@ public class AvCodersSerialClient : SerialClient
 
     public override void Send(String message) => _comPort.Send(message);
 
-    public override void Send(byte[] bytes)
-    {
-        List<char> chars = new List<char>();
-        foreach (byte b in bytes)
-        {
-            chars.Add((char) b);
-        }
-        _comPort.Send(chars.ToArray(), bytes.Length);
-    }
+    public override void Send(byte[] bytes) => Send(bytes.ToString() ?? throw new InvalidCastException("Bytes can't be a string"));
 
     public sealed override void ConfigurePort(SerialSpec serialSpec)
     {
