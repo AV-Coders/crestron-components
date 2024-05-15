@@ -7,6 +7,10 @@ public static class SerialMappings
 {
     public static readonly Dictionary<SerialBaud, ComPort.eComBaudRates> BaudRatesMap = new()
     {
+        { SerialBaud.Rate300, ComPort.eComBaudRates.ComspecBaudRate300 },
+        { SerialBaud.Rate1200, ComPort.eComBaudRates.ComspecBaudRate1200 },
+        { SerialBaud.Rate2400, ComPort.eComBaudRates.ComspecBaudRate2400 },
+        { SerialBaud.Rate4800, ComPort.eComBaudRates.ComspecBaudRate4800 },
         { SerialBaud.Rate9600, ComPort.eComBaudRates.ComspecBaudRate9600 },
         { SerialBaud.Rate19200, ComPort.eComBaudRates.ComspecBaudRate19200 },
         { SerialBaud.Rate38400, ComPort.eComBaudRates.ComspecBaudRate38400 },
