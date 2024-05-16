@@ -120,7 +120,7 @@ public class SubpageSelection : IDevice
     public void ShowPopupPage(int selection)
     {
         _activePage = selection;
-        _buttonConfig[selection].VisibilityEvent?.Invoke(Visibility.Shown);
+        new Thread(_ => _buttonConfig[selection].VisibilityEvent?.Invoke(Visibility.Shown)).Start();
         CrestronPanel.Interlock(_panels, _buttonConfig[selection].PopupPageJoin, _pages);
         CrestronPanel.Interlock(_smartObjects, _srlHelper.BooleanJoinFor(selection, SelectJoin), _allSelectJoins);
         Log($"Showing modal {selection}");
