@@ -121,6 +121,8 @@ public class SubpageSelection : IDevice
 
     public void ShowPopupPage(int selection)
     {
+        if(_activePage >= 0)
+            _buttonConfig[_activePage].VisibilityEvent?.Invoke(Visibility.Hidden);
         _activePage = selection;
         new Thread(_ => _buttonConfig[selection].VisibilityEvent?.Invoke(Visibility.Shown)).Start();
         CrestronPanel.Interlock(_panels, _buttonConfig[selection].PopupPageJoin, _pages);
