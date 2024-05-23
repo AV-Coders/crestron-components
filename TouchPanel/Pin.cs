@@ -19,6 +19,9 @@ public class Pin
     
     public const uint ZeroJoin = 10;
     public const uint ClearJoin = 100;
+    public const uint CancelJoin = 102;
+    public const uint EnterJoin = 103;
+
     
     public const uint UnmaskedInputStringJoin = 11;
     public const uint MaskedInputStringJoin = 12;
@@ -47,8 +50,11 @@ public class Pin
             return;
         if (!args.Sig.BoolValue)
             return;
-        if(args.Sig.Number == _cancelJoin)
+        if (args.Sig.Number == _cancelJoin)
+        {
             CrestronPanel.Interlock(_panels, 0, _relatedPages);
+            ClearText();
+        }
     }
 
     private void PinButtonPressed(GenericBase currentDevice, SmartObjectEventArgs args)
@@ -61,6 +67,10 @@ public class Pin
         uint buttonNumber = args.Sig.Number - 4010;
         switch (buttonNumber)
         {
+            case CancelJoin:
+                ClearText();
+                CrestronPanel.Interlock(_panels, 0, _relatedPages);
+                break;
             case ClearJoin:
                 ClearText();
                 break;
