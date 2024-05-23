@@ -19,6 +19,7 @@ public class Pin
     
     public const uint ZeroJoin = 10;
     public const uint ClearJoin = 100;
+    public const uint BackspaceJoin = 101;
     public const uint CancelJoin = 102;
     public const uint EnterJoin = 103;
 
@@ -67,6 +68,10 @@ public class Pin
         uint buttonNumber = args.Sig.Number - 4010;
         switch (buttonNumber)
         {
+            case BackspaceJoin:
+                if (_input.Length > 0)
+                    _input = _input[..^1];
+                break;
             case CancelJoin:
                 ClearText();
                 CrestronPanel.Interlock(_panels, 0, _relatedPages);
