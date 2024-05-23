@@ -122,7 +122,7 @@ public class SubpageSelection : IDevice
     public void ShowPopupPage(int selection)
     {
         if(_activePage >= 0)
-            _buttonConfig[_activePage].VisibilityEvent?.Invoke(Visibility.Hidden);
+            new Thread(_ => _buttonConfig[_activePage].VisibilityEvent?.Invoke(Visibility.Hidden)).Start();
         _activePage = selection;
         new Thread(_ => _buttonConfig[selection].VisibilityEvent?.Invoke(Visibility.Shown)).Start();
         CrestronPanel.Interlock(_panels, _buttonConfig[selection].PopupPageJoin, _pages);
@@ -138,7 +138,7 @@ public class SubpageSelection : IDevice
         _subMenus.ForEach(menu => menu.ClearSubpages());
         foreach (SubpageButtonConfig subpageButton in _buttonConfig)
         {
-            subpageButton.VisibilityEvent?.Invoke(Visibility.Hidden);
+            new Thread(_ => subpageButton.VisibilityEvent?.Invoke(Visibility.Hidden)).Start();
         }
 
         Log("Clearing Subpages");
