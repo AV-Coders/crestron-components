@@ -36,6 +36,8 @@ public class SubpageSelection : IDevice
 
     public static readonly uint JoinIncrement = 10;
 
+    private int? _defaultPage = null;
+
     public SubpageSelection(string name, List<BasicTriListWithSmartObject> panels, SubpageSelectionType subpageSelectionType,
         List<SubpageButtonConfig> buttonConfig, uint[] pages, List<SubpageSelection> subMenus, uint smartObjectId, uint closeJoin,
         Pin? pin = null)
@@ -150,9 +152,12 @@ public class SubpageSelection : IDevice
             CrestronConsole.PrintLine($"{DateTime.Now} - {_name} - SubPageSelection - {message}");
     }
 
+    public void SetDefaultPage(int? page) => _defaultPage = page;
+
     public void PowerOn()
     {
-        // There's nothing to do on power on
+        if(_defaultPage != null)
+            ShowPopupPage((int)_defaultPage);
     }
 
     public void PowerOff() => ClearSubpages();
