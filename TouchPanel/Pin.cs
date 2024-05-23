@@ -1,4 +1,5 @@
-﻿using Crestron.SimplSharpPro.DeviceSupport;
+﻿using System.Text;
+using Crestron.SimplSharpPro.DeviceSupport;
 
 namespace AVCoders.Crestron.TouchPanel;
 public class Pin
@@ -20,6 +21,7 @@ public class Pin
     public const uint ClearJoin = 100;
     
     public const uint UnmaskedInputStringJoin = 11;
+    public const uint MaskedInputStringJoin = 12;
 
     public Pin(string name, List<BasicTriListWithSmartObject> panels, uint smartObjectId, 
         uint pageJoin, uint[] relatedPages, uint cancelJoin)
@@ -70,7 +72,12 @@ public class Pin
                 break;
         }
 
-        _smartObjects.ForEach(x => x.StringInput[UnmaskedInputStringJoin + 10].StringValue = _input);
+        _smartObjects.ForEach(x =>
+        {
+            x.StringInput[UnmaskedInputStringJoin + 10].StringValue = _input;
+            x.StringInput[MaskedInputStringJoin + 10].StringValue = MaskInput();
+            
+        });
 
         if (_input == _pin)
         {
@@ -79,6 +86,16 @@ public class Pin
             CrestronPanel.Interlock(_panels, 0, _relatedPages);
             _pin = String.Empty;
         }
+    }
+    
+    private string MaskInput()
+    {
+        StringBuilder sb = new StringBuilder(_input);
+        for (int i = 0; i < _input.Length; i++)
+        {
+            sb[i] = '*';
+        }
+        return sb.ToString();
     }
 
     public void Authenticate(string? expectedPin, Action successAction)
