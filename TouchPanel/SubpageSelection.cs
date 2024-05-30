@@ -122,9 +122,9 @@ public class SubpageSelection : IDevice
     public void ShowPopupPage(int selection)
     {
         if(_activePage >= 0)
-            new Thread(_ => _buttonConfig[_activePage].VisibilityEvent?.Invoke(Visibility.Hidden)).Start();
+            InvokeVisibilityEvent(_buttonConfig[_activePage], Visibility.Hidden);
         _activePage = selection;
-        new Thread(_ => _buttonConfig[selection].VisibilityEvent?.Invoke(Visibility.Shown)).Start();
+        InvokeVisibilityEvent(_buttonConfig[selection], Visibility.Shown);
         CrestronPanel.Interlock(_panels, _buttonConfig[selection].PopupPageJoin, _pages);
         CrestronPanel.Interlock(_smartObjects, _srlHelper.BooleanJoinFor(selection, SelectJoin), _allSelectJoins);
         Log($"Showing modal {selection}");
@@ -138,10 +138,16 @@ public class SubpageSelection : IDevice
         _subMenus.ForEach(menu => menu.ClearSubpages());
         foreach (SubpageButtonConfig subpageButton in _buttonConfig)
         {
-            new Thread(_ => subpageButton.VisibilityEvent?.Invoke(Visibility.Hidden)).Start();
+            InvokeVisibilityEvent(subpageButton, Visibility.Hidden);
         }
 
         Log("Clearing Subpages");
+    }
+
+    private void InvokeVisibilityEvent(SubpageButtonConfig button, Visibility visibility)
+    {
+        if(button.VisibilityEvent != null)
+            new Thread(_ => button.VisibilityEvent.Invoke(visibility)).Start();
     }
 
     private int GetArrayIndexFromButton(uint sigNumber) => (int)((sigNumber - 4001) / 10) - 1;
