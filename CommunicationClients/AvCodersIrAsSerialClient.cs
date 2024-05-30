@@ -31,4 +31,6 @@ public class AvCodersIrAsSerialClient : SerialClient
             _encoding
             );
     }
+
+    public override void Send(char[] chars) => _irPort.SendSerialData(chars.ToString() ?? throw new InvalidCastException("Chars is not a string"));
 }
