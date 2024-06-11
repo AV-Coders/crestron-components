@@ -130,7 +130,11 @@ public class Pin
 
     private void ClearText()
     {
-        _smartObjects.ForEach(x => x.StringInput[UnmaskedInputStringJoin + 10].StringValue = string.Empty);
+        _smartObjects.ForEach(x =>
+        {
+            x.StringInput[UnmaskedInputStringJoin + 10].StringValue = string.Empty;
+            x.StringInput[MaskedInputStringJoin + 10].StringValue = string.Empty;
+        });
         _input = string.Empty;
         Log("Cleared text");
     }
