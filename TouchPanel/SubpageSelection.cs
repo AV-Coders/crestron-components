@@ -37,6 +37,7 @@ public class SubpageSelection : IDevice
     public static readonly uint JoinIncrement = 10;
 
     private int? _defaultPage = null;
+    private bool _rememberSelection;
 
     public SubpageSelection(string name, List<BasicTriListWithSmartObject> panels, SubpageSelectionType subpageSelectionType,
         List<SubpageButtonConfig> buttonConfig, uint[] pages, List<SubpageSelection> subMenus, uint smartObjectId, uint closeJoin,
@@ -124,6 +125,8 @@ public class SubpageSelection : IDevice
         if(_activePage >= 0)
             InvokeVisibilityEvent(_buttonConfig[_activePage], Visibility.Hidden);
         _activePage = selection;
+        if (_rememberSelection)
+            _defaultPage = _activePage;
         InvokeVisibilityEvent(_buttonConfig[selection], Visibility.Shown);
         CrestronPanel.Interlock(_panels, _buttonConfig[selection].PopupPageJoin, _pages);
         CrestronPanel.Interlock(_smartObjects, _srlHelper.BooleanJoinFor(selection, SelectJoin), _allSelectJoins);
@@ -161,6 +164,11 @@ public class SubpageSelection : IDevice
     }
 
     public void SetDefaultPage(int? page) => _defaultPage = page;
+    
+    public void RememberSelection(bool remember)
+    {
+        _rememberSelection = remember;
+    }
 
     public void PowerOn()
     {
