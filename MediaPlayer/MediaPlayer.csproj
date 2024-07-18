@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="AVCoders.MediaPlayer" Version="2024.7.70" />
+      <PackageReference Include="Crestron.SimplSharp.SDK.Program" Version="2.20.66" />
+    </ItemGroup>
+
+</Project>
