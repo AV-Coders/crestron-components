@@ -6,11 +6,12 @@ public record QscAudioBlockInfo(string Name, string LevelInstanceTag, string Mut
 
 public class QscLevelControls : LevelControls
 {
+    // This is designed to work with QsysSourceSelect if required. 
     private readonly List<QscAudioBlockInfo> _audioBlocks;
     private readonly QsysEcp _dsp;
 
-    public QscLevelControls(string name, List<QscAudioBlockInfo> audioBlocks, QsysEcp dsp, List<SmartObject> smartObjects) :
-        base(name, (ushort)audioBlocks.Count, smartObjects)
+    public QscLevelControls(string name, List<QscAudioBlockInfo> audioBlocks, QsysEcp dsp, List<SmartObject> smartObjects, uint joinIncrement = DefaultJoinIncrement) :
+        base(name, (ushort)audioBlocks.Count, smartObjects, joinIncrement)
     {
         _audioBlocks = audioBlocks;
         _dsp = dsp;

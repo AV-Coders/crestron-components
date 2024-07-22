@@ -1,0 +1,69 @@
+﻿using AVCoders.Dsp;
+
+namespace AVCoders.Crestron.TouchPanel;
+
+public record QscSources(string Name, int InputNumber);
+
+public class QSysSourceSelect : LevelControls
+{
+    // This is designed to work with Qsys Level control.  Digital joins 4-10 are used by this module
+    private readonly List<QscSources> _sources;
+    private readonly List<string> _selectBlocks;
+    private readonly QsysEcp _dsp;
+    
+    public QSysSourceSelect(string name, List<string> selectBlocks, QsysEcp dsp,  List<SmartObject> smartObjects, List<QscSources> sources, uint joinIncrement = DefaultJoinIncrement) : 
+        base(name, (ushort)selectBlocks.Count, smartObjects, joinIncrement)
+    {
+        _selectBlocks = selectBlocks;
+        _dsp = dsp;
+        _sources = sources;
+
+        for (int i = 0; i < selectBlocks.Count; i++)
+        {
+            Log($"Setting up source select {i}");
+            var faderIndex = i;
+            _dsp.AddControl(selection => HandleSourceChange(selection, faderIndex), selectBlocks[faderIndex]);
+            for (uint sourceIndex = 0; sourceIndex < sources.Count; sourceIndex++)
+            {
+                smartObjects.ForEach(smartObject =>
+                {
+                    smartObject.StringInput[SrlHelper.SerialJoinFor(faderIndex, sourceIndex + 4)].StringValue =
+                        sources[(int)sourceIndex].Name;
+                });
+            }
+        }
+    }
+
+    private void HandleSourceChange(string selection, int faderIndex)
+    {
+        var intVersion = Int32.Parse(selection);
+        var sourceIndex = _sources.FindIndex(x => x.InputNumber == intVersion);
+        if (sourceIndex < 0)
+            return;
+        for (uint i = 4; i < JoinIncrement; i++)
+        {
+            SmartObjects.ForEach(x => x.BooleanInput[SrlHelper.BooleanJoinFor(faderIndex, i)].BoolValue = sourceIndex == (i-4));
+        }
+    }
+
+    // Created in the base class as the generic handler.  Actually used as selection in this module.
+    protected override void HandleVolumePress(GenericBase currentDevice, SmartObjectEventArgs args)
+    {
+        if (args.Sig.Type != eSigType.Bool)
+            return;
+        if (args.Sig.Number < 4000) // Some touch panels send a sig 1 event as well as the button press event.
+            return;
+        if (!args.Sig.BoolValue)
+            return;
+        var joinInfo = SrlHelper.GetBooleanSigInfo(args.Sig.Number);
+        if (joinInfo.Join > _sources.Count - 4)
+            return;
+
+        string instanceTag = _selectBlocks[(int)joinInfo.Join];
+        string inputSelection = _sources[joinInfo.Index].InputNumber.ToString();
+        Log($"Setting source for {instanceTag} to {inputSelection}");
+        
+        
+
+    }
+}

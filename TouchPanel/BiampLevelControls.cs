@@ -9,8 +9,8 @@ public class BiampLevelControls : LevelControls
     private readonly List<BiampAudioBlockInfo> _audioBlocks;
     private readonly BiampTtp _dsp;
 
-    public BiampLevelControls(string name, List<BiampAudioBlockInfo> audioBlocks, BiampTtp dsp, List<SmartObject> smartObjects) :
-        base(name, (ushort)audioBlocks.Count, smartObjects)
+    public BiampLevelControls(string name, List<BiampAudioBlockInfo> audioBlocks, BiampTtp dsp, List<SmartObject> smartObjects, uint joinIncrement = DefaultJoinIncrement) :
+        base(name, (ushort)audioBlocks.Count, smartObjects, joinIncrement)
     {
         _audioBlocks = audioBlocks;
         _dsp = dsp;

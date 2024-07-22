@@ -7,8 +7,8 @@ public class DisplayLevelControls : LevelControls
 {
     private readonly List<DisplayInfo> _displays;
 
-    public DisplayLevelControls(string name, List<DisplayInfo> displays, List<SmartObject> smartObjects) :
-        base(name, (ushort)displays.Count, smartObjects)
+    public DisplayLevelControls(string name, List<DisplayInfo> displays, List<SmartObject> smartObjects, uint joinIncrement = DefaultJoinIncrement) :
+        base(name, (ushort)displays.Count, smartObjects, joinIncrement)
     {
         _displays = displays;
         

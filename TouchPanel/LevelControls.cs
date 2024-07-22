@@ -6,6 +6,7 @@ namespace AVCoders.Crestron.TouchPanel;
 public abstract class LevelControls
 {
     protected readonly List<SmartObject> SmartObjects;
+    
     protected readonly SubpageReferenceListHelper SrlHelper;
     protected bool ButtonHeld;
     
@@ -20,11 +21,13 @@ public abstract class LevelControls
 
     public const uint NameJoin = 1;
 
-    public const uint JoinIncrement = 10;
+    public const uint DefaultJoinIncrement = 10;
+    protected readonly uint JoinIncrement;
 
-    protected LevelControls(string name, ushort numberOfAudioBlocks, List<SmartObject> smartObjects)
+    protected LevelControls(string name, ushort numberOfAudioBlocks, List<SmartObject> smartObjects, uint joinIncrement)
     {
         SmartObjects = smartObjects;
+        JoinIncrement = joinIncrement;
         SrlHelper = new SubpageReferenceListHelper(JoinIncrement, JoinIncrement, JoinIncrement);
         _name = name;
         
