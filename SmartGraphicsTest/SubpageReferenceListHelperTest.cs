@@ -42,8 +42,6 @@ public class SubpageReferenceListHelperTest
         
         Assert.Equal(new SubpageReferenceListJoinData(expectedIndex, expectedJoin), actual);
     }
-    
-    
 
     [Theory]
     [InlineData(4011, 0, 1)]
@@ -54,6 +52,22 @@ public class SubpageReferenceListHelperTest
     public void BooleanJoinFor_ReturnsTheCorrectJoinNumber(uint expectedJoin, int index, uint join)
     {
         var actual = _subpageReferenceListHelper.BooleanJoinFor(index, join);
+        
+        Assert.Equal(expectedJoin, actual);
+    }
+
+    [Theory]
+    [InlineData(4011, 0, 1)]
+    [InlineData(4012, 0, 2)]
+    [InlineData(4020, 0, 10)]
+    [InlineData(4021, 0, 11)]
+    [InlineData(4029, 0, 19)]
+    [InlineData(4030, 0, 20)]
+    [InlineData(4031, 1, 1)]
+    public void BooleanJoinFor_HandlesDifferentJoinOffsets(uint expectedJoin, int index, uint join)
+    {
+        SubpageReferenceListHelper subpageReferenceListHelper = new(20, 15, 22);
+        var actual = subpageReferenceListHelper.BooleanJoinFor(index, join);
         
         Assert.Equal(expectedJoin, actual);
     }

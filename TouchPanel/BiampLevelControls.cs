@@ -42,6 +42,12 @@ public class BiampLevelControls : LevelControls
                 return;
             }
 
+            if (selectionInfo.Join > 3)
+            {
+                Log($"Ignoring button press {args.Sig.Number}");
+                return;
+            }
+
             Log(
                 $"Volume Button pressed, id {args.Sig.Number}.  Index {selectionInfo.Index}, Join: {selectionInfo.Join}");
             if (selectionInfo.Join == VolumeUpJoin)

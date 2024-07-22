@@ -24,7 +24,7 @@ public class DisplayLevelControls : LevelControls
 
     protected override void HandleVolumePress(GenericBase currentDevice, SmartObjectEventArgs args)
     {
-        var foo = SrlHelper.GetSigInfo(args.Sig);
+        var selectionInfo = SrlHelper.GetSigInfo(args.Sig);
         switch (args.Sig.Type)
         {
             case eSigType.Bool when args.Sig.BoolValue == false:
@@ -32,29 +32,37 @@ public class DisplayLevelControls : LevelControls
                 return;
             case eSigType.Bool:
                 Log($"Volume Button pressed, id {args.Sig.Number}");
+                if (args.Sig.Number < 4000) // Some touch panels send a sig 1 event as well as the button press event.
+                    return;
+
+                if (selectionInfo.Join > 3)
+                {
+                    Log($"Ignoring button press {args.Sig.Number}");
+                    return;
+                }
             
-                switch (foo.Join)
+                switch (selectionInfo.Join)
                 {
                     case VolumeUpJoin:
-                        void VolumeUp() => _displays[foo.Index].Display.SetVolume(_displays[foo.Index].Display.GetCurrentVolume() + 1);
+                        void VolumeUp() => _displays[selectionInfo.Index].Display.SetVolume(_displays[selectionInfo.Index].Display.GetCurrentVolume() + 1);
                         VolumeControl(VolumeUp);
-                        Log($"Queued volume up on display {foo.Index}");
+                        Log($"Queued volume up on display {selectionInfo.Index}");
                         break;
                     case VolumeDownJoin:
-                        void VolumeDown() => _displays[foo.Index].Display.SetVolume(_displays[foo.Index].Display.GetCurrentVolume() - 1);
+                        void VolumeDown() => _displays[selectionInfo.Index].Display.SetVolume(_displays[selectionInfo.Index].Display.GetCurrentVolume() - 1);
                         VolumeControl(VolumeDown);
-                        Log($"Queued volume down on display {foo.Index}");
+                        Log($"Queued volume down on display {selectionInfo.Index}");
                         break;
                     case MuteJoin:
-                        _displays[foo.Index].Display.ToggleAudioMute();
-                        Log($"Toggled mute for display {foo.Index}");
+                        _displays[selectionInfo.Index].Display.ToggleAudioMute();
+                        Log($"Toggled mute for display {selectionInfo.Index}");
                         break;
                 }
                 break;
             case eSigType.UShort when args.Sig.Number <= 10:
                 return;
             case eSigType.UShort:
-                _displays[foo.Index].Display.SetVolume(args.Sig.UShortValue);
+                _displays[selectionInfo.Index].Display.SetVolume(args.Sig.UShortValue);
                 break;
         }
     }
