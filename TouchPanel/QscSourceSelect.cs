@@ -4,14 +4,14 @@ namespace AVCoders.Crestron.TouchPanel;
 
 public record QscSource(string Name, int InputNumber);
 
-public class QsysSourceSelect : LevelControls
+public class QscSourceSelect : LevelControls
 {
     // This is designed to work with Qsys Level control.  Digital joins 4-10 are used by this module
     private readonly List<QscSource> _sources;
     private readonly List<QscAudioBlockInfo> _audioBlocks;
     private readonly QsysEcp _dsp;
     
-    public QsysSourceSelect(string name, List<QscAudioBlockInfo> audioBlocks, QsysEcp dsp,  List<SmartObject> smartObjects, List<QscSource> sources, uint joinIncrement = DefaultJoinIncrement) : 
+    public QscSourceSelect(string name, List<QscAudioBlockInfo> audioBlocks, QsysEcp dsp,  List<SmartObject> smartObjects, List<QscSource> sources, uint joinIncrement = DefaultJoinIncrement) : 
         base(name, (ushort)audioBlocks.Count, smartObjects, joinIncrement)
     {
         _audioBlocks = audioBlocks;
