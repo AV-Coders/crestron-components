@@ -55,16 +55,18 @@ public class QsysSourceSelect : LevelControls
     {
         if (args.Sig.Type != eSigType.Bool)
             return;
-        if (args.Sig.Number < 4000) // Some touch panels send a sig 1 event as well as the button press event.
-            return;
         if (!args.Sig.BoolValue)
             return;
-        var joinInfo = SrlHelper.GetBooleanSigInfo(args.Sig.Number);
-        if (joinInfo.Join > _sources.Count - 4)
+        if (args.Sig.Number < 4000) // Some touch panels send a sig 1 event as well as the button press event.
             return;
-        Log($"Source button pressed, id {args.Sig.Number}.  Index {joinInfo.Index}, Join: {joinInfo.Join}");
-        string instanceTag = _audioBlocks[(int)joinInfo.Join].SelectInstanceTag;
-        string inputSelection = _sources[joinInfo.Index].InputNumber.ToString();
+        var joinInfo = SrlHelper.GetBooleanSigInfo(args.Sig.Number);
+        int sourceIndex = (int) joinInfo.Join - 4;
+        if (sourceIndex > _sources.Count)
+            return;
+        
+        Log($"Source button pressed, id {args.Sig.Number}.  Index {sourceIndex}, Join: {joinInfo.Join}");
+        string instanceTag = _audioBlocks[joinInfo.Index].SelectInstanceTag;
+        string inputSelection = _sources[sourceIndex].InputNumber.ToString();
         Log($"Setting source for {instanceTag} to {inputSelection}");
         _dsp.SetValue(instanceTag, inputSelection);
     }
