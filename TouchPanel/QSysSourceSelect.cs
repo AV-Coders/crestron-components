@@ -2,27 +2,31 @@
 
 namespace AVCoders.Crestron.TouchPanel;
 
-public record QscSources(string Name, int InputNumber);
+public record QscSource(string Name, int InputNumber);
 
 public class QSysSourceSelect : LevelControls
 {
     // This is designed to work with Qsys Level control.  Digital joins 4-10 are used by this module
-    private readonly List<QscSources> _sources;
-    private readonly List<string> _selectBlocks;
+    private readonly List<QscSource> _sources;
+    private readonly List<QscAudioBlockInfo> _audioBlocks;
     private readonly QsysEcp _dsp;
     
-    public QSysSourceSelect(string name, List<string> selectBlocks, QsysEcp dsp,  List<SmartObject> smartObjects, List<QscSources> sources, uint joinIncrement = DefaultJoinIncrement) : 
-        base(name, (ushort)selectBlocks.Count, smartObjects, joinIncrement)
+    public QSysSourceSelect(string name, List<QscAudioBlockInfo> audioBlocks, QsysEcp dsp,  List<SmartObject> smartObjects, List<QscSource> sources, uint joinIncrement = DefaultJoinIncrement) : 
+        base(name, (ushort)audioBlocks.Count, smartObjects, joinIncrement)
     {
-        _selectBlocks = selectBlocks;
+        _audioBlocks = audioBlocks;
         _dsp = dsp;
         _sources = sources;
 
-        for (int i = 0; i < selectBlocks.Count; i++)
+        for (int i = 0; i < audioBlocks.Count; i++)
         {
             Log($"Setting up source select {i}");
             var faderIndex = i;
-            _dsp.AddControl(selection => HandleSourceChange(selection, faderIndex), selectBlocks[faderIndex]);
+            if (_audioBlocks[faderIndex].SelectInstanceTag == string.Empty)
+                throw new InvalidOperationException($"Audio block at index {faderIndex} does not have a select instance tag");
+            
+            _dsp.AddControl(selection => HandleSourceChange(selection, faderIndex),
+                audioBlocks[faderIndex].SelectInstanceTag);
             for (uint sourceIndex = 0; sourceIndex < sources.Count; sourceIndex++)
             {
                 smartObjects.ForEach(smartObject =>
@@ -59,11 +63,9 @@ public class QSysSourceSelect : LevelControls
         if (joinInfo.Join > _sources.Count - 4)
             return;
 
-        string instanceTag = _selectBlocks[(int)joinInfo.Join];
+        string instanceTag = _audioBlocks[(int)joinInfo.Join].SelectInstanceTag;
         string inputSelection = _sources[joinInfo.Index].InputNumber.ToString();
         Log($"Setting source for {instanceTag} to {inputSelection}");
-        
-        
-
+        _dsp.SetValue(instanceTag, inputSelection);
     }
 }
