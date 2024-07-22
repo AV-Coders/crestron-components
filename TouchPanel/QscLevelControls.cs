@@ -2,32 +2,11 @@
 
 namespace AVCoders.Crestron.TouchPanel;
 
-public record QscAudioBlockInfo
+public record QscAudioBlockInfo(string Name, string LevelInstanceTag, string MuteInstanceTag, string SelectInstanceTag)
 {
     public QscAudioBlockInfo(string Name, string LevelInstanceTag, string MuteInstanceTag) : 
         this(Name, LevelInstanceTag, MuteInstanceTag, string.Empty)
     {
-    }
-
-    public QscAudioBlockInfo(string Name, string LevelInstanceTag, string MuteInstanceTag, string SelectInstanceTag)
-    {
-        this.Name = Name;
-        this.LevelInstanceTag = LevelInstanceTag;
-        this.MuteInstanceTag = MuteInstanceTag;
-        this.SelectInstanceTag = SelectInstanceTag;
-    }
-
-    public string Name { get; init; }
-    public string LevelInstanceTag { get; init; }
-    public string MuteInstanceTag { get; init; }
-    public string SelectInstanceTag { get; init; }
-
-    public void Deconstruct(out string Name, out string LevelInstanceTag, out string MuteInstanceTag, out string SelectInstanceTag)
-    {
-        Name = this.Name;
-        LevelInstanceTag = this.LevelInstanceTag;
-        MuteInstanceTag = this.MuteInstanceTag;
-        SelectInstanceTag = this.SelectInstanceTag;
     }
 }
 
