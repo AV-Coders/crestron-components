@@ -2,17 +2,17 @@
 
 namespace AVCoders.Crestron.TouchPanel;
 
-public record QscAudioBlockInfo(string Name, string LevelInstanceTag, string MuteInstanceTag, string SelectInstanceTag)
-{
-    public QscAudioBlockInfo(string Name, string LevelInstanceTag, string MuteInstanceTag) : 
-        this(Name, LevelInstanceTag, MuteInstanceTag, string.Empty)
-    {
-    }
-}
+public record QscAudioBlockWithSelectInfo(
+    string Name,
+    string LevelInstanceTag,
+    string MuteInstanceTag,
+    string SelectInstanceTag): QscAudioBlockInfo(Name, LevelInstanceTag, MuteInstanceTag);
+
+public record QscAudioBlockInfo(string Name, string LevelInstanceTag, string MuteInstanceTag);
 
 public class QscLevelControls : LevelControls
 {
-    // This is designed to work with QsysSourceSelect if required. 
+    // This is designed to work with QscSourceSelect if required. 
     private readonly List<QscAudioBlockInfo> _audioBlocks;
     private readonly QsysEcp _dsp;
 
