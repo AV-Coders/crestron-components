@@ -30,12 +30,14 @@ public class SetTopBoxOverCrestronIr : ISetTopBox
     private readonly string _name;
     private readonly IROutputPort _port;
     private readonly ushort _pulseTimeInMs;
+    private readonly bool _sendEnterAfterChannel;
 
-    public SetTopBoxOverCrestronIr(string name, IROutputPort port, string irFileName, ushort pulseTimeInMs = 25)
+    public SetTopBoxOverCrestronIr(string name, IROutputPort port, string irFileName, bool sendEnterAfterChannel = true, ushort pulseTimeInMs = 25)
     {
         _name = name;
         _port = port;
         _pulseTimeInMs = pulseTimeInMs;
+        _sendEnterAfterChannel = sendEnterAfterChannel;
         port.LoadIRDriver($"{Directory.GetApplicationDirectory()}/{irFileName}");
     }
     public void ChannelUp() => Pulse("CH+");
@@ -55,6 +57,8 @@ public class SetTopBoxOverCrestronIr : ISetTopBox
             Pulse($"{c}");
             Thread.Sleep(_pulseTimeInMs * 3);
         }
+        if(_sendEnterAfterChannel)
+            Pulse(RemoteButtonMap[RemoteButton.Enter]);
     }
 
     private void Pulse(string key)
