@@ -1,8 +1,9 @@
 ﻿using AVCoders.MediaPlayer;
 using Crestron.SimplSharp;
 using Crestron.SimplSharpPro;
+using Directory = Crestron.SimplSharp.CrestronIO.Directory;
 
-namespace MediaPlayer;
+namespace AVCoders.Crestron.MediaPlayer;
 
 public class SetTopBoxOverCrestronIr : ISetTopBox
 {
@@ -35,7 +36,7 @@ public class SetTopBoxOverCrestronIr : ISetTopBox
         _name = name;
         _port = port;
         _pulseTimeInMs = pulseTimeInMs;
-        port.LoadIRDriver($"{Crestron.SimplSharp.CrestronIO.Directory.GetApplicationDirectory()}/{irFileName}");
+        port.LoadIRDriver($"{Directory.GetApplicationDirectory()}/{irFileName}");
     }
     public void ChannelUp() => Pulse("CH+");
 

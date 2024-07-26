@@ -45,6 +45,9 @@ jobs:
 
     - name: Create TouchPanel Nuget Package
       run: dotnet pack /home/runner/work/crestron-components/crestron-components/TouchPanel/TouchPanel.csproj --output /home/runner/work/crestron-components/package /p:Version=2024.7.${{ github.run_number }} --configuration PackRelease
+    
+    - name: Create MediaPlayer Nuget Package
+      run: dotnet pack /home/runner/work/crestron-components/crestron-components/MediaPlayer/MediaPlayer.csproj --output /home/runner/work/crestron-components/package /p:Version=2024.7.${{ github.run_number }} --configuration PackRelease
       
     - name: Publish to GitHub Packages 
       run: dotnet nuget push /home/runner/work/crestron-components/package/*.nupkg --api-key ${{ secrets.GITHUB_TOKEN }}  --source "github"
