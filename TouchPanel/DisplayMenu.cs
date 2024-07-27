@@ -8,25 +8,6 @@ public record InputInfo(string Name, Input Input);
 
 public record DisplayInfo(Display.Display Display, string Name, InputInfo[] Inputs, int MaxVolume = 100);
 
-public static class DisplayPageButtonJoins
-{
-    public static readonly uint[][] InputShowButtons =
-    { 
-        new uint[] { 4017, 4047, 4077, 4107, 4137, 4167, 4197, 4127, 4157 }, // Input 1
-        new uint[] { 4018, 4048, 4078, 4108, 4138, 4168, 4198, 4128, 4158 }, 
-        new uint[] { 4019, 4049, 4079, 4109, 4139, 4169, 4199, 4129, 4159 }, 
-        new uint[] { 4020, 4050, 4080, 4110, 4140, 4170, 4200, 4230, 4260 }  // Input 4
-    };
-
-    public static readonly uint[][] InputLabels =
-    {
-        new uint[] { 13, 43, 73, 103, 133, 163, 193, 223, 253 }, // Input 1 
-        new uint[] { 14, 44, 74, 104, 134, 164, 194, 224, 254 }, 
-        new uint[] { 15, 45, 75, 105, 135, 165, 195, 225, 255 }, 
-        new uint[] { 16, 46, 76, 106, 136, 166, 196, 226, 256 } // Input 4
-    };
-}
-
 public class DisplayMenu
 {
     private readonly List<DisplayInfo> _displays;
@@ -41,8 +22,20 @@ public class DisplayMenu
     public const uint Input2Join = 4;
     public const uint Input3Join = 5;
     public const uint Input4Join = 6;
+    public const uint Input1ShowJoin = 7;
+    public const uint Input2ShowJoin = 8;
+    public const uint Input3ShowJoin = 9;
+    public const uint Input4ShowJoin = 10;
+    public static readonly uint[] InputShowJoins = { Input1ShowJoin, Input2ShowJoin, Input3ShowJoin, Input4ShowJoin};
+
 
     public const uint NameJoin = 1;
+
+    public const uint Input1NameJoin = 3;
+    public const uint Input2NameJoin = 4;
+    public const uint Input3NameJoin = 5;
+    public const uint Input4NameJoin = 6;
+    public static readonly uint[] InputNameJoins = { Input1NameJoin, Input2NameJoin, Input3NameJoin, Input4NameJoin};
     
     public static readonly uint JoinIncrement = 30;
 
@@ -67,8 +60,8 @@ public class DisplayMenu
             {
                 _smartObjects.ForEach(x =>
                 {
-                    x.BooleanInput[DisplayPageButtonJoins.InputShowButtons[inputIndex][deviceIndex]].BoolValue = true;
-                    x.StringInput[DisplayPageButtonJoins.InputLabels[inputIndex][deviceIndex]].StringValue = _displays[deviceIndex].Inputs[inputIndex].Name;
+                    x.BooleanInput[_srlHelper.BooleanJoinFor(deviceIndex, InputShowJoins[inputIndex])].BoolValue = true;
+                    x.StringInput[_srlHelper.BooleanJoinFor(deviceIndex, InputNameJoins[inputIndex])].StringValue = _displays[deviceIndex].Inputs[inputIndex].Name;
                 });
             }
         }
@@ -83,39 +76,44 @@ public class DisplayMenu
         var selectionInfo = _srlHelper.GetBooleanSigInfo(args.Sig.Number);
         Log($"Volume Button pressed, id {args.Sig.Number}.  Index {selectionInfo.Index}, Join: {selectionInfo.Join}");
 
-        if (selectionInfo.Join == PowerOnJoin)
+        switch (selectionInfo.Join)
         {
-            _displays[selectionInfo.Index].Display.PowerOn();
-            Log($"Turning on display {selectionInfo.Index}");
-        }
-        else if (selectionInfo.Join == PowerOffJoin)
-        {
-            _displays[selectionInfo.Index].Display.PowerOff();
-            Log($"Turning off display {selectionInfo.Index}");
-        }
-        else if (selectionInfo.Join == Input1Join)
-        {
-            var input = _displays[selectionInfo.Index].Inputs[0].Input;
-            _displays[selectionInfo.Index].Display.SetInput(input);
-            Log($"Turning setting display {selectionInfo.Index} to {input}");
-        }
-        else if (selectionInfo.Join == Input2Join)
-        {
-            var input = _displays[selectionInfo.Index].Inputs[1].Input;
-            _displays[selectionInfo.Index].Display.SetInput(input);
-            Log($"Turning setting display {selectionInfo.Index} to {input}");
-        }
-        else if (selectionInfo.Join == Input3Join)
-        {
-            var input = _displays[selectionInfo.Index].Inputs[2].Input;
-            _displays[selectionInfo.Index].Display.SetInput(input);
-            Log($"Turning setting display {selectionInfo.Index} to {input}");
-        }
-        else if (selectionInfo.Join == Input4Join)
-        {
-            var input = _displays[selectionInfo.Index].Inputs[3].Input;
-            _displays[selectionInfo.Index].Display.SetInput(input);
-            Log($"Turning setting display {selectionInfo.Index} to {input}");
+            case PowerOnJoin:
+                _displays[selectionInfo.Index].Display.PowerOn();
+                Log($"Turning on display {selectionInfo.Index}");
+                break;
+            case PowerOffJoin:
+                _displays[selectionInfo.Index].Display.PowerOff();
+                Log($"Turning off display {selectionInfo.Index}");
+                break;
+            case Input1Join:
+            {
+                var input = _displays[selectionInfo.Index].Inputs[0].Input;
+                _displays[selectionInfo.Index].Display.SetInput(input);
+                Log($"Turning setting display {selectionInfo.Index} to {input}");
+                break;
+            }
+            case Input2Join:
+            {
+                var input = _displays[selectionInfo.Index].Inputs[1].Input;
+                _displays[selectionInfo.Index].Display.SetInput(input);
+                Log($"Turning setting display {selectionInfo.Index} to {input}");
+                break;
+            }
+            case Input3Join:
+            {
+                var input = _displays[selectionInfo.Index].Inputs[2].Input;
+                _displays[selectionInfo.Index].Display.SetInput(input);
+                Log($"Turning setting display {selectionInfo.Index} to {input}");
+                break;
+            }
+            case Input4Join:
+            {
+                var input = _displays[selectionInfo.Index].Inputs[3].Input;
+                _displays[selectionInfo.Index].Display.SetInput(input);
+                Log($"Turning setting display {selectionInfo.Index} to {input}");
+                break;
+            }
         }
     }
 
