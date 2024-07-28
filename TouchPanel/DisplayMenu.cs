@@ -61,7 +61,7 @@ public class DisplayMenu
                 _smartObjects.ForEach(x =>
                 {
                     x.BooleanInput[_srlHelper.BooleanJoinFor(deviceIndex, InputShowJoins[inputIndex])].BoolValue = true;
-                    x.StringInput[_srlHelper.BooleanJoinFor(deviceIndex, InputNameJoins[inputIndex])].StringValue = _displays[deviceIndex].Inputs[inputIndex].Name;
+                    x.StringInput[_srlHelper.SerialJoinFor(deviceIndex, InputNameJoins[inputIndex])].StringValue = _displays[deviceIndex].Inputs[inputIndex].Name;
                 });
             }
         }
