@@ -62,7 +62,9 @@ public class DisplayLevelControls : LevelControls
             case eSigType.UShort when args.Sig.Number <= 10:
                 return;
             case eSigType.UShort:
-                _displays[selectionInfo.Index].Display.SetVolume(args.Sig.UShortValue);
+                _displays[selectionInfo.Index].Display.SetVolume(
+                    Math.PercentageToRange(args.Sig.UShortValue, 
+                        _displays[selectionInfo.Index].MaxVolume));
                 break;
         }
     }
