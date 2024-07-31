@@ -28,6 +28,10 @@ public class DisplayMenu
     public const uint Input4ShowJoin = 10;
     public static readonly uint[] InputShowJoins = { Input1ShowJoin, Input2ShowJoin, Input3ShowJoin, Input4ShowJoin};
 
+    public const uint MuteJoin = 30;
+
+    public const uint VolumeJoin = 1;
+
 
     public const uint NameJoin = 1;
 
@@ -54,7 +58,8 @@ public class DisplayMenu
             FeedbackForDevice(deviceIndex);
             _displays[deviceIndex].Display.InputHandlers += _ => FeedbackForDevice(deviceIndex);
             _displays[deviceIndex].Display.PowerStateHandlers += _ => FeedbackForDevice(deviceIndex);
-            _displays[deviceIndex].Display.VolumeLevelHandlers += _ => FeedbackForDevice(deviceIndex);
+            _displays[deviceIndex].Display.VolumeLevelHandlers += volume => VolumeFeedback(deviceIndex, volume);
+            _displays[deviceIndex].Display.MuteStateHandlers += _ => FeedbackForDevice(deviceIndex);
 
             for (int inputIndex = 0; inputIndex < _displays[deviceIndex].Inputs.Length; inputIndex++)
             {
@@ -69,52 +74,70 @@ public class DisplayMenu
 
     private void HandleDisplayPress(GenericBase currentDevice, SmartObjectEventArgs args)
     {
-        if (args.Sig.Type != eSigType.Bool)
-            return;
-        if (!args.Sig.BoolValue)
-            return;
-        var selectionInfo = _srlHelper.GetBooleanSigInfo(args.Sig.Number);
-        Log($"Volume Button pressed, id {args.Sig.Number}.  Index {selectionInfo.Index}, Join: {selectionInfo.Join}");
-
-        switch (selectionInfo.Join)
+        var selectionInfo = _srlHelper.GetSigInfo(args.Sig);
+        Log($"Display Join, id {args.Sig.Number}. Type: {args.Sig.Type.ToString()} Index {selectionInfo.Index}, Join: {selectionInfo.Join}");
+        
+        switch (args.Sig.Type)
         {
-            case PowerOnJoin:
-                _displays[selectionInfo.Index].Display.PowerOn();
-                Log($"Turning on display {selectionInfo.Index}");
+            case eSigType.Bool when args.Sig.BoolValue:
+                switch (selectionInfo.Join)
+                {
+                    case PowerOnJoin:
+                        _displays[selectionInfo.Index].Display.PowerOn();
+                        Log($"Turning on display {selectionInfo.Index}");
+                        break;
+                    case PowerOffJoin:
+                        _displays[selectionInfo.Index].Display.PowerOff();
+                        Log($"Turning off display {selectionInfo.Index}");
+                        break;
+                    case MuteJoin:
+                        _displays[selectionInfo.Index].Display.ToggleAudioMute();
+                        break;
+                    case Input1Join:
+                    {
+                        var input = _displays[selectionInfo.Index].Inputs[0].Input;
+                        _displays[selectionInfo.Index].Display.SetInput(input);
+                        Log($"Turning setting display {selectionInfo.Index} to {input}");
+                        break;
+                    }
+                    case Input2Join:
+                    {
+                        var input = _displays[selectionInfo.Index].Inputs[1].Input;
+                        _displays[selectionInfo.Index].Display.SetInput(input);
+                        Log($"Turning setting display {selectionInfo.Index} to {input}");
+                        break;
+                    }
+                    case Input3Join:
+                    {
+                        var input = _displays[selectionInfo.Index].Inputs[2].Input;
+                        _displays[selectionInfo.Index].Display.SetInput(input);
+                        Log($"Turning setting display {selectionInfo.Index} to {input}");
+                        break;
+                    }
+                    case Input4Join:
+                    {
+                        var input = _displays[selectionInfo.Index].Inputs[3].Input;
+                        _displays[selectionInfo.Index].Display.SetInput(input);
+                        Log($"Turning setting display {selectionInfo.Index} to {input}");
+                        break;
+                    }
+                }
+
                 break;
-            case PowerOffJoin:
-                _displays[selectionInfo.Index].Display.PowerOff();
-                Log($"Turning off display {selectionInfo.Index}");
+            case eSigType.UShort when args.Sig.Number > 10:
+                _displays[selectionInfo.Index].Display.SetVolume(
+                    Math.PercentageToRange(args.Sig.UShortValue, _displays[selectionInfo.Index].MaxVolume));
                 break;
-            case Input1Join:
-            {
-                var input = _displays[selectionInfo.Index].Inputs[0].Input;
-                _displays[selectionInfo.Index].Display.SetInput(input);
-                Log($"Turning setting display {selectionInfo.Index} to {input}");
-                break;
-            }
-            case Input2Join:
-            {
-                var input = _displays[selectionInfo.Index].Inputs[1].Input;
-                _displays[selectionInfo.Index].Display.SetInput(input);
-                Log($"Turning setting display {selectionInfo.Index} to {input}");
-                break;
-            }
-            case Input3Join:
-            {
-                var input = _displays[selectionInfo.Index].Inputs[2].Input;
-                _displays[selectionInfo.Index].Display.SetInput(input);
-                Log($"Turning setting display {selectionInfo.Index} to {input}");
-                break;
-            }
-            case Input4Join:
-            {
-                var input = _displays[selectionInfo.Index].Inputs[3].Input;
-                _displays[selectionInfo.Index].Display.SetInput(input);
-                Log($"Turning setting display {selectionInfo.Index} to {input}");
-                break;
-            }
         }
+    }
+
+    private void VolumeFeedback(int deviceIndex, int volume)
+    {
+        _smartObjects.ForEach(smartObject =>
+        {
+            smartObject.UShortInput[_srlHelper.AnalogJoinFor(deviceIndex, VolumeJoin)].UShortValue =
+                Math.PercentageFromRange(volume, _displays[deviceIndex].MaxVolume);
+        });
     }
 
     private void FeedbackForDevice(int deviceIndex)
@@ -126,6 +149,8 @@ public class DisplayMenu
                 _displays[deviceIndex].Display.GetCurrentPowerState() == PowerState.On;
             smartObject.BooleanInput[_srlHelper.BooleanJoinFor(deviceIndex, PowerOffJoin)].BoolValue =
                 _displays[deviceIndex].Display.GetCurrentPowerState() == PowerState.Off;
+            smartObject.BooleanInput[_srlHelper.BooleanJoinFor(deviceIndex, MuteJoin)].BoolValue =
+                _displays[deviceIndex].Display.GetAudioMute() == MuteState.On;
             if (_displays[deviceIndex].Inputs.Length > 0)
                 smartObject.BooleanInput[_srlHelper.BooleanJoinFor(deviceIndex, Input1Join)].BoolValue =
                     _displays[deviceIndex].Inputs[0].Input == _displays[deviceIndex].Display.GetCurrentInput();

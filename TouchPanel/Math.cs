@@ -20,7 +20,19 @@ public static class Math
         return (ushort)(input * floating);
     }
 
+    public static ushort PercentageToRange(int input, int max)
+    {
+        var floating = (max / 100.0);
+        return (ushort)(input * floating);
+    }
+
     public static ushort PercentageFromRange(ushort input, int max)
+    {
+        var floating = (double) input / max;
+        return (ushort)(floating * 100);
+    }
+
+    public static ushort PercentageFromRange(int input, int max)
     {
         var floating = (double) input / max;
         return (ushort)(floating * 100);

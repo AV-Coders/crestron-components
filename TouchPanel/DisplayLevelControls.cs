@@ -72,11 +72,6 @@ public class DisplayLevelControls : LevelControls
     private new void HandleVolumeLevel(int volumeLevel, int displayIndex)
     {
         Log($"Handling volume level {volumeLevel} for display {displayIndex}.");
-        SmartObjects.ForEach(x => x.UShortInput[SrlHelper.AnalogJoinFor(displayIndex, VolumeLevelJoin)].UShortValue = ScaleVolumeLevel(volumeLevel, _displays[displayIndex].MaxVolume));
-    }
-
-    private ushort ScaleVolumeLevel(int currentLevel, int maxLevel)
-    {
-        return (ushort)(currentLevel * 100 / maxLevel);
+        SmartObjects.ForEach(x => x.UShortInput[SrlHelper.AnalogJoinFor(displayIndex, VolumeLevelJoin)].UShortValue = Math.PercentageFromRange(volumeLevel, _displays[displayIndex].MaxVolume));
     }
 }
