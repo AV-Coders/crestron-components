@@ -70,11 +70,11 @@ public abstract class LevelControls
                 switch (selectionInfo.Join)
                 {
                     case VolumeUpJoin:
-                        Log($"Queueing Volume up on fader index {selectionInfo.Index}");
+                        Log($"Queueing Volume up for fader index {selectionInfo.Index}");
                         StartVolumeUp(selectionInfo.Index);
                         break;
                     case VolumeDownJoin:
-                        Log($"Queueing Volume down on fader index {selectionInfo.Index}");
+                        Log($"Queueing Volume down for fader index {selectionInfo.Index}");
                         StartVolumeDown(selectionInfo.Index);
                         break;
                     case MuteJoin:
@@ -83,7 +83,7 @@ public abstract class LevelControls
                         ToggleAudioMute(selectionInfo.Index);
                         break;
                     default:
-                        Log($"Ignoring button press {args.Sig.Number}");
+                        Log($"Join {selectionInfo.Join} for index {selectionInfo.Index} is not handled by this module");
                         break;
                 }
                 return;
@@ -97,8 +97,7 @@ public abstract class LevelControls
                 break;
         }
     }
-
-
+    
     protected abstract void StartVolumeUp(int index);
     protected abstract void StartVolumeDown(int index);
     protected abstract void ToggleAudioMute(int index);
@@ -115,6 +114,6 @@ public abstract class LevelControls
     protected void Log(string message)
     {
         if (_enableLogs)
-            CrestronConsole.PrintLine($"{DateTime.Now} - {_name} - LevelControls - {message}");
+            CrestronConsole.PrintLine($"{DateTime.Now} - {_name} - {GetType()} - {message}");
     }
 }
