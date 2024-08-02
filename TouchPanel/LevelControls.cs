@@ -54,7 +54,7 @@ public abstract class LevelControls
         }).Start();
     }
 
-    protected void HandleVolumePress(GenericBase currentDevice, SmartObjectEventArgs args)
+    private void HandleVolumePress(GenericBase currentDevice, SmartObjectEventArgs args)
     {
         var selectionInfo = SrlHelper.GetSigInfo(args.Sig);
         switch (args.Sig.Type)

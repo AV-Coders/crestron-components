@@ -6,7 +6,7 @@ public record QscSource(string Name, int InputNumber);
 
 public class QscSourceSelect : LevelControls
 {
-    // This is designed to work with Qsys Level control.  Digital joins 4-10 are used by this module
+    // This is designed to work with QscLevelControl.  Digital joins 4-10 are used by this module
     private readonly List<QscSource> _sources;
     private readonly List<QscAudioBlockWithSelectInfo> _audioBlocks;
     private readonly QsysEcp _dsp;
@@ -27,6 +27,7 @@ public class QscSourceSelect : LevelControls
             
             _dsp.AddControl(selection => HandleSourceChange(selection, faderIndex),
                 audioBlocks[faderIndex].SelectInstanceTag);
+            SmartObjects.ForEach(smartObject => smartObject.SigChange += HandleSourceSelect);
             for (uint sourceIndex = 0; sourceIndex < sources.Count; sourceIndex++)
             {
                 smartObjects.ForEach(smartObject =>
@@ -49,9 +50,8 @@ public class QscSourceSelect : LevelControls
             SmartObjects.ForEach(x => x.BooleanInput[SrlHelper.BooleanJoinFor(faderIndex, i)].BoolValue = sourceIndex == (i-4));
         }
     }
-
-    // Created in the base class as the generic handler.  Actually used as selection in this module.
-    protected new void HandleVolumePress(GenericBase currentDevice, SmartObjectEventArgs args)
+    
+    private void HandleSourceSelect(GenericBase currentDevice, SmartObjectEventArgs args)
     {
         if (args.Sig.Type != eSigType.Bool)
             return;
