@@ -1,7 +1,4 @@
-﻿using AVCoders.Core;
-using AVCoders.Crestron.SmartGraphics;
-
-namespace AVCoders.Crestron.TouchPanel;
+﻿namespace AVCoders.Crestron.TouchPanel;
 
 public class DisplayLevelControls : LevelControls
 {
@@ -22,51 +19,24 @@ public class DisplayLevelControls : LevelControls
         }
     }
 
-    protected override void HandleVolumePress(GenericBase currentDevice, SmartObjectEventArgs args)
+    protected override void StartVolumeUp(int index)
     {
-        var selectionInfo = SrlHelper.GetSigInfo(args.Sig);
-        switch (args.Sig.Type)
-        {
-            case eSigType.Bool when args.Sig.BoolValue == false:
-                ButtonHeld = false;
-                return;
-            case eSigType.Bool:
-                Log($"Volume Button pressed, id {args.Sig.Number}");
-                if (args.Sig.Number < 4000) // Some touch panels send a sig 1 event as well as the button press event.
-                    return;
+        void VolumeUp() => _displays[index].Display.SetVolume(_displays[index].Display.GetCurrentVolume() + 1);
+        VolumeControl(VolumeUp);
+    }
 
-                if (selectionInfo.Join > 3)
-                {
-                    Log($"Ignoring button press {args.Sig.Number}");
-                    return;
-                }
-            
-                switch (selectionInfo.Join)
-                {
-                    case VolumeUpJoin:
-                        void VolumeUp() => _displays[selectionInfo.Index].Display.SetVolume(_displays[selectionInfo.Index].Display.GetCurrentVolume() + 1);
-                        VolumeControl(VolumeUp);
-                        Log($"Queued volume up on display {selectionInfo.Index}");
-                        break;
-                    case VolumeDownJoin:
-                        void VolumeDown() => _displays[selectionInfo.Index].Display.SetVolume(_displays[selectionInfo.Index].Display.GetCurrentVolume() - 1);
-                        VolumeControl(VolumeDown);
-                        Log($"Queued volume down on display {selectionInfo.Index}");
-                        break;
-                    case MuteJoin:
-                        _displays[selectionInfo.Index].Display.ToggleAudioMute();
-                        Log($"Toggled mute for display {selectionInfo.Index}");
-                        break;
-                }
-                break;
-            case eSigType.UShort when args.Sig.Number <= 10:
-                return;
-            case eSigType.UShort:
-                _displays[selectionInfo.Index].Display.SetVolume(
-                    Math.PercentageToRange(args.Sig.UShortValue, 
-                        _displays[selectionInfo.Index].MaxVolume));
-                break;
-        }
+    protected override void StartVolumeDown(int index)
+    {
+        void VolumeDown() => _displays[index].Display.SetVolume(_displays[index].Display.GetCurrentVolume() - 1);
+        VolumeControl(VolumeDown);
+    }
+    
+    protected override void ToggleAudioMute(int index) => _displays[index].Display.ToggleAudioMute();
+
+    protected override void SetNewLevel(Sig sig)
+    {
+        var selectionInfo = SrlHelper.GetSigInfo(sig);
+        _displays[selectionInfo.Index].Display.SetVolume(Math.PercentageToRange(sig.UShortValue, _displays[selectionInfo.Index].MaxVolume));
     }
 
     private new void HandleVolumeLevel(int volumeLevel, int displayIndex)

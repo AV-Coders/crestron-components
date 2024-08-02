@@ -1,6 +1,4 @@
-﻿using AVCoders.Dsp;
-
-namespace AVCoders.Crestron.TouchPanel;
+﻿namespace AVCoders.Crestron.TouchPanel;
 
 public class GenericLevelControls : LevelControls
 {
@@ -25,49 +23,29 @@ public class GenericLevelControls : LevelControls
         }
     }
 
-    protected override void HandleVolumePress(GenericBase currentDevice, SmartObjectEventArgs args)
+    protected override void StartVolumeUp(int index)
     {
-        var selectionInfo = SrlHelper.GetSigInfo(args.Sig);
-        switch (args.Sig.Type)
-        {
-            // Some touch panels send a sig 1 event as well as the button press event.
-            case eSigType.Bool when args.Sig.Number < 4000:
-                return;
-            case eSigType.Bool when !args.Sig.BoolValue:
-                ButtonHeld = false;
-                return;
-            case eSigType.Bool when selectionInfo.Join > 3:
-                Log($"Ignoring button press {args.Sig.Number}");
-                return;
-            case eSigType.Bool:
-            {
-                Log($"Volume Button pressed, id {args.Sig.Number}.  Index {selectionInfo.Index}, Join: {selectionInfo.Join}");
-                switch (selectionInfo.Join)
-                {
-                    case VolumeUpJoin:
-                    {
-                        void Action() => _faders[selectionInfo.Index].LevelUp(2);
-                        VolumeControl(Action);
-                        Log($"Queued volume up for fader {_faders[selectionInfo.Index].Name}");
-                        break;
-                    }
-                    case VolumeDownJoin:
-                    {
-                        void Action() => _faders[selectionInfo.Index].LevelDown(2);
-                        VolumeControl(Action);
-                        Log($"Queued volume down for fader {_faders[selectionInfo.Index].Name}");
-                        break;
-                    }
-                    case MuteJoin:
-                        _faders[selectionInfo.Index].ToggleAudioMute();
-                        Log($"Toggled mute for fader {_faders[selectionInfo.Index].Name}");
-                        break;
-                }
-                break;
-            }
-            case eSigType.UShort:
-                _faders[selectionInfo.Index].SetLevel(args.Sig.ShortValue);
-                break;
-        }
+        void Action() => _faders[index].LevelUp(2);
+        VolumeControl(Action);
+        Log($"Queued volume up for fader {_faders[index].Name}");
+    }
+
+    protected override void StartVolumeDown(int index)
+    {
+        void Action() => _faders[index].LevelDown(2);
+        VolumeControl(Action);
+        Log($"Queued volume down for fader {_faders[index].Name}");
+    }
+
+    protected override void ToggleAudioMute(int index)
+    {
+        _faders[index].ToggleAudioMute();
+        Log($"Toggled mute for fader {_faders[index].Name}");
+    }
+
+    protected override void SetNewLevel(Sig sig)
+    {
+        var selectionInfo = SrlHelper.GetSigInfo(sig);
+        _faders[selectionInfo.Index].SetLevel(sig.ShortValue);
     }
 }

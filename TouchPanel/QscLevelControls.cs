@@ -34,51 +34,35 @@ public class QscLevelControls : LevelControls
         }
     }
 
-    protected override void HandleVolumePress(GenericBase currentDevice, SmartObjectEventArgs args)
+    protected override void StartVolumeUp(int index)
     {
-        var selectionInfo = SrlHelper.GetSigInfo(args.Sig);
-        if (args.Sig.Type == eSigType.Bool)
-        {
-            if (args.Sig.Number < 4000) // Some touch panels send a sig 1 event as well as the button press event.
-                return;
-            
-            if (!args.Sig.BoolValue)
-            {
-                ButtonHeld = false;
-                return;
-            }
+        string instanceTag = _audioBlocks[index].LevelInstanceTag;
+        void Action() => _dsp.LevelUp(instanceTag, 2);
+        Log($"Queued volume up on instance tag {instanceTag}");
+        VolumeControl(Action);
 
-            if (selectionInfo.Join > 3)
-            {
-                Log($"Ignoring button press {args.Sig.Number}");
-                return;
-            }
+    }
 
-            Log($"Volume Button pressed, id {args.Sig.Number}.  Index {selectionInfo.Index}, Join: {selectionInfo.Join}");
-            if (selectionInfo.Join == VolumeUpJoin)
-            {
-                string instanceTag = _audioBlocks[selectionInfo.Index].LevelInstanceTag;
-                void Action() => _dsp.LevelUp(instanceTag, 2);
-                VolumeControl(Action);
-                Log($"Queued volume up on instance tag {instanceTag}");
-            }
-            else if (selectionInfo.Join == VolumeDownJoin)
-            {
-                string instanceTag = _audioBlocks[selectionInfo.Index].LevelInstanceTag;
-                void Action() => _dsp.LevelDown(instanceTag, 2);
-                VolumeControl(Action);
-                Log($"Queued volume down on instance tag {instanceTag}");
-            }
-            else if (selectionInfo.Join == MuteJoin)
-            {
-                string instanceTag = _audioBlocks[selectionInfo.Index].MuteInstanceTag;
-                _dsp.ToggleAudioMute(instanceTag);
-                Log($"Toggled mute for instance tag {instanceTag}");
-            }
-        }
-        else if (args.Sig.Type == eSigType.UShort)
-        {
-            _dsp.SetLevel(_audioBlocks[selectionInfo.Index].LevelInstanceTag, args.Sig.ShortValue);
-        }
+    protected override void StartVolumeDown(int index)
+    {
+        string instanceTag = _audioBlocks[index].LevelInstanceTag;
+        void Action() => _dsp.LevelDown(instanceTag, 2);
+        VolumeControl(Action);
+        Log($"Queued volume down on instance tag {instanceTag}");
+
+    }
+
+    protected override void ToggleAudioMute(int index)
+    {
+        string instanceTag = _audioBlocks[index].MuteInstanceTag;
+        _dsp.ToggleAudioMute(instanceTag);
+        Log($"Toggled mute for instance tag {instanceTag}");
+
+    }
+
+    protected override void SetNewLevel(Sig sig)
+    {
+        var selectionInfo = SrlHelper.GetSigInfo(sig);
+        _dsp.SetLevel(_audioBlocks[selectionInfo.Index].LevelInstanceTag, sig.ShortValue);
     }
 }

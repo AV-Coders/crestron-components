@@ -51,7 +51,7 @@ public class QscSourceSelect : LevelControls
     }
 
     // Created in the base class as the generic handler.  Actually used as selection in this module.
-    protected override void HandleVolumePress(GenericBase currentDevice, SmartObjectEventArgs args)
+    protected new void HandleVolumePress(GenericBase currentDevice, SmartObjectEventArgs args)
     {
         if (args.Sig.Type != eSigType.Bool)
             return;
@@ -70,4 +70,12 @@ public class QscSourceSelect : LevelControls
         Log($"Setting source for {instanceTag} to {inputSelection}");
         _dsp.SetValue(instanceTag, inputSelection);
     }
+
+    protected override void StartVolumeUp(int index) {}
+
+    protected override void StartVolumeDown(int index) {}
+
+    protected override void ToggleAudioMute(int index) {}
+
+    protected override void SetNewLevel(Sig sig){}
 }

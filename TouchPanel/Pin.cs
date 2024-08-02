@@ -94,13 +94,14 @@ public class Pin
             
         });
 
-        if (_input == _pin)
-        {
-            _action?.Invoke();
-            ClearText();
-            CrestronPanel.Interlock(_panels, 0, _relatedPages);
-            _pin = String.Empty;
-        }
+        if (_input != _pin)
+            return;
+        
+        ClearText();
+        CrestronPanel.Interlock(_panels, 0, _relatedPages);
+        _pin = String.Empty;
+        Thread.Sleep(100);
+        _action?.Invoke();
     }
     
     private string MaskInput()

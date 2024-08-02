@@ -54,7 +54,55 @@ public abstract class LevelControls
         }).Start();
     }
 
-    protected abstract void HandleVolumePress(GenericBase currentDevice, SmartObjectEventArgs args);
+    protected void HandleVolumePress(GenericBase currentDevice, SmartObjectEventArgs args)
+    {
+        var selectionInfo = SrlHelper.GetSigInfo(args.Sig);
+        switch (args.Sig.Type)
+        {
+            case eSigType.Bool when args.Sig.Number > 4000:
+            {
+                if (!args.Sig.BoolValue)
+                {
+                    ButtonHeld = false;
+                    return;
+                }
+
+                switch (selectionInfo.Join)
+                {
+                    case VolumeUpJoin:
+                        Log($"Queueing Volume up on fader index {selectionInfo.Index}");
+                        StartVolumeUp(selectionInfo.Index);
+                        break;
+                    case VolumeDownJoin:
+                        Log($"Queueing Volume down on fader index {selectionInfo.Index}");
+                        StartVolumeDown(selectionInfo.Index);
+                        break;
+                    case MuteJoin:
+                        
+                        Log($"Toggling Volume mute for fader index {selectionInfo.Index}");
+                        ToggleAudioMute(selectionInfo.Index);
+                        break;
+                    default:
+                        Log($"Ignoring button press {args.Sig.Number}");
+                        break;
+                }
+                return;
+            }
+            case eSigType.UShort when args.Sig.Number > 10:
+                Log($"Analog sig, Number: {args.Sig.Number}");
+                SetNewLevel(args.Sig);
+                return;
+            default:
+                Log($"Ignoring Sig, Type: {args.Sig.Type.ToString()}, Number: {args.Sig.Number}");
+                break;
+        }
+    }
+
+
+    protected abstract void StartVolumeUp(int index);
+    protected abstract void StartVolumeDown(int index);
+    protected abstract void ToggleAudioMute(int index);
+    protected abstract void SetNewLevel(Sig sig);
 
     protected void HandleMuteState(MuteState state, int faderIndex) => SmartObjects.ForEach(x =>
         x.BooleanInput[SrlHelper.BooleanJoinFor(faderIndex, MuteJoin)].BoolValue = state == MuteState.On);
