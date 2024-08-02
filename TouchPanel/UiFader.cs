@@ -90,19 +90,30 @@ public class BiampFader : UIFader
 public class DisplayFader : UIFader
 {
     private readonly Display.Display _display;
+    private readonly int _maxVolume;
 
     public DisplayFader(DisplayInfo displayInfo, FaderType type = FaderType.Speaker) : base(displayInfo.Name, type)
     {
         _display = displayInfo.Display;
+        _maxVolume = displayInfo.MaxVolume;
         _display.VolumeLevelHandlers += volumeLevel => VolumeLevelHandlers?.Invoke(volumeLevel);
         _display.MuteStateHandlers += muteState => MuteStateHandlers?.Invoke(muteState);
     }
 
-    public override void LevelUp(int amount) => _display.SetVolume(_display.GetCurrentVolume() + amount);
+    public override void LevelUp(int amount)
+    {
+        if(_display.GetCurrentVolume() < _maxVolume)
+            _display.SetVolume(_display.GetCurrentVolume() + amount);
+    }
 
-    public override void LevelDown(int amount) => _display.SetVolume(_display.GetCurrentVolume() - amount);
+    public override void LevelDown(int amount)
+    {
+        if(_display.GetCurrentVolume() > 0)
+            _display.SetVolume(_display.GetCurrentVolume() - amount);
+    }
 
-    public override void SetLevel(int percentage) => _display.SetVolume(percentage);
+    public override void SetLevel(int percentage) =>
+        _display.SetVolume(Math.PercentageToRange(percentage, _maxVolume));
 
     public override void ToggleAudioMute() => _display.ToggleAudioMute();
     
