@@ -18,6 +18,7 @@ public abstract class LevelControls
     public const uint MuteJoin = 3;
 
     public const uint VolumeLevelJoin = 1;
+    public const uint FaderTypeJoin = 2;
 
     public const uint NameJoin = 1;
 

@@ -17,7 +17,11 @@ public class GenericLevelControls : LevelControls
             var faderIndex = i;
             _faders[i].VolumeLevelHandlers += volumeLevel => HandleVolumeLevel(volumeLevel, faderIndex); 
             _faders[i].MuteStateHandlers += muteState => HandleMuteState(muteState, faderIndex);
-            SmartObjects.ForEach(smartObject => smartObject.StringInput[SrlHelper.SerialJoinFor(i, NameJoin)].StringValue = faders[i].Name);
+            SmartObjects.ForEach(smartObject =>
+            {
+                smartObject.StringInput[SrlHelper.SerialJoinFor(i, NameJoin)].StringValue = faders[i].Name;
+                smartObject.UShortInput[SrlHelper.AnalogJoinFor(i, FaderTypeJoin)].UShortValue = (ushort) faders[i].Type;
+            });
         }
     }
 

@@ -4,15 +4,24 @@ using AVCoders.Display;
 
 namespace AVCoders.Crestron.TouchPanel;
 
+public enum FaderType : ushort
+{
+    Speaker = 0,
+    Microphone = 1,
+    LineIn = 2
+}
+
 public abstract class UIFader
 {
     public readonly string Name;
+    public readonly FaderType Type;
     public VolumeLevelHandler? VolumeLevelHandlers;
     public MuteStateHandler? MuteStateHandlers;
 
-    protected UIFader(string name)
+    protected UIFader(string name, FaderType type)
     {
         Name = name;
+        Type = type;
     }
 
     public abstract void LevelUp(int amount);
@@ -32,7 +41,7 @@ public class QscFader : UIFader
     private readonly string _muteNamedControl;
     private readonly QsysEcp _dsp;
 
-    public QscFader(QscAudioBlockInfo audioBlockInfo, QsysEcp dsp) : base(audioBlockInfo.Name)
+    public QscFader(QscAudioBlockInfo audioBlockInfo, FaderType type, QsysEcp dsp) : base(audioBlockInfo.Name, type)
     {
         _dsp = dsp;
         _levelNamedControl = audioBlockInfo.LevelInstanceTag;
@@ -58,7 +67,7 @@ public class BiampFader : UIFader
     private readonly int _index;
     private readonly BiampTtp _dsp;
 
-    public BiampFader(BiampAudioBlockInfo audioBlockInfo, BiampTtp dsp) : base(audioBlockInfo.Name)
+    public BiampFader(BiampAudioBlockInfo audioBlockInfo, FaderType type, BiampTtp dsp) : base(audioBlockInfo.Name, type)
     {
         _dsp = dsp;
         _instanceTag = audioBlockInfo.InstanceTag;
@@ -82,7 +91,7 @@ public class DisplayFader : UIFader
 {
     private readonly Display.Display _display;
 
-    public DisplayFader(DisplayInfo displayInfo) : base(displayInfo.Name)
+    public DisplayFader(DisplayInfo displayInfo, FaderType type = FaderType.Speaker) : base(displayInfo.Name, type)
     {
         _display = displayInfo.Display;
         _display.VolumeLevelHandlers += volumeLevel => VolumeLevelHandlers?.Invoke(volumeLevel);
