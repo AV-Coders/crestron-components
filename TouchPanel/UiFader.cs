@@ -1,6 +1,5 @@
 using AVCoders.Core;
 using AVCoders.Dsp;
-using AVCoders.Display;
 
 namespace AVCoders.Crestron.TouchPanel;
 
@@ -96,7 +95,7 @@ public class DisplayFader : UIFader
     {
         _display = displayInfo.Display;
         _maxVolume = displayInfo.MaxVolume;
-        _display.VolumeLevelHandlers += volumeLevel => VolumeLevelHandlers?.Invoke(volumeLevel);
+        _display.VolumeLevelHandlers += volumeLevel => VolumeLevelHandlers?.Invoke(Math.PercentageFromRange(volumeLevel, _maxVolume));
         _display.MuteStateHandlers += muteState => MuteStateHandlers?.Invoke(muteState);
     }
 
