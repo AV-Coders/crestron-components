@@ -116,7 +116,7 @@ public class Pin
 
     public void Authenticate(string? expectedPin, Action successAction)
     {
-        if (expectedPin == null)
+        if (String.IsNullOrEmpty(expectedPin))
         {
             Log("Authentication not required");
             successAction.Invoke();
