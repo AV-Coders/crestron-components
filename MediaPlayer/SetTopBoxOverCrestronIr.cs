@@ -61,6 +61,8 @@ public class SetTopBoxOverCrestronIr : ISetTopBox
             Pulse(RemoteButtonMap[RemoteButton.Enter]);
     }
 
+    public void ToggleSubtitles() => SendIRCode(RemoteButton.Subtitle);
+
     private void Pulse(string key)
     {
         Log($"Pulsing {key}");
