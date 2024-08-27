@@ -47,7 +47,7 @@ public class TvChannelControls
             }
             case SubtitleJoin:
             {
-                _stb.SendIRCode(RemoteButton.Subtitle);
+                _stb.ToggleSubtitles();
                 Log("Subtitle");
                 break;
             }
