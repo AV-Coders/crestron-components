@@ -6,7 +6,7 @@ namespace AVCoders.Crestron.TouchPanel;
 
 public record InputInfo(string Name, Input Input);
 
-public record DisplayInfo(Display.Display Display, string Name, InputInfo[] Inputs, int MaxVolume = 100);
+public record DisplayInfo(Display.Display Display, CommunicationClient Client, string Name, InputInfo[] Inputs, int MaxVolume = 100);
 
 public class DisplayMenu
 {
@@ -31,6 +31,12 @@ public class DisplayMenu
     public const uint MuteJoin = 30;
 
     public const uint VolumeJoin = 1;
+    public const uint DriverStatusRedJoin = 2;
+    public const uint DriverStatusGreenJoin = 3;
+    public const uint DriverStatusBlueJoin = 4;
+    public const uint CommsStatusRedJoin = 5;
+    public const uint CommsStatusGreenJoin = 6;
+    public const uint CommsStatusBlueJoin = 7;
 
 
     public const uint NameJoin = 1;
@@ -40,6 +46,9 @@ public class DisplayMenu
     public const uint Input3NameJoin = 5;
     public const uint Input4NameJoin = 6;
     public static readonly uint[] InputNameJoins = { Input1NameJoin, Input2NameJoin, Input3NameJoin, Input4NameJoin};
+
+    public const uint DriverStatusLabelJoin = 11;
+    public const uint CommsStatusLabelJoin = 12;
     
     public static readonly uint JoinIncrement = 30;
 
@@ -60,6 +69,8 @@ public class DisplayMenu
             _displays[deviceIndex].Display.PowerStateHandlers += _ => FeedbackForDevice(deviceIndex);
             _displays[deviceIndex].Display.VolumeLevelHandlers += volume => VolumeFeedback(deviceIndex, volume);
             _displays[deviceIndex].Display.MuteStateHandlers += _ => FeedbackForDevice(deviceIndex);
+            _displays[deviceIndex].Display.CommunicationStateHandlers += state => DriverStateFeedback(deviceIndex, state);
+            _displays[deviceIndex].Client.ConnectionStateHandlers += state => CommsStateFeedback(deviceIndex, state);
 
             for (int inputIndex = 0; inputIndex < _displays[deviceIndex].Inputs.Length; inputIndex++)
             {
@@ -137,6 +148,99 @@ public class DisplayMenu
         {
             smartObject.UShortInput[_srlHelper.AnalogJoinFor(deviceIndex, VolumeJoin)].UShortValue =
                 Math.PercentageFromRange(volume, _displays[deviceIndex].MaxVolume);
+        });
+    }
+
+    private void DriverStateFeedback(int deviceIndex, CommunicationState state)
+    {
+        ushort redValue = 0;
+        ushort greenValue = 0;
+        ushort blueValue = 0;
+        string driverText = String.Empty;
+
+        switch (state)
+        {
+            case CommunicationState.Okay:
+                greenValue = 199;
+                blueValue = 129;
+                driverText = "Driver: Okay";
+                break;
+            case CommunicationState.Error:
+                redValue = 146;
+                greenValue = 8;
+                blueValue = 8;
+                driverText = "Driver: Error";
+                break;
+            case CommunicationState.NotAttempted:
+                redValue = 141;
+                greenValue = 141;
+                blueValue = 141;
+                driverText = "Driver: Not attempted";
+                break;
+            case CommunicationState.Unknown:
+                redValue = 0;
+                greenValue = 0;
+                blueValue = 0;
+                driverText = "Driver: Unknown";
+                break;
+                
+        }
+        _smartObjects.ForEach(smartObject =>
+        {
+            smartObject.UShortInput[_srlHelper.AnalogJoinFor(deviceIndex, DriverStatusRedJoin)].UShortValue = redValue;
+            smartObject.UShortInput[_srlHelper.AnalogJoinFor(deviceIndex, DriverStatusGreenJoin)].UShortValue = greenValue;
+            smartObject.UShortInput[_srlHelper.AnalogJoinFor(deviceIndex, DriverStatusBlueJoin)].UShortValue = blueValue;
+            smartObject.StringInput[_srlHelper.SerialJoinFor(deviceIndex, DriverStatusLabelJoin)].StringValue = driverText;
+        });
+    }
+
+    private void CommsStateFeedback(int deviceIndex, ConnectionState state)
+    {
+        ushort redValue = 0;
+        ushort greenValue = 0;
+        ushort blueValue = 0;
+        string commsText = String.Empty;
+
+        switch (state)
+        {
+            case ConnectionState.Connected:
+                greenValue = 199;
+                blueValue = 129;
+                commsText = "Comms: Connected";
+                break;
+            case ConnectionState.Error:
+                redValue = 146;
+                greenValue = 8;
+                blueValue = 8;
+                commsText = "Comms: Error";
+                break;
+            case ConnectionState.Disconnected:
+                redValue = 166;
+                greenValue = 127;
+                blueValue = 0;
+                commsText = "Comms: Disconnected";
+                break;
+            case ConnectionState.Connecting:
+            case ConnectionState.Disconnecting:
+                redValue = 5;
+                greenValue = 112;
+                blueValue = 192;
+                commsText = "Comms: Busy";
+                break;
+            case ConnectionState.Idle:
+                redValue = 141;
+                greenValue = 141;
+                blueValue = 141;
+                commsText = "Comms: Idle";
+                break;
+                
+        }
+        _smartObjects.ForEach(smartObject =>
+        {
+            smartObject.UShortInput[_srlHelper.AnalogJoinFor(deviceIndex, CommsStatusRedJoin)].UShortValue = redValue;
+            smartObject.UShortInput[_srlHelper.AnalogJoinFor(deviceIndex, CommsStatusGreenJoin)].UShortValue = greenValue;
+            smartObject.UShortInput[_srlHelper.AnalogJoinFor(deviceIndex, CommsStatusBlueJoin)].UShortValue = blueValue;
+            smartObject.StringInput[_srlHelper.SerialJoinFor(deviceIndex, CommsStatusLabelJoin)].StringValue = commsText;
         });
     }
 
