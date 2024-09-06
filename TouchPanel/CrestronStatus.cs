@@ -11,8 +11,9 @@ public class CrestronStatus
 
     private const uint OnlineJoin = 1;
 
-    private const uint NameJoin = 1;
+    private const uint ModelJoin = 1;
     private const uint IpIdJoin = 2;
+    private const uint NameJoin = 3;
 
     public CrestronStatus(string name, GenericDevice[] crestronDevices, SmartObject smartObject)
     {
@@ -50,8 +51,9 @@ public class CrestronStatus
     
     private void FeedbackForDevice(int deviceIndex)
     {
-        _smartObject.StringInput[_srlHelper.SerialJoinFor(deviceIndex, NameJoin)].StringValue = _crestronDevices[deviceIndex].Name;
+        _smartObject.StringInput[_srlHelper.SerialJoinFor(deviceIndex, NameJoin)].StringValue = _crestronDevices[deviceIndex].Description;
         _smartObject.StringInput[_srlHelper.SerialJoinFor(deviceIndex, IpIdJoin)].StringValue = $"IP ID: {_crestronDevices[deviceIndex].ID:x2}";
+        _smartObject.StringInput[_srlHelper.SerialJoinFor(deviceIndex, ModelJoin)].StringValue = _crestronDevices[deviceIndex].Name;
         _smartObject.BooleanInput[_srlHelper.BooleanJoinFor(deviceIndex, OnlineJoin)].BoolValue = _crestronDevices[deviceIndex].IsOnline;
     }
 
