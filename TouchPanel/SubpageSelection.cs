@@ -9,7 +9,7 @@ public enum SubpageSelectionType
     Toggling,
     Interlocked
 }
-public record SubpageButtonConfig(ushort ButtonMode, uint PopupPageJoin, string Title, VisibilityChanged? VisibilityEvent = null, string? Pin = null);
+public record SubpageButtonConfig(ushort ButtonMode, uint PopupPageJoin, string Title, SubpageSelection? RelatedMenu = null, VisibilityChanged? VisibilityEvent = null, string? Pin = null);
 
 public class SubpageSelection : IDevice
 {
@@ -19,7 +19,6 @@ public class SubpageSelection : IDevice
     private readonly List<SubpageButtonConfig> _buttonConfig;
     private readonly uint[] _pages;
     private readonly SubpageSelectionType _subpageSelectionType;
-    private readonly List<SubpageSelection> _subMenus;
     private readonly Pin? _pin;
     private readonly uint _closeJoin;
     private int _activePage;
@@ -40,8 +39,7 @@ public class SubpageSelection : IDevice
     private bool _rememberSelection;
 
     public SubpageSelection(string name, List<BasicTriListWithSmartObject> panels, SubpageSelectionType subpageSelectionType,
-        List<SubpageButtonConfig> buttonConfig, uint[] pages, List<SubpageSelection> subMenus, uint smartObjectId, uint closeJoin,
-        Pin? pin = null)
+        List<SubpageButtonConfig> buttonConfig, uint[] pages, uint smartObjectId, uint closeJoin, Pin? pin = null)
     {
         _smartObjects = new List<SmartObject>();
         _srlHelper = new SubpageReferenceListHelper(JoinIncrement, JoinIncrement, JoinIncrement);
@@ -56,7 +54,6 @@ public class SubpageSelection : IDevice
         _pages = pages;
         _buttonConfig = buttonConfig;
         _subpageSelectionType = subpageSelectionType;
-        _subMenus = subMenus;
         _pin = pin;
         _closeJoin = closeJoin;
 
@@ -106,7 +103,6 @@ public class SubpageSelection : IDevice
 
     private void HandleSubpages(uint sigNumber)
     {
-        _subMenus.ForEach(x => x.ClearSubpages());
         var selection = GetArrayIndexFromButton(sigNumber);
         if (selection == _activePage && _subpageSelectionType == SubpageSelectionType.Toggling)
         {
@@ -123,11 +119,11 @@ public class SubpageSelection : IDevice
     public void ShowPopupPage(int selection)
     {
         if(_activePage >= 0)
-            InvokeVisibilityEvent(_buttonConfig[_activePage], Visibility.Hidden);
+            HandleMenuItemVisibility(_buttonConfig[_activePage], Visibility.Hidden);
         _activePage = selection;
         if (_rememberSelection)
             _defaultPage = _activePage;
-        InvokeVisibilityEvent(_buttonConfig[selection], Visibility.Shown);
+        HandleMenuItemVisibility(_buttonConfig[selection], Visibility.Shown);
         CrestronPanel.Interlock(_panels, _buttonConfig[selection].PopupPageJoin, _pages);
         CrestronPanel.Interlock(_smartObjects, _srlHelper.BooleanJoinFor(selection, SelectJoin), _allSelectJoins);
         Log($"Showing modal {selection}");
@@ -138,19 +134,25 @@ public class SubpageSelection : IDevice
         _activePage = -1;
         CrestronPanel.Interlock(_panels, 0, _pages);
         CrestronPanel.Interlock(_smartObjects, 0, _allSelectJoins);
-        _subMenus.ForEach(menu => menu.ClearSubpages());
-        foreach (SubpageButtonConfig subpageButton in _buttonConfig)
-        {
-            InvokeVisibilityEvent(subpageButton, Visibility.Hidden);
-        }
-
+        _buttonConfig.ForEach( button => HandleMenuItemVisibility(button, Visibility.Hidden));
         Log("Clearing Subpages");
     }
 
-    private void InvokeVisibilityEvent(SubpageButtonConfig button, Visibility visibility)
+    private void HandleMenuItemVisibility(SubpageButtonConfig button, Visibility visibility)
     {
-        if(button.VisibilityEvent != null)
-            new Thread(_ => button.VisibilityEvent.Invoke(visibility)).Start();
+        new Thread(_ =>
+        {
+            button.VisibilityEvent?.Invoke(visibility);
+            switch (visibility)
+            {
+                case Visibility.Hidden:
+                    button.RelatedMenu?.PowerOff();
+                    break;
+                case Visibility.Shown:
+                    button.RelatedMenu?.PowerOn();
+                    break;
+            }
+        }).Start();
     }
 
     private int GetArrayIndexFromButton(uint sigNumber) => (int)((sigNumber - 4001) / 10) - 1;
