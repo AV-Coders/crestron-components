@@ -83,6 +83,8 @@ public class SubpageSelection : IDevice
             return;
         if (!args.Sig.BoolValue)
             return;
+        if (args.Sig.Number < 4000)
+            return;
         Log($"Modal button {args.Sig.Number} pressed");
         HandleSubpages(args.Sig.Number);
     }
