@@ -9,6 +9,10 @@ public class AvCodersCommsStatus
     private readonly List<List<string>> _logMessages;
     private readonly List<SmartObject> _smartObjects;
     private readonly SubpageReferenceListHelper _srlHelper;
+    private readonly ThreadWorker _indicatorThreadWorker;
+
+    public const uint TxIndicator = 1;
+    public const uint RxIndicator = 2;
 
     public const uint NameJoin = 1;
     public const uint ClassJoin = 2;
@@ -24,21 +28,46 @@ public class AvCodersCommsStatus
     {
         _communicationClients = communicationClients;
         _srlHelper = new SubpageReferenceListHelper(JoinIncrement, JoinIncrement, JoinIncrement);
+        _indicatorThreadWorker = new ThreadWorker(ClearIndicators, TimeSpan.FromMilliseconds(500));
         
         _smartObjects = smartObjects;
         _smartObjects.ForEach(x => x.UShortInput["Set Number of Items"].ShortValue = (short)_communicationClients.Count);
 
         _logMessages = new List<List<string>>{};
         
-
         for (int i = 0; i < _communicationClients.Count; i++)
         {
             var deviceIndex = i;
             _communicationClients[deviceIndex].ConnectionStateHandlers += _ => FeedbackForDevice(deviceIndex);
             _communicationClients[deviceIndex].LogHandlers += (response, level) =>  LogHandlers(response, level, deviceIndex);
+            _communicationClients[deviceIndex].ResponseHandlers += _ => ResponseHandlers(deviceIndex);
             _logMessages.Add(new List<string>{ "Module started" });
             FeedbackForDevice(deviceIndex);
         }
+    }
+
+    private async Task ClearIndicators(CancellationToken cancellationToken)
+    {
+        CrestronConsole.PrintLine($"{DateTime.Now} - AvCodersCommsStatus - Clearing Indicators");
+        for (int deviceIndex = 0; deviceIndex < _communicationClients.Count; deviceIndex++)
+        {
+            _smartObjects.ForEach(smartObject =>
+            {
+                smartObject.BooleanInput[_srlHelper.BooleanJoinFor(deviceIndex, RxIndicator)].BoolValue = false;
+            });
+        }
+        await _indicatorThreadWorker.Stop();
+    }
+
+    private void ResponseHandlers(int deviceIndex)
+    {
+        CrestronConsole.PrintLine($"{DateTime.Now} - AvCodersCommsStatus - Activating Indicator");
+        _smartObjects.ForEach(smartObject =>
+        {
+            smartObject.BooleanInput[_srlHelper.BooleanJoinFor(deviceIndex, RxIndicator)].BoolValue = true;
+        });
+        _indicatorThreadWorker.Restart();
+        CrestronConsole.PrintLine($"{DateTime.Now} - AvCodersCommsStatus - Activating Indicator");
     }
 
     private void LogHandlers(string response, EventLevel level, int deviceIndex)
