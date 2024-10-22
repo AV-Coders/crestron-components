@@ -79,7 +79,7 @@ public class PduControls
                     case PowerOffJoin:
                         _confirmation.Prompt(
                             _outlets[selectionInfo.Index].PowerOff,
-                            $"Are you sure you want to off the {_outlets[selectionInfo.Index].Name} outlet?",
+                            $"Are you sure you want to turn off the {_outlets[selectionInfo.Index].Name} outlet?",
                             "Yes",
                             "No"
                             );
