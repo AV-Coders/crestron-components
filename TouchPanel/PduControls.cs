@@ -26,7 +26,7 @@ public class Outlet
 
 public class PduControls
 {
-    private readonly List<Outlet> _outlets = new ();
+    private readonly List<Outlet> _outlets;
     private readonly List<SmartObject> _smartObjects;
     private readonly SubpageReferenceListHelper _srlHelper;
     private readonly string _name;
@@ -41,6 +41,7 @@ public class PduControls
     {
         _name = name;
         _outlets = outlets;
+        _srlHelper = new SubpageReferenceListHelper(10, 10, 10);
         _smartObjects = smartObjects;
         _smartObjects.ForEach(x =>
         {
