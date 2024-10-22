@@ -64,6 +64,7 @@ public class Confirmation
         
         if(args.Sig.Number - 4010 == ConfirmationJoin)
             _action?.Invoke();
+        _action = null;
     }
 
     public void Prompt(Action confirmationAction, string question, string confirmationText, string cancelText)

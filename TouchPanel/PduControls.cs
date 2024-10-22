@@ -28,6 +28,7 @@ public class PduControls
 {
     private readonly List<Outlet> _outlets;
     private readonly List<SmartObject> _smartObjects;
+    private readonly Confirmation _confirmation;
     private readonly SubpageReferenceListHelper _srlHelper;
     private readonly string _name;
     private bool _enableLogs;
@@ -37,12 +38,13 @@ public class PduControls
     
     public const uint NameJoin = 1;
 
-    public PduControls(string name, List<Outlet> outlets, List<SmartObject> smartObjects)
+    public PduControls(string name, List<Outlet> outlets, List<SmartObject> smartObjects, Confirmation confirmation)
     {
         _name = name;
         _outlets = outlets;
         _srlHelper = new SubpageReferenceListHelper(10, 10, 10);
         _smartObjects = smartObjects;
+        _confirmation = confirmation;
         _smartObjects.ForEach(x =>
         {
             x.UShortInput["Set Number of Items"].ShortValue = (short)_outlets.Count;
@@ -75,8 +77,13 @@ public class PduControls
                         Log($"Turning on outlet {_outlets[selectionInfo.Index].Name}");
                         break;
                     case PowerOffJoin:
-                        _outlets[selectionInfo.Index].PowerOff();
-                        Log($"Turning off display {_outlets[selectionInfo.Index].Name}");
+                        _confirmation.Prompt(
+                            _outlets[selectionInfo.Index].PowerOff,
+                            $"Are you sure you want to off the {_outlets[selectionInfo.Index].Name} outlet?",
+                            "Yes",
+                            "No"
+                            );
+                        Log($"Outlet power off requested for {_outlets[selectionInfo.Index].Name}");
                         break;
                 }
 
