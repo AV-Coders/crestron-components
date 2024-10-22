@@ -15,7 +15,7 @@
         <PackageReference Include="Crestron.SimplSharp.SDK.Program" Version="2.21.54" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
         <PackageReference Include="xunit" Version="2.9.2" />
-        <PackageReference Include="xunit.runner.visualstudio" Version="3.0.0-pre.24">
+        <PackageReference Include="xunit.runner.visualstudio" Version="3.0.0-pre.42">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>
