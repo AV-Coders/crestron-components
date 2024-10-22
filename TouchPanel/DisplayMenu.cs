@@ -58,8 +58,11 @@ public class DisplayMenu
         _displays = displays;
         _srlHelper = new SubpageReferenceListHelper(JoinIncrement, JoinIncrement, JoinIncrement);
         _smartObjects = smartObjects;
-        _smartObjects.ForEach(x => x.UShortInput["Set Number of Items"].ShortValue = (short)_displays.Count);
-        _smartObjects.ForEach(x => x.SigChange += HandleDisplayPress);
+        _smartObjects.ForEach(x =>
+        {
+            x.UShortInput["Set Number of Items"].ShortValue = (short)_displays.Count;
+            x.SigChange += HandleDisplayPress;
+        });
 
         for (int i = 0; i < _displays.Count; i++)
         {
