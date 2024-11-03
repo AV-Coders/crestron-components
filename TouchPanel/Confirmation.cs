@@ -8,36 +8,37 @@ public class Confirmation
     private readonly List<BasicTriListWithSmartObject> _panels;
     private readonly List<SmartObject> _smartObjects;
     private readonly SubpageReferenceListHelper _srlHelper;
-    private readonly uint _smartObjectId;
+    private readonly uint _questionJoin;
     private readonly uint _pageJoin;
     private readonly uint[] _relatedPages;
     private readonly uint _cancelJoin;
-    private Action? _action;
     private readonly string _name;
     private bool _enableLogs;
-    
-    private const uint ConfirmationJoin = 1;
-    private const uint CancelJoin = 2;
+    private List<KeyValuePair<string, Action?>> _options;
+
+    private const uint SelectJoin = 1;
         
 
-    public Confirmation(string name, List<BasicTriListWithSmartObject> panels, uint smartObjectId, 
+    public Confirmation(string name, List<BasicTriListWithSmartObject> panels, uint smartObjectId, uint questionJoin,
         uint pageJoin, uint[] relatedPages, uint cancelJoin)
     {
         _name = name;
         _panels = panels;
-        _smartObjectId = smartObjectId;
+        _questionJoin = questionJoin;
         _pageJoin = pageJoin;
         _relatedPages = relatedPages;
         _cancelJoin = cancelJoin;
         _srlHelper = new SubpageReferenceListHelper(10, 10, 10);
+        _options = new List<KeyValuePair<string, Action?>>();
         
         _smartObjects = new List<SmartObject>();
         _panels.ForEach(panel =>
         {
-            _smartObjects.Add(panel.SmartObjects![_smartObjectId]);
+            var smartObject = panel.SmartObjects![smartObjectId]!;
+            smartObject.SigChange += ConfirmationButtonPressed;
+            _smartObjects.Add(smartObject);
             panel.SigChange += HandlePanelButtonPress;
         });
-        _smartObjects.ForEach(smartObject => smartObject.SigChange += ConfirmationButtonPressed);
     }
     private void HandlePanelButtonPress(BasicTriList currentDevice, SigEventArgs args)
     {
@@ -57,24 +58,32 @@ public class Confirmation
             return;
         if (!args.Sig.BoolValue)
             return;
-        Log($"Button {args.Sig.Number} pressed");
+        var info = _srlHelper.GetBooleanSigInfo(args.Sig.Number);
+        if (info.Join != SelectJoin)
+            return;
+        Log($"Option {info.Index} selected");
         
         CrestronPanel.Interlock(_panels, 0, _relatedPages);
         Thread.Sleep(100);
         
-        if(args.Sig.Number - 4010 == ConfirmationJoin)
-            _action?.Invoke();
-        _action = null;
+        _options[info.Index].Value?.Invoke();
+        _options = new List<KeyValuePair<string, Action?>>();
     }
 
-    public void Prompt(Action confirmationAction, string question, string confirmationText, string cancelText)
+    public void Prompt(string question, List<KeyValuePair<string, Action?>> options)
     {
-        _action = confirmationAction;
+        _options = options;
+        _panels.ForEach(panel =>
+        {
+            panel.StringInput[_questionJoin].StringValue = question;
+        });
         _smartObjects.ForEach(x =>
         {
-            x.StringInput[_srlHelper.SerialJoinFor(0, 1)].StringValue = question;
-            x.StringInput[_srlHelper.SerialJoinFor(0, 2)].StringValue = confirmationText;
-            x.StringInput[_srlHelper.SerialJoinFor(0, 3)].StringValue = cancelText;
+            x.UShortInput["Set Number of Items"].UShortValue = (ushort)options.Count;
+            for (int i = 0; i < options.Count; i++)
+            {
+                x.StringInput[_srlHelper.SerialJoinFor(i, SelectJoin)].StringValue = options[i].Key;
+            }
 
         });
         

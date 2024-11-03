@@ -78,15 +78,16 @@ public class PduControls
                         break;
                     case PowerOffJoin:
                         _confirmation.Prompt(
-                            _outlets[selectionInfo.Index].PowerOff,
                             $"Are you sure you want to turn off the {_outlets[selectionInfo.Index].Name} outlet?",
-                            "Yes",
-                            "No"
+                            new List<KeyValuePair<string, Action?>>
+                            {
+                                new ("Yes", _outlets[selectionInfo.Index].PowerOff),
+                                new ("No", null)
+                            }
                             );
                         Log($"Outlet power off requested for {_outlets[selectionInfo.Index].Name}");
                         break;
                 }
-
                 break;
         }
     }
