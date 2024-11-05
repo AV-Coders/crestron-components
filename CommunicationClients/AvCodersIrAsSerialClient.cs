@@ -9,7 +9,7 @@ public class AvCodersIrAsSerialClient : SerialClient
     private readonly IROutputPort _irPort;
     private readonly Encoding _encoding;
 
-    public AvCodersIrAsSerialClient(IROutputPort irPort, SerialSpec serialSpec, Encoding? encoding)
+    public AvCodersIrAsSerialClient(IROutputPort irPort, SerialSpec serialSpec, Encoding? encoding, string name) : base(name)
     {
         _irPort = irPort;
         _irPort.Register();

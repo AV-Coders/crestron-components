@@ -91,7 +91,7 @@ public class AvCodersCommsStatus
     {
         _smartObjects.ForEach(smartObject =>
         {
-            // smartObject.StringInput[_srlHelper.SerialJoinFor(deviceIndex, NameJoin)].StringValue = _communicationClients[deviceIndex];
+            smartObject.StringInput[_srlHelper.SerialJoinFor(deviceIndex, NameJoin)].StringValue = _communicationClients[deviceIndex].Name;
             smartObject.StringInput[_srlHelper.SerialJoinFor(deviceIndex, ClassJoin)].StringValue = _communicationClients[deviceIndex].GetType().ToString();
             smartObject.StringInput[_srlHelper.SerialJoinFor(deviceIndex, IpJoin)].StringValue = _communicationClients[deviceIndex].GetHost();
             smartObject.StringInput[_srlHelper.SerialJoinFor(deviceIndex, PortJoin)].StringValue = _communicationClients[deviceIndex].GetPort().ToString();
