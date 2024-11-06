@@ -2,6 +2,12 @@
 
 namespace AVCoders.Crestron.TouchPanel;
 
+public record QscAudioBlockWithSelectInfo(
+    string Name,
+    string LevelInstanceTag,
+    string MuteInstanceTag,
+    string SelectInstanceTag): QscAudioBlockInfo(Name, LevelInstanceTag, MuteInstanceTag);
+
 public record QscSource(string Name, int InputNumber);
 
 public class QscSourceSelect : LevelControls

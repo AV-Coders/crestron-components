@@ -1,10 +1,12 @@
-﻿namespace AVCoders.Crestron.TouchPanel;
+﻿using AVCoders.Core;
+
+namespace AVCoders.Crestron.TouchPanel;
 
 public class GenericLevelControls : LevelControls
 {
-    private readonly List<UIFader> _faders;
+    private readonly List<VolumeControl> _faders;
 
-    public GenericLevelControls(string name, List<UIFader> faders, List<SmartObject> smartObjects, uint joinIncrement = DefaultJoinIncrement) :
+    public GenericLevelControls(string name, List<VolumeControl> faders, List<SmartObject> smartObjects, uint joinIncrement = DefaultJoinIncrement) :
         base(name, (ushort)faders.Count, smartObjects, joinIncrement)
     {
         _faders = faders;
