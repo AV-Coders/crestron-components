@@ -24,7 +24,7 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: 6.0.x
+        dotnet-version: 6.x
         
     - name: Setup Github Packages
       run: dotnet nuget add source --username ant-car --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/AV-Coders/index.json"
