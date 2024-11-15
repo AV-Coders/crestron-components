@@ -9,7 +9,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Crestron.SimplSharp.SDK.Program" Version="2.21.65" />
+      <PackageReference Include="Crestron.SimplSharp.SDK.Program" Version="2.21.68" />
     </ItemGroup>
 
 </Project>
