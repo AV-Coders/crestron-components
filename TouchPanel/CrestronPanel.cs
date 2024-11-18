@@ -69,8 +69,13 @@ public static class CrestronPanel
         panels.ForEach(x => Interlock(x, newActive, all));
     }
 
-    public static bool SigEventIsAButtonPress(SigEventArgs args)
+    public static bool EventIsAButtonPress(SigEventArgs args)
     {
         return args.Sig is { Type: eSigType.Bool, BoolValue: true };
+    }
+
+    public static bool SigIsAButtonPress(Sig sig)
+    {
+        return sig is { Type: eSigType.Bool, BoolValue: true };
     }
 }
