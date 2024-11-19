@@ -15,7 +15,7 @@ public class PduControls
 
     public const uint PowerOnJoin = 1;
     public const uint PowerOffJoin = 2;
-    public const uint PowerCycleJoin = 3;
+    public const uint RebootJoin = 3;
     
     public const uint NameJoin = 1;
 
@@ -82,7 +82,7 @@ public class PduControls
                             );
                         Log($"Outlet power off requested for {_outlets[selectionInfo.Index].Name}");
                         break;
-                    case PowerCycleJoin:
+                    case RebootJoin:
                         _confirmation.Prompt(
                             $"Are you sure you want to REBOOT the {_outlets[selectionInfo.Index].Name} outlet?",
                             new List<KeyValuePair<string, Action?>>
@@ -105,6 +105,7 @@ public class PduControls
         {
             smartObject.BooleanInput[_srlHelper.BooleanJoinFor(deviceIndex, PowerOnJoin)].BoolValue = state == PowerState.On;
             smartObject.BooleanInput[_srlHelper.BooleanJoinFor(deviceIndex, PowerOffJoin)].BoolValue = state == PowerState.Off;
+            smartObject.BooleanInput[_srlHelper.BooleanJoinFor(deviceIndex, RebootJoin)].BoolValue = state == PowerState.Rebooting;
         });
         
     }
