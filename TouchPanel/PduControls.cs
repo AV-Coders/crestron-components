@@ -1,28 +1,8 @@
 using AVCoders.Core;
 using AVCoders.Crestron.SmartGraphics;
+using AVCoders.Power;
 
 namespace AVCoders.Crestron.TouchPanel;
-
-public class Outlet
-{
-    public PowerStateHandler? PowerStateHandlers;
-    public readonly string Name;
-
-    public Outlet(string name)
-    {
-        Name = name;
-    }
-
-    public void PowerOn()
-    {
-        PowerStateHandlers?.Invoke(PowerState.On);
-    }
-
-    public void PowerOff()
-    {
-        PowerStateHandlers?.Invoke(PowerState.Off);
-    }
-}
 
 public class PduControls
 {
@@ -53,6 +33,7 @@ public class PduControls
         _outlets.Clear();
         outlets.ForEach(x => _outlets.Add(x));
         UpdateOutletInfo();
+        
     }
 
     private void UpdateOutletInfo()
