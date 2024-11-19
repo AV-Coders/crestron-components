@@ -45,6 +45,18 @@ public class PduControls
         _srlHelper = new SubpageReferenceListHelper(10, 10, 10);
         _smartObjects = smartObjects;
         _confirmation = confirmation;
+        UpdateOutletInfo();
+    }
+
+    public void HandleNewOutlets(List<Outlet> outlets)
+    {
+        _outlets.Clear();
+        outlets.ForEach(x => _outlets.Add(x));
+        UpdateOutletInfo();
+    }
+
+    private void UpdateOutletInfo()
+    {
         _smartObjects.ForEach(x =>
         {
             x.UShortInput["Set Number of Items"].ShortValue = (short)_outlets.Count;
@@ -62,6 +74,7 @@ public class PduControls
             });
         }
     }
+    
     private void HandleOutletPress(GenericBase currentDevice, SmartObjectEventArgs args)
     {
         var selectionInfo = _srlHelper.GetSigInfo(args.Sig);
