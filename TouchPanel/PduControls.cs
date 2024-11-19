@@ -15,6 +15,7 @@ public class PduControls
 
     public const uint PowerOnJoin = 1;
     public const uint PowerOffJoin = 2;
+    public const uint PowerCycleJoin = 3;
     
     public const uint NameJoin = 1;
 
@@ -81,6 +82,18 @@ public class PduControls
                             );
                         Log($"Outlet power off requested for {_outlets[selectionInfo.Index].Name}");
                         break;
+                    case PowerCycleJoin:
+                        _confirmation.Prompt(
+                            $"Are you sure you want to REBOOT the {_outlets[selectionInfo.Index].Name} outlet?",
+                            new List<KeyValuePair<string, Action?>>
+                            {
+                                new ("Yes", _outlets[selectionInfo.Index].Reboot),
+                                new ("No", null)
+                            }
+                            );
+                        Log($"Outlet reboot requested for {_outlets[selectionInfo.Index].Name}");
+                        break;
+                    
                 }
                 break;
         }

@@ -9,13 +9,13 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="AVCoders.Camera" Version="2024.11.156" />
-      <PackageReference Include="avcoders.core" Version="2024.11.156" />
-      <PackageReference Include="avcoders.display" Version="2024.11.156" />
-      <PackageReference Include="AVCoders.Dsp" Version="2024.11.156" />
-      <PackageReference Include="AVCoders.MediaPlayer" Version="2024.11.156" />
-      <PackageReference Include="AVCoders.Motor" Version="2024.11.156" />
-      <PackageReference Include="AVCoders.Power" Version="2024.11.156" />
+      <PackageReference Include="AVCoders.Camera" Version="2024.11.157" />
+      <PackageReference Include="avcoders.core" Version="2024.11.157" />
+      <PackageReference Include="avcoders.display" Version="2024.11.157" />
+      <PackageReference Include="AVCoders.Dsp" Version="2024.11.157" />
+      <PackageReference Include="AVCoders.MediaPlayer" Version="2024.11.157" />
+      <PackageReference Include="AVCoders.Motor" Version="2024.11.157" />
+      <PackageReference Include="AVCoders.Power" Version="2024.11.157" />
       <PackageReference Include="Crestron.SimplSharp.SDK.Program" Version="2.21.68" />
       <PackageReference Include="SSH.NET" Version="2024.2.0" />
     </ItemGroup>
