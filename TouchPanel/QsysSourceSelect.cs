@@ -2,22 +2,16 @@
 
 namespace AVCoders.Crestron.TouchPanel;
 
-public record QscAudioBlockWithSelectInfo(
-    string Name,
-    string LevelInstanceTag,
-    string MuteInstanceTag,
-    string SelectInstanceTag): QscAudioBlockInfo(Name, LevelInstanceTag, MuteInstanceTag);
-
 public record QscSource(string Name, int InputNumber);
 
-public class QscSourceSelect : LevelControls
+public class QsysSourceSelect : LevelControls
 {
     // This is designed to work with QscLevelControl.  Digital joins 4-10 are used by this module
     private readonly List<QscSource> _sources;
     private readonly List<QscAudioBlockWithSelectInfo> _audioBlocks;
     private readonly QsysEcp _dsp;
     
-    public QscSourceSelect(string name, List<QscAudioBlockWithSelectInfo> audioBlocks, QsysEcp dsp,  List<SmartObject> smartObjects, List<QscSource> sources, uint joinIncrement = DefaultJoinIncrement) : 
+    public QsysSourceSelect(string name, List<QscAudioBlockWithSelectInfo> audioBlocks, QsysEcp dsp,  List<SmartObject> smartObjects, List<QscSource> sources, uint joinIncrement = DefaultJoinIncrement) : 
         base(name, (ushort)audioBlocks.Count, smartObjects, joinIncrement)
     {
         _audioBlocks = audioBlocks;
