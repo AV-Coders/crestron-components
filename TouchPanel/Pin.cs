@@ -39,7 +39,7 @@ public class Pin
         _smartObjects = new List<SmartObject>();
         _panels.ForEach(panel =>
         {
-            _smartObjects.Add(panel.SmartObjects![_smartObjectId]);
+            _smartObjects.Add(panel.SmartObjects![_smartObjectId]!);
             panel.SigChange += HandlePanelButtonPress;
         });
         _smartObjects.ForEach(smartObject => smartObject.SigChange += PinButtonPressed);
