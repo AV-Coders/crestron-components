@@ -74,8 +74,28 @@ public static class CrestronPanel
         return args.Sig is { Type: eSigType.Bool, BoolValue: true };
     }
 
+    public static bool EventIsAStringChange(SigEventArgs args)
+    {
+        return args.Sig is { Type: eSigType.String };
+    }
+
+    public static bool EventIsAnAnalogChange(SigEventArgs args)
+    {
+        return args.Sig is { Type: eSigType.UShort };
+    }
+
     public static bool SigIsAButtonPress(Sig sig)
     {
         return sig is { Type: eSigType.Bool, BoolValue: true };
+    }
+    
+    public static bool SigIsAStringChange(Sig sig)
+    {
+        return sig is { Type: eSigType.String };
+    }
+    
+    public static bool SigIsAnAnalogChange(Sig sig)
+    {
+        return sig is { Type: eSigType.UShort };
     }
 }
