@@ -48,7 +48,7 @@ public class SubpageSelection : IDevice
         _panels.ForEach(panel =>
         {
             panel.SigChange += HandleButtonPress;
-            _smartObjects.Add(panel.SmartObjects![smartObjectId]);
+            _smartObjects.Add(panel.SmartObjects![smartObjectId]!);
         });
         _smartObjects.ForEach(smartObject => smartObject.SigChange += ModalButtonPressed);
         _pages = pages;
@@ -178,6 +178,11 @@ public class SubpageSelection : IDevice
     {
         if(_defaultPage != null)
             ShowPopupPage((int)_defaultPage);
+    }
+
+    public void Restore()
+    {
+        ShowPopupPage(_activePage);
     }
 
     public void PowerOff() => ClearSubpages();
