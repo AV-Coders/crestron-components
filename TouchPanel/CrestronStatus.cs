@@ -5,7 +5,7 @@ namespace AVCoders.Crestron.TouchPanel;
 public class CrestronStatus
 {
     private readonly GenericDevice[] _crestronDevices;
-    private readonly SmartObject _smartObject;
+    private readonly List<SmartObject> _smartObjects;
     private readonly SubpageReferenceListHelper _srlHelper;
     private readonly string _name;
 
@@ -15,11 +15,11 @@ public class CrestronStatus
     private const uint IpIdJoin = 2;
     private const uint NameJoin = 3;
 
-    public CrestronStatus(string name, GenericDevice[] crestronDevices, SmartObject smartObject)
+    public CrestronStatus(string name, GenericDevice[] crestronDevices, List<SmartObject> smartObjects)
     {
         _name = name;
         _crestronDevices = crestronDevices;
-        _smartObject = smartObject;
+        _smartObjects = smartObjects;
         _srlHelper = new SubpageReferenceListHelper(10, 10, 10);
         ConfigureSmartObject();
 
@@ -32,7 +32,7 @@ public class CrestronStatus
 
     private void HandleDeviceOnlineStatusChange(OnlineOfflineEventArgs args, int deviceIndex)
     {
-        _smartObject.BooleanInput[_srlHelper.BooleanJoinFor(deviceIndex, OnlineJoin)].BoolValue = args.DeviceOnLine;
+        _smartObjects.ForEach(x => x.BooleanInput[_srlHelper.BooleanJoinFor(deviceIndex, OnlineJoin)].BoolValue = args.DeviceOnLine);
         
         if(args.DeviceOnLine)
             FeedbackForDevice(deviceIndex);
@@ -41,7 +41,7 @@ public class CrestronStatus
     private void ConfigureSmartObject()
     {
         Log("Configuring modal buttons");
-        _smartObject.UShortInput["Set Number of Items"].ShortValue = (short)_crestronDevices.Length;
+        _smartObjects.ForEach(x => x.UShortInput["Set Number of Items"].ShortValue = (short)_crestronDevices.Length);
 
         for (int i = 0; i < _crestronDevices.Length; i++)
         {
@@ -51,10 +51,13 @@ public class CrestronStatus
     
     private void FeedbackForDevice(int deviceIndex)
     {
-        _smartObject.StringInput[_srlHelper.SerialJoinFor(deviceIndex, NameJoin)].StringValue = _crestronDevices[deviceIndex].Description;
-        _smartObject.StringInput[_srlHelper.SerialJoinFor(deviceIndex, IpIdJoin)].StringValue = $"IP ID: {_crestronDevices[deviceIndex].ID:x2}";
-        _smartObject.StringInput[_srlHelper.SerialJoinFor(deviceIndex, ModelJoin)].StringValue = _crestronDevices[deviceIndex].Name;
-        _smartObject.BooleanInput[_srlHelper.BooleanJoinFor(deviceIndex, OnlineJoin)].BoolValue = _crestronDevices[deviceIndex].IsOnline;
+        _smartObjects.ForEach(x =>
+        {
+            x.StringInput[_srlHelper.SerialJoinFor(deviceIndex, NameJoin)].StringValue = _crestronDevices[deviceIndex].Description;
+            x.StringInput[_srlHelper.SerialJoinFor(deviceIndex, IpIdJoin)].StringValue = $"IP ID: {_crestronDevices[deviceIndex].ID:x2}";
+            x.StringInput[_srlHelper.SerialJoinFor(deviceIndex, ModelJoin)].StringValue = _crestronDevices[deviceIndex].Name;
+            x.BooleanInput[_srlHelper.BooleanJoinFor(deviceIndex, OnlineJoin)].BoolValue = _crestronDevices[deviceIndex].IsOnline;
+        });
     }
 
     private void Log(string message)
