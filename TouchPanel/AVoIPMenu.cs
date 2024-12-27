@@ -58,7 +58,10 @@ public class AVoIPMenu
         {
             smartObject.StringInput[_srlHelper.SerialJoinFor(deviceIndex, NameJoin)].StringValue = _devices[deviceIndex].Name;
             smartObject.StringInput[_srlHelper.SerialJoinFor(deviceIndex, TypeJoin)].StringValue = _devices[deviceIndex].DeviceType.ToString();
-            smartObject.StringInput[_srlHelper.SerialJoinFor(deviceIndex, StreamIdJoin)].StringValue = _devices[deviceIndex].StreamAddress;
+            smartObject.StringInput[_srlHelper.SerialJoinFor(deviceIndex, StreamIdJoin)].StringValue = 
+                _devices[deviceIndex].DeviceType == AVoIPDeviceType.Encoder? 
+                    $"Streaming to {_devices[deviceIndex].StreamAddress}" :
+                    $"Source: {_devices[deviceIndex].StreamAddress}";
         });
         
     }
