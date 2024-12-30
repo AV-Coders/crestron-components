@@ -44,11 +44,11 @@ public class AVoIPMenu
         for (int i = 0; i < _devices.Count; i++)
         {
             var deviceIndex = i;
-            FeedbackForDevice(deviceIndex);
             _devices[deviceIndex].StreamChangeHandlers += _ => FeedbackForDevice(deviceIndex);
             _devices[deviceIndex].PreviewUrlChangeHandlers += _ => FeedbackForDevice(deviceIndex);
-            // _devices[deviceIndex].CommunicationStateHandlers += state => DriverStateFeedback(deviceIndex, state);
             _devices[deviceIndex].CommunicationClient.ConnectionStateHandlers += state => CommsStateFeedback(deviceIndex, state);
+            CommsStateFeedback(deviceIndex, _devices[deviceIndex].CommunicationClient.GetConnectionState());
+            FeedbackForDevice(deviceIndex);
         }
     }
 
