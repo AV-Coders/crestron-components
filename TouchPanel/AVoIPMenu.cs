@@ -25,6 +25,7 @@ public class AVoIPMenu
     private const uint NameJoin = 1;
     private const uint TypeJoin = 2;
     private const uint StreamIdJoin = 3;
+    private const uint SyncStatusJoin = 4;
 
     public const uint DriverStatusLabelJoin = 11;
     public const uint CommsStatusLabelJoin = 12;
@@ -47,9 +48,32 @@ public class AVoIPMenu
             _devices[deviceIndex].StreamChangeHandlers += _ => FeedbackForDevice(deviceIndex);
             _devices[deviceIndex].PreviewUrlChangeHandlers += _ => FeedbackForDevice(deviceIndex);
             _devices[deviceIndex].CommunicationClient.ConnectionStateHandlers += state => CommsStateFeedback(deviceIndex, state);
+            switch (devices[deviceIndex].DeviceType)
+            {
+                case AVoIPDeviceType.Encoder:
+                    devices[deviceIndex].InputStatusChangedHandlers += (inputNumber, status, resolution) => HandleDeviceSync(deviceIndex, inputNumber, status, resolution);
+                    break;
+                case AVoIPDeviceType.Decoder:
+                    devices[deviceIndex].OutputStatusChangedHandlers += (inputNumber, status, resolution) => HandleDeviceSync(deviceIndex, inputNumber, status, resolution);
+                    break;
+            }
             CommsStateFeedback(deviceIndex, _devices[deviceIndex].CommunicationClient.GetConnectionState());
             FeedbackForDevice(deviceIndex);
         }
+    }
+
+    private void HandleDeviceSync(int deviceIndex, uint inputNumber, ConnectionStatus status, string resolution)
+    {
+        string syncStatus = status switch
+        {
+            ConnectionStatus.Disconnected => "Disconnected",
+            ConnectionStatus.Connected => $"Connected at {resolution}",
+            _ => "Unknown"
+        };
+        _smartObjects.ForEach(smartObject =>
+        {
+            smartObject.StringInput[_srlHelper.SerialJoinFor(deviceIndex, SyncStatusJoin)].StringValue = syncStatus;
+        });
     }
 
     private void FeedbackForDevice(int deviceIndex)
