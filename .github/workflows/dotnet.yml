@@ -55,5 +55,8 @@ jobs:
     - name: Create MediaPlayer Nuget Package
       run: dotnet pack /home/runner/work/crestron-components/crestron-components/MediaPlayer/MediaPlayer.csproj --output /home/runner/work/crestron-components/package /p:Version=${{ steps.date.outputs.date }}.${{ github.run_number }} --configuration PackRelease
       
+    - name: Create DSP Nuget Package
+      run: dotnet pack /home/runner/work/crestron-components/crestron-components/Dsp/Dsp.csproj --output /home/runner/work/crestron-components/package /p:Version=${{ steps.date.outputs.date }}.${{ github.run_number }} --configuration PackRelease
+      
     - name: Publish to GitHub Packages 
       run: dotnet nuget push /home/runner/work/crestron-components/package/*.nupkg --api-key ${{ secrets.GITHUB_TOKEN }}  --source "github"
