@@ -7,13 +7,11 @@ namespace AVCoders.Crestron.DSP;
 public class UcEngineMtrSpeakerVolume : VolumeControl
 {
     private readonly UcEngineAudioRsvdSigs _audioBlock;
-    public VolumeLevelHandler VolumeLevelHandlers;
 
-    public UcEngineMtrSpeakerVolume(string name, UcEngineAudioRsvdSigs audioBlock, VolumeLevelHandler volumeLevelHandler) : base(name, VolumeType.Speaker)
+    public UcEngineMtrSpeakerVolume(string name, UcEngineAudioRsvdSigs audioBlock) : base(name, VolumeType.Speaker)
     {
         _audioBlock = audioBlock;
         _audioBlock.DeviceExtenderSigChange += HandleTeamsLevelChange;
-        VolumeLevelHandlers += volumeLevelHandler;
     }
 
     public override void LevelUp(int amount)
@@ -39,6 +37,6 @@ public class UcEngineMtrSpeakerVolume : VolumeControl
     {
         if (args.Sig.Number != _audioBlock.ConferenceSpeakerVolumeFeedback.Number)
             return;
-        VolumeLevelHandlers.Invoke((int)(args.Sig.UShortValue/655.35));
+        VolumeLevelHandlers?.Invoke((int)(args.Sig.UShortValue/655.35));
     }
 }
