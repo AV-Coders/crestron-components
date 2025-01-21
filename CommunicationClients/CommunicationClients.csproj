@@ -6,7 +6,6 @@
         <Nullable>enable</Nullable>
         <AssemblyName>AVCoders.Crestron.CommunicationClients</AssemblyName>
         <RootNamespace>AVCoders.Crestron.CommunicationClients</RootNamespace>
-        <LangVersion>11</LangVersion>
     </PropertyGroup>
 
     <ItemGroup>
