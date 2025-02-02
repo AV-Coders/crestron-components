@@ -1,22 +1,23 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <AssemblyName>AVCoders.Crestron.TouchPanel</AssemblyName>
         <RootNamespace>AVCoders.Crestron.TouchPanel</RootNamespace>
+        <TargetFrameworks>net6.0;net8.0</TargetFrameworks>
+        <LangVersion>default</LangVersion>
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="AVCoders.Camera" Version="2025.1.220" />
-      <PackageReference Include="avcoders.core" Version="2025.1.220" />
-      <PackageReference Include="avcoders.display" Version="2025.1.220" />
-      <PackageReference Include="AVCoders.Dsp" Version="2025.1.220" />
-      <PackageReference Include="AVCoders.Matrix" Version="2025.1.220" />
-      <PackageReference Include="AVCoders.MediaPlayer" Version="2025.1.220" />
-      <PackageReference Include="AVCoders.Motor" Version="2025.1.220" />
-      <PackageReference Include="avcoders.power" Version="2025.1.220" />
+      <PackageReference Include="AVCoders.Camera" Version="2025.2.222" />
+      <PackageReference Include="avcoders.core" Version="2025.2.222" />
+      <PackageReference Include="avcoders.display" Version="2025.2.222" />
+      <PackageReference Include="AVCoders.Dsp" Version="2025.2.222" />
+      <PackageReference Include="AVCoders.Matrix" Version="2025.2.222" />
+      <PackageReference Include="AVCoders.MediaPlayer" Version="2025.2.222" />
+      <PackageReference Include="AVCoders.Motor" Version="2025.2.222" />
+      <PackageReference Include="avcoders.power" Version="2025.2.222" />
       <PackageReference Include="Crestron.SimplSharp.SDK.Program" Version="2.21.90" />
       <PackageReference Include="SSH.NET" Version="2024.2.0" />
     </ItemGroup>
