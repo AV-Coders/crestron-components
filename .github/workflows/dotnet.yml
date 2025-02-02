@@ -31,8 +31,8 @@ jobs:
 
     - name: Restore dependencies
       run: dotnet restore
-      env:
-        DOTNET_NUGET_SIGNATURE_VERIFICATION: false
+      # env:
+        # DOTNET_NUGET_SIGNATURE_VERIFICATION: false
       
     - name: Build
       run: dotnet build --no-restore
