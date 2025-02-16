@@ -253,23 +253,23 @@ public class DisplayMenu
         {
             smartObject.StringInput[_srlHelper.SerialJoinFor(deviceIndex, NameJoin)].StringValue = _displays[deviceIndex].Name;
             smartObject.BooleanInput[_srlHelper.BooleanJoinFor(deviceIndex, PowerOnJoin)].BoolValue =
-                _displays[deviceIndex].Display.GetCurrentPowerState() == PowerState.On;
+                _displays[deviceIndex].Display.PowerState == PowerState.On;
             smartObject.BooleanInput[_srlHelper.BooleanJoinFor(deviceIndex, PowerOffJoin)].BoolValue =
-                _displays[deviceIndex].Display.GetCurrentPowerState() == PowerState.Off;
+                _displays[deviceIndex].Display.PowerState == PowerState.Off;
             smartObject.BooleanInput[_srlHelper.BooleanJoinFor(deviceIndex, MuteJoin)].BoolValue =
-                _displays[deviceIndex].Display.GetAudioMute() == MuteState.On;
+                _displays[deviceIndex].Display.AudioMute == MuteState.On;
             if (_displays[deviceIndex].Inputs.Length > 0)
                 smartObject.BooleanInput[_srlHelper.BooleanJoinFor(deviceIndex, Input1Join)].BoolValue =
-                    _displays[deviceIndex].Inputs[0].Input == _displays[deviceIndex].Display.GetCurrentInput();
+                    _displays[deviceIndex].Inputs[0].Input == _displays[deviceIndex].Display.Input;
             if (_displays[deviceIndex].Inputs.Length > 1)
                 smartObject.BooleanInput[_srlHelper.BooleanJoinFor(deviceIndex, Input2Join)].BoolValue =
-                    _displays[deviceIndex].Inputs[1].Input == _displays[deviceIndex].Display.GetCurrentInput();
+                    _displays[deviceIndex].Inputs[1].Input == _displays[deviceIndex].Display.Input;
             if (_displays[deviceIndex].Inputs.Length > 2)
                 smartObject.BooleanInput[_srlHelper.BooleanJoinFor(deviceIndex, Input3Join)].BoolValue =
-                    _displays[deviceIndex].Inputs[2].Input == _displays[deviceIndex].Display.GetCurrentInput();
+                    _displays[deviceIndex].Inputs[2].Input == _displays[deviceIndex].Display.Input;
             if (_displays[deviceIndex].Inputs.Length > 3)
                 smartObject.BooleanInput[_srlHelper.BooleanJoinFor(deviceIndex, Input4Join)].BoolValue =
-                    _displays[deviceIndex].Inputs[3].Input == _displays[deviceIndex].Display.GetCurrentInput();
+                    _displays[deviceIndex].Inputs[3].Input == _displays[deviceIndex].Display.Input;
         });
         
     }
