@@ -42,7 +42,7 @@ public class MotorMenu
                     MotorType.Curtain => "Open",
                     _ => throw new ArgumentOutOfRangeException()
                 };
-                smartObject.StringInput[_srlHelper.SerialJoinFor(i, RaiseJoin)].StringValue = _motors[i].Type switch
+                smartObject.StringInput[_srlHelper.SerialJoinFor(i, LowerJoin)].StringValue = _motors[i].Type switch
                 {
                     MotorType.Roller => "Down",
                     MotorType.Curtain => "Close",
