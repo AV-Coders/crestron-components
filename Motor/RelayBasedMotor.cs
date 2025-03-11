@@ -12,7 +12,6 @@ public class RelayBasedMotor : AVCoders.Motor.Motor
     private readonly CrestronControlSystem _cs;
     private readonly int _holdSeconds;
     private readonly int _debounceTimeMilliseconds;
-    private Action? _queuedAction;
     private CancellationTokenSource _cancellationTokenSource = new ();
 
     public RelayBasedMotor(string name, Relay relays, CrestronControlSystem cs, RelayAction powerOnAction, int moveSeconds = 25, int holdSeconds = 1, int debounceTimeMilliseconds = 500)
@@ -34,76 +33,46 @@ public class RelayBasedMotor : AVCoders.Motor.Motor
     ~RelayBasedMotor()
     {
         _cancellationTokenSource.Cancel();
-    }
-
-    private void TriggerRaiseRelays()
-    {
-        ClearRelays();
-        _cs.RelayPorts[_relays.Raise]!.State = true;
-        ClearRelaysAfterMoveCompleted();
+        _cancellationTokenSource.Dispose();
     }
 
     public override void Raise()
     {
-        _cancellationTokenSource.Cancel();
-        Guid thisMove = Guid.NewGuid();
-        
         if (CurrentMoveAction == RelayAction.Raise)
             Log("Not triggering the same move direction twice");
         else
-        {
-            Log($"Raising, move id {thisMove}");
-            TriggerRaiseRelays();
-        
-            CreateMoveTimer(thisMove);
-            CurrentMoveId = thisMove;
-            CurrentMoveAction = RelayAction.Raise;
-        }
-    }
-
-    private void TriggerLowerRelays()
-    {
-        ClearRelays();
-        _cs.RelayPorts[_relays.Lower]!.State = true;
-        ClearRelaysAfterMoveCompleted();
+            TriggerRelay(RelayAction.Raise);
     }
 
     public override void Lower()
     {
-        _cancellationTokenSource.Cancel();
-        _cancellationTokenSource = new CancellationTokenSource();
-        Guid thisMove = Guid.NewGuid();
         if (CurrentMoveAction == RelayAction.Lower)
             Log("Not triggering the same move direction twice");
         else
-        {
-            Log($"Lowering, move id {thisMove}");
-            TriggerLowerRelays();
-
-            if (CurrentMoveId != Guid.Empty)
-                _queuedAction = TriggerLowerRelays;
-        
-            CreateMoveTimer(thisMove);
-            CurrentMoveId = thisMove;
-            CurrentMoveAction = RelayAction.Lower;
-        }
+            TriggerRelay(RelayAction.Lower);
     }
 
-    public override void Stop()
+    private void TriggerRelay(RelayAction action)
     {
-        _cancellationTokenSource.Cancel();
-        _queuedAction = null;
+        Guid thisMove = Guid.NewGuid();
+        Log($"Action: {action.ToString()}, move id: {thisMove}");
+        CancelAndCreateANewToken();
         ClearRelays();
-        _cancellationTokenSource = new CancellationTokenSource();
-    }
-
-    private void ClearRelaysAfterMoveCompleted()
-    {
+        _cs.RelayPorts[action == RelayAction.Lower? _relays.Lower : _relays.Raise]!.State = true;
         new Task(() =>
         {
             Task.Delay(TimeSpan.FromSeconds(_holdSeconds), _cancellationTokenSource.Token).Wait(_cancellationTokenSource.Token);
             ClearRelays();
         }).Start();
+        CreateMoveTimer(thisMove, ClearRelays);
+        CurrentMoveId = thisMove;
+        CurrentMoveAction = action;
+    }
+
+    public override void Stop()
+    {
+        CancelAndCreateANewToken();
+        ClearRelays();
     }
 
     private void ClearRelays()
@@ -111,6 +80,13 @@ public class RelayBasedMotor : AVCoders.Motor.Motor
         _cs.RelayPorts[_relays.Raise]!.State = false;
         _cs.RelayPorts[_relays.Lower]!.State = false;
         Task.Delay(TimeSpan.FromMilliseconds(_debounceTimeMilliseconds), _cancellationTokenSource.Token).Wait();
+    }
+
+    private void CancelAndCreateANewToken()
+    {
+        _cancellationTokenSource.Cancel();
+        _cancellationTokenSource.Dispose();
+        _cancellationTokenSource = new CancellationTokenSource();
     }
 
     private new void Log(string message) => CrestronConsole.PrintLine($"{DateTime.Now} - {Name} - RelayBasedMotor - {message}");
