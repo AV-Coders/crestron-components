@@ -5,7 +5,6 @@ namespace AVCoders.Crestron.TouchPanel;
 public class MotorMenu
 {
     private readonly List<Motor.Motor> _motors;
-    private readonly SmartObject _smartObject;
     private readonly SubpageReferenceListHelper _srlHelper;
     private readonly string _name;
 
@@ -15,19 +14,21 @@ public class MotorMenu
 
     private const uint NameJoin = 1;
 
-    public MotorMenu(string name, List<Motor.Motor> motors, SmartObject smartObject)
+    public MotorMenu(string name, List<Motor.Motor> motors, List<SmartObject> smartObjects)
     {
         _name = name;
         _motors = motors;
-        _smartObject = smartObject;
-        _smartObject.UShortInput["Set Number of Items"].ShortValue = (short)_motors.Count;
-        _smartObject.SigChange += HandleMotorPress;
         _srlHelper = new SubpageReferenceListHelper(10, 10, 10);
         
-        for (int i = 0; i < _motors.Count; i++)
+        smartObjects.ForEach(smartObject =>
         {
-            _smartObject.StringInput[_srlHelper.SerialJoinFor(i, NameJoin)].StringValue = _motors[i].Name;
-        }
+            smartObject.UShortInput["Set Number of Items"].ShortValue = (short)_motors.Count;
+            smartObject.SigChange += HandleMotorPress;
+            for (int i = 0; i < _motors.Count; i++)
+            {
+                smartObject.StringInput[_srlHelper.SerialJoinFor(i, NameJoin)].StringValue = _motors[i].Name;
+            }
+        });
     }
 
     private void HandleMotorPress(GenericBase currentDevice, SmartObjectEventArgs args)
