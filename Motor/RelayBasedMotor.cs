@@ -73,6 +73,7 @@ public class RelayBasedMotor : AVCoders.Motor.Motor
     {
         CancelAndCreateANewToken();
         ClearRelays();
+        CurrentMoveAction = RelayAction.None;
     }
 
     private void ClearRelays()
