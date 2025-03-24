@@ -35,15 +35,9 @@ public class NvxEncoder : NvxBase
         }
     }
 
-    private void UpdateResolution()
-    {
-        InputResolution = 
+    private void UpdateResolution() => InputResolution = 
             $"{Device.HdmiIn[1]!.VideoAttributes.HorizontalResolutionFeedback.UShortValue}x{Device.HdmiIn[1]!.VideoAttributes.VerticalResolutionFeedback.UShortValue}:{Device.HdmiIn[1]!.VideoAttributes.FramesPerSecondFeedback.UShortValue}p";
-    }
 
-    private void UpdateSyncState()
-    {
-        InputConnectionStatus = 
+    private void UpdateSyncState() => InputConnectionStatus = 
             Device.HdmiIn[1]!.SyncDetectedFeedback.BoolValue ? ConnectionStatus.Connected : ConnectionStatus.Disconnected;
-    }
 }

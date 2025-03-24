@@ -35,15 +35,20 @@ public class NvxDecoder : NvxBase
         }
     }
 
-    private void UpdateResolution()
+    public void SetInput(string serverUrl)
     {
-        OutputResolution = 
-            $"{Device.HdmiOut.VideoAttributes.HorizontalResolutionFeedback.UShortValue}x{Device.HdmiOut.VideoAttributes.VerticalResolutionFeedback.UShortValue}:{Device.HdmiOut.VideoAttributes.FramesPerSecondFeedback.UShortValue}p";
+        Device.Control.ServerUrl.StringValue = serverUrl;
     }
 
-    private void UpdateSyncState()
+    public void SetInput(DmNvxBaseClass source)
     {
-        OutputConnectionStatus = 
-            Device.HdmiOut.SyncDetectedFeedback.BoolValue ? ConnectionStatus.Connected : ConnectionStatus.Disconnected;
+        if(source.Control.DeviceModeFeedback == eDeviceMode.Receiver)
+            throw new InvalidOperationException($"You can't route a receiver to a receiver.  Transmitter: {source.ID:x2}, Receiver: {Device.ID:x2}");
     }
+
+    private void UpdateResolution() => OutputResolution = 
+            $"{Device.HdmiOut.VideoAttributes.HorizontalResolutionFeedback.UShortValue}x{Device.HdmiOut.VideoAttributes.VerticalResolutionFeedback.UShortValue}:{Device.HdmiOut.VideoAttributes.FramesPerSecondFeedback.UShortValue}p";
+
+    private void UpdateSyncState() => OutputConnectionStatus = 
+            Device.HdmiOut.SyncDetectedFeedback.BoolValue ? ConnectionStatus.Connected : ConnectionStatus.Disconnected;
 }
