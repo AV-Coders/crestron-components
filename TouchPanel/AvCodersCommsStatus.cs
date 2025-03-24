@@ -60,13 +60,18 @@ public class AvCodersCommsStatus
 
     private void HandleCommsClientLogEvent(LogEvent logEvent)
     {
-        if (!logEvent.Properties.ContainsKey("AvCodersCommsStatusIndex"))
+        if (!logEvent.Properties.TryGetValue("AvCodersCommsStatusIndex", out var deviceIndexRaw))
         {
             Log.Error("A log event has been handed over without a device index.");
             return;
         }
-        
-        int deviceIndex = Convert.ToInt32(logEvent.Properties["AvCodersCommsStatusIndex"]);
+
+        int deviceIndex = Convert.ToInt32(deviceIndexRaw.ToString().Replace("\"", null));
+        if(deviceIndex > _communicationClients.Count - 1)
+        {
+            Log.Error($"The device Index {deviceIndex} out of range, max {_communicationClients.Count - 1}.");
+            return;
+        }
         _logMessages[deviceIndex].Add($"{DateTime.Now} - {logEvent.Level.ToString()} - {logEvent.RenderMessage()}");
 
         while (_logMessages[deviceIndex].Count > 5)
