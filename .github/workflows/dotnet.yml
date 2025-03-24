@@ -58,6 +58,9 @@ jobs:
     - name: Create DSP Nuget Package
       run: dotnet pack /home/runner/work/crestron-components/crestron-components/Dsp/Dsp.csproj --output /home/runner/work/crestron-components/package /p:Version=${{ steps.date.outputs.date }}.${{ github.run_number }} --configuration PackRelease
       
+    - name: Create Matrix Nuget Package
+      run: dotnet pack /home/runner/work/crestron-components/crestron-components/Matrix/Matrix.csproj --output /home/runner/work/crestron-components/package /p:Version=${{ steps.date.outputs.date }}.${{ github.run_number }} --configuration PackRelease
+      
     - name: Create Motor Nuget Package
       run: dotnet pack /home/runner/work/crestron-components/crestron-components/Motor/Motor.csproj --output /home/runner/work/crestron-components/package /p:Version=${{ steps.date.outputs.date }}.${{ github.run_number }} --configuration PackRelease
       

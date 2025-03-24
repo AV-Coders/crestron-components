@@ -18,6 +18,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dsp", "Dsp\Dsp.csproj", "{0
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Motor", "Motor\Motor.csproj", "{73633083-1EBE-451D-9E55-AEEB0B88CF09}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Matrix", "Matrix\Matrix.csproj", "{44C62F0E-FE44-4B13-B5D3-898E2F49B39F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -60,5 +62,9 @@ Global
 		{73633083-1EBE-451D-9E55-AEEB0B88CF09}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{73633083-1EBE-451D-9E55-AEEB0B88CF09}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{73633083-1EBE-451D-9E55-AEEB0B88CF09}.Release|Any CPU.Build.0 = Release|Any CPU
+		{44C62F0E-FE44-4B13-B5D3-898E2F49B39F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{44C62F0E-FE44-4B13-B5D3-898E2F49B39F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{44C62F0E-FE44-4B13-B5D3-898E2F49B39F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{44C62F0E-FE44-4B13-B5D3-898E2F49B39F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

@@ -51,10 +51,10 @@ public class AVoIPMenu
             switch (devices[deviceIndex].DeviceType)
             {
                 case AVoIPDeviceType.Encoder:
-                    devices[deviceIndex].InputStatusChangedHandlers += (inputNumber, status, resolution) => HandleDeviceSync(deviceIndex, inputNumber, status, resolution);
+                    devices[deviceIndex].InputStatusChangedHandlers += (status, resolution) => HandleDeviceSync(deviceIndex, status, resolution);
                     break;
                 case AVoIPDeviceType.Decoder:
-                    devices[deviceIndex].OutputStatusChangedHandlers += (inputNumber, status, resolution) => HandleDeviceSync(deviceIndex, inputNumber, status, resolution);
+                    devices[deviceIndex].OutputStatusChangedHandlers += (status, resolution) => HandleDeviceSync(deviceIndex, status, resolution);
                     break;
             }
             CommsStateFeedback(deviceIndex, _devices[deviceIndex].CommunicationClient.GetConnectionState());
@@ -62,7 +62,7 @@ public class AVoIPMenu
         }
     }
 
-    private void HandleDeviceSync(int deviceIndex, uint inputNumber, ConnectionStatus status, string resolution)
+    private void HandleDeviceSync(int deviceIndex, ConnectionStatus status, string resolution)
     {
         string syncStatus = status switch
         {

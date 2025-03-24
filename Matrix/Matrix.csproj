@@ -1,17 +1,18 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <AssemblyName>AVCoders.Crestron.DSP</AssemblyName>
-        <RootNamespace>AVCoders.Crestron.DSP</RootNamespace>
-        <TargetFrameworks>net6.0;net8.0</TargetFrameworks>
+        <TargetFrameworks>net8.0;net6.0</TargetFrameworks>
         <LangVersion>default</LangVersion>
+        <AssemblyName>AvCoders.Crestron.Matrix</AssemblyName>
+        <RootNamespace>AvCoders.Crestron.Matrix</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
       <PackageReference Include="avcoders.core" Version="2025.3.248" />
-      <PackageReference Include="AVCoders.Dsp" Version="2025.3.247" />
+      <PackageReference Include="AVCoders.Matrix" Version="2025.3.248" />
+      <PackageReference Include="AVCoders.Motor" Version="2025.3.248" />
       <PackageReference Include="Crestron.SimplSharp.SDK.Program" Version="2.21.90" />
     </ItemGroup>
 
