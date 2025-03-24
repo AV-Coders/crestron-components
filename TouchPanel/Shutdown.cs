@@ -1,4 +1,6 @@
 ﻿using AVCoders.Core;
+using Serilog;
+using Serilog.Context;
 
 namespace AVCoders.Crestron.TouchPanel;
 
@@ -11,7 +13,6 @@ public class Shutdown : SubPage, IDevice
     private readonly ShutdownMode _mode;
     private readonly ushort _countdownTime;
     private ushort _timeRemaining;
-    private bool _enableLogs;
     private bool _timerRunning;
     
     public const uint ShutdownConfirm = 4011;
@@ -34,7 +35,7 @@ public class Shutdown : SubPage, IDevice
             return;
         if (!args.Sig.BoolValue)
             return;
-        Log($"Button {args.Sig.Number} pressed");
+        Debug($"Button {args.Sig.Number} pressed");
         switch (args.Sig.Number)
         {
             case ShutdownConfirm:
@@ -57,7 +58,7 @@ public class Shutdown : SubPage, IDevice
                 if(_timerRunning)
                     ShutdownTick();
             }
-            Log("Shutdown thread finished.");
+            Debug("Shutdown thread finished.");
         }).Start();
     }
 
@@ -65,7 +66,7 @@ public class Shutdown : SubPage, IDevice
     {
         _timeRemaining--;
         UpdateRemainingTimeString();
-        Log($"Shutdown tick.  Time remaining: {_timeRemaining}");
+        Debug($"Shutdown tick.  Time remaining: {_timeRemaining}");
 
         if (_timeRemaining < 1)
             DoShutdown();
@@ -73,7 +74,7 @@ public class Shutdown : SubPage, IDevice
 
     private void DoShutdown()
     {
-        Log($"Shutting down");
+        Debug($"Shutting down");
         StopTimer();
         PowerStateHandlers?.Invoke(PowerState.Off);
         UpdateRemainingTimeString();
@@ -81,7 +82,7 @@ public class Shutdown : SubPage, IDevice
 
     private void StopTimer()
     {
-        Log($"Stopping timer");
+        Debug($"Stopping timer");
         _timerRunning = false;
         _timeRemaining = _countdownTime;
         UpdateRemainingTimeString();
@@ -92,27 +93,28 @@ public class Shutdown : SubPage, IDevice
         switch (visibility)
         {
             case Visibility.Shown:
-                Log($"Visible");
+                Debug($"Visible");
                 _timerRunning = true;
                 _timeRemaining = _countdownTime;
                 if(_mode == ShutdownMode.Countdown)
                     CreateShutdownTimer();
                 break;
             case Visibility.Hidden:
-                Log($"Hidden");
+                Debug($"Hidden");
                 StopTimer();
                 break;
         }
     }
 
     private void UpdateRemainingTimeString() => _smartObjects.ForEach(smartObject => smartObject.UShortInput[11].UShortValue = _timeRemaining);
-
-    public void EnableLogs(bool enable) => _enableLogs = enable;
-
-    private void Log(string message)
+    
+    private void Debug(string message)
     {
-        if(_enableLogs)
-            CrestronConsole.PrintLine($"{DateTime.Now} - {_name} - Shutdown - {message}");
+        using (LogContext.PushProperty("class", GetType()))
+        using (LogContext.PushProperty("instance_name", _name))
+        {
+            Log.Debug(message);
+        }
     }
 
     public void PowerOn() => UpdateRemainingTimeString();

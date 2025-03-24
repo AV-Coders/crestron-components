@@ -11,7 +11,7 @@ public class NvxEncoder : NvxBase
     public NvxEncoder(string name, DmNvxE3x device) : base(name, device, AVoIPDeviceType.Encoder)
     {
         device.HdmiIn[1]!.StreamChange += HandleStreamChanges;
-        if(Device.Control.DeviceModeFeedback != eDeviceMode.Transmitter)
+        if(device.Control.DeviceModeFeedback != eDeviceMode.Transmitter)
             throw new InvalidOperationException($"The device at {Device.ID:x2} is not a Transmitter");
         
         UpdateSyncState();

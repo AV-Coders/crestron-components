@@ -4,14 +4,12 @@ using AVCoders.Power;
 
 namespace AVCoders.Crestron.TouchPanel;
 
-public class PduControls
+public class PduControls : LogBase
 {
     private readonly List<Outlet> _outlets;
     private readonly List<SmartObject> _smartObjects;
     private readonly Confirmation _confirmation;
     private readonly SubpageReferenceListHelper _srlHelper;
-    private readonly string _name;
-    private bool _enableLogs;
 
     public const uint PowerOnJoin = 1;
     public const uint PowerOffJoin = 2;
@@ -19,9 +17,8 @@ public class PduControls
     
     public const uint NameJoin = 1;
 
-    public PduControls(string name, List<Outlet> outlets, List<SmartObject> smartObjects, Confirmation confirmation)
+    public PduControls(string name, List<Outlet> outlets, List<SmartObject> smartObjects, Confirmation confirmation) : base(name)
     {
-        _name = name;
         _outlets = outlets;
         _srlHelper = new SubpageReferenceListHelper(10, 10, 10);
         _smartObjects = smartObjects;
@@ -60,7 +57,7 @@ public class PduControls
     private void HandleOutletPress(GenericBase currentDevice, SmartObjectEventArgs args)
     {
         var selectionInfo = _srlHelper.GetSigInfo(args.Sig);
-        Log($"Display Join, id {args.Sig.Number}. Type: {args.Sig.Type.ToString()} Index {selectionInfo.Index}, Join: {selectionInfo.Join}");
+        Debug($"Display Join, id {args.Sig.Number}. Type: {args.Sig.Type.ToString()} Index {selectionInfo.Index}, Join: {selectionInfo.Join}");
         
         switch (args.Sig.Type)
         {
@@ -69,7 +66,7 @@ public class PduControls
                 {
                     case PowerOnJoin:
                         _outlets[selectionInfo.Index].PowerOn();
-                        Log($"Turning on outlet {_outlets[selectionInfo.Index].Name}");
+                        Debug($"Turning on outlet {_outlets[selectionInfo.Index].Name}");
                         break;
                     case PowerOffJoin:
                         _confirmation.Prompt(
@@ -80,7 +77,7 @@ public class PduControls
                                 new ("No", null)
                             }
                             );
-                        Log($"Outlet power off requested for {_outlets[selectionInfo.Index].Name}");
+                        Debug($"Outlet power off requested for {_outlets[selectionInfo.Index].Name}");
                         break;
                     case RebootJoin:
                         _confirmation.Prompt(
@@ -91,7 +88,7 @@ public class PduControls
                                 new ("No", null)
                             }
                             );
-                        Log($"Outlet reboot requested for {_outlets[selectionInfo.Index].Name}");
+                        Debug($"Outlet reboot requested for {_outlets[selectionInfo.Index].Name}");
                         break;
                     
                 }
@@ -108,13 +105,5 @@ public class PduControls
             smartObject.BooleanInput[_srlHelper.BooleanJoinFor(deviceIndex, RebootJoin)].BoolValue = state == PowerState.Rebooting;
         });
         
-    }
-
-    public void EnableLogs(bool enable) => _enableLogs = enable;
-
-    private void Log(string message)
-    {
-        if(_enableLogs)
-            CrestronConsole.PrintLine($"{DateTime.Now} - {_name} - Display Menu - {message}");
     }
 }

@@ -64,5 +64,9 @@ public static class Ssh
         return true;
     }
     
-    private static void Log(string name, string message) => CrestronConsole.PrintLine($"{DateTime.Now} - {name} - SSH - {message}");
+    private static void Log(string name, string message)
+    {
+        Serilog.Log.Verbose(message);
+        CrestronConsole.PrintLine($"{DateTime.Now} - {name} - SSH - {message}");
+    }
 }

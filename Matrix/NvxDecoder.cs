@@ -11,7 +11,7 @@ public class NvxDecoder : NvxBase
     public NvxDecoder(string name, DmNvxBaseClass device) : base(name, device, AVoIPDeviceType.Decoder)
     {
         device.HdmiOut.StreamChange += HandleStreamChanges;
-        if(Device.Control.DeviceModeFeedback != eDeviceMode.Receiver)
+        if(device.Control.DeviceModeFeedback != eDeviceMode.Receiver)
             throw new InvalidOperationException($"The device at {Device.ID:x2} is not a Decoder");
         
         UpdateSyncState();

@@ -1,17 +1,16 @@
 ﻿using AVCoders.Core;
 using AVCoders.Crestron.SmartGraphics;
+using Serilog;
+using Serilog.Context;
 
 namespace AVCoders.Crestron.TouchPanel;
 
-public abstract class LevelControls
+public abstract class LevelControls : LogBase
 {
     protected readonly List<SmartObject> SmartObjects;
     
     protected readonly SubpageReferenceListHelper SrlHelper;
     protected bool ButtonHeld;
-    
-    private readonly string _name;
-    private bool _enableLogs;
 
     public const uint VolumeUpJoin = 1;
     public const uint VolumeDownJoin = 2;
@@ -25,12 +24,11 @@ public abstract class LevelControls
     public const uint DefaultJoinIncrement = 10;
     protected readonly uint JoinIncrement;
 
-    protected LevelControls(string name, ushort numberOfAudioBlocks, List<SmartObject> smartObjects, uint joinIncrement)
+    protected LevelControls(string name, ushort numberOfAudioBlocks, List<SmartObject> smartObjects, uint joinIncrement) : base(name)
     {
         SmartObjects = smartObjects;
         JoinIncrement = joinIncrement;
         SrlHelper = new SubpageReferenceListHelper(JoinIncrement, JoinIncrement, JoinIncrement);
-        _name = name;
         
 
         SmartObjects.ForEach(smartObject =>
@@ -48,7 +46,7 @@ public abstract class LevelControls
             while (ButtonHeld)
             {
                 action.Invoke();
-                Log("Volume command sent");
+                Debug("Volume command sent");
                 Thread.Sleep(250);
             }
         }).Start();
@@ -70,30 +68,30 @@ public abstract class LevelControls
                 switch (selectionInfo.Join)
                 {
                     case VolumeUpJoin:
-                        Log($"Queueing Volume up for fader index {selectionInfo.Index}");
+                        Debug($"Queueing Volume up for fader index {selectionInfo.Index}");
                         StartVolumeUp(selectionInfo.Index);
                         break;
                     case VolumeDownJoin:
-                        Log($"Queueing Volume down for fader index {selectionInfo.Index}");
+                        Debug($"Queueing Volume down for fader index {selectionInfo.Index}");
                         StartVolumeDown(selectionInfo.Index);
                         break;
                     case MuteJoin:
                         
-                        Log($"Toggling Volume mute for fader index {selectionInfo.Index}");
+                        Debug($"Toggling Volume mute for fader index {selectionInfo.Index}");
                         ToggleAudioMute(selectionInfo.Index);
                         break;
                     default:
-                        Log($"Join {selectionInfo.Join} for index {selectionInfo.Index} is not handled by this module");
+                        Debug($"Join {selectionInfo.Join} for index {selectionInfo.Index} is not handled by this module");
                         break;
                 }
                 return;
             }
             case eSigType.UShort when args.Sig.Number > 10:
-                Log($"Analog sig, Number: {args.Sig.Number}");
+                Debug($"Analog sig, Number: {args.Sig.Number}");
                 SetNewLevel(args.Sig);
                 return;
             default:
-                Log($"Ignoring Sig, Type: {args.Sig.Type.ToString()}, Number: {args.Sig.Number}");
+                Debug($"Ignoring Sig, Type: {args.Sig.Type.ToString()}, Number: {args.Sig.Number}");
                 break;
         }
     }
@@ -109,11 +107,4 @@ public abstract class LevelControls
     protected void HandleVolumeLevel(int volumeLevel, int faderIndex) => SmartObjects.ForEach(x =>
         x.UShortInput[SrlHelper.AnalogJoinFor(faderIndex, VolumeLevelJoin)].ShortValue = (short)volumeLevel);
     
-    public void EnableLogs(bool enable) => _enableLogs = enable;
-
-    protected void Log(string message)
-    {
-        if (_enableLogs)
-            CrestronConsole.PrintLine($"{DateTime.Now} - {_name} - {GetType()} - {message}");
-    }
 }

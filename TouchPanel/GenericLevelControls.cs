@@ -13,7 +13,7 @@ public class GenericLevelControls : LevelControls
 
         for (int i = 0; i < faders.Count; i++)
         {
-            Log($"Setting up fader {i}");
+            Debug($"Setting up fader {i}");
             var faderIndex = i;
             _faders[i].VolumeLevelHandlers += volumeLevel => HandleVolumeLevel(volumeLevel, faderIndex); 
             _faders[i].MuteStateHandlers += muteState => HandleMuteState(muteState, faderIndex);
@@ -29,20 +29,20 @@ public class GenericLevelControls : LevelControls
     {
         void Action() => _faders[index].LevelUp(2);
         VolumeControl(Action);
-        Log($"Queued volume up for fader {_faders[index].Name}");
+        Debug($"Queued volume up for fader {_faders[index].Name}");
     }
 
     protected override void StartVolumeDown(int index)
     {
         void Action() => _faders[index].LevelDown(2);
         VolumeControl(Action);
-        Log($"Queued volume down for fader {_faders[index].Name}");
+        Debug($"Queued volume down for fader {_faders[index].Name}");
     }
 
     protected override void ToggleAudioMute(int index)
     {
         _faders[index].ToggleAudioMute();
-        Log($"Toggled mute for fader {_faders[index].Name}");
+        Debug($"Toggled mute for fader {_faders[index].Name}");
     }
 
     protected override void SetNewLevel(Sig sig)

@@ -1,21 +1,20 @@
-﻿using AVCoders.MediaPlayer;
+﻿using AVCoders.Core;
+using AVCoders.MediaPlayer;
 
 namespace AVCoders.Crestron.TouchPanel;
 
 public record TVControlActionDetails(Action Action, bool Repeat);
 
-public class TvChannelControls
+public class TvChannelControls : LogBase
 {
     private readonly ISetTopBox _stb;
-    private readonly string _name;
     private CancellationTokenSource _pressAndHoldToken = new ();
     
     private readonly Dictionary<uint, TVControlActionDetails> _actions = new ();
 
-    public TvChannelControls(List<SmartObject> smartObjects, ISetTopBox stb, string name)
+    public TvChannelControls(List<SmartObject> smartObjects, ISetTopBox stb, string name) : base(name)
     {
         _stb = stb;
-        _name = name;
         
         smartObjects.ForEach(x => x.SigChange += SetTopBoxButtonPressed);
         
@@ -46,7 +45,7 @@ public class TvChannelControls
             return;
         
         uint button = args.Sig.Number - 4010;
-        Log($"Button {button} Pressed");
+        Debug($"Button {button} Pressed");
         
         if(_actions.TryGetValue(button, out var action))
         {
@@ -61,7 +60,7 @@ public class TvChannelControls
         else
         {
             _stb.SetChannel((int)button);
-            Log($"Channel {button}");
+            Debug($"Channel {button}");
         }
     }
     
@@ -81,11 +80,6 @@ public class TvChannelControls
         {
             Console.WriteLine(exception);
         }
-    }
-
-    private void Log(string message)
-    {
-        CrestronConsole.PrintLine($"{DateTime.Now} - {_name} - TvChannelControls - {message}");
     }
     
 }

@@ -1,6 +1,8 @@
-﻿using Crestron.SimplSharpPro.DeviceSupport;
+﻿using AVCoders.Core;
+using Crestron.SimplSharpPro.DeviceSupport;
 using Renci.SshNet;
 using Directory = Crestron.SimplSharp.CrestronIO.Directory;
+using SshClient = Renci.SshNet.SshClient;
 
 namespace AVCoders.Crestron.TouchPanel;
 
@@ -8,15 +10,13 @@ namespace AVCoders.Crestron.TouchPanel;
 /// Uploads the vtz to the TouchPanel file once per instantiation.
 /// Add the VTZ files to your project in the same way you would add the smart graphics SGD files. 
 /// </summary>
-public class DisplayListLoader
+public class DisplayListLoader : LogBase
 {
     private const string RemoteTpPath = "/display/tp.vtz";
     private readonly TsxCcsUcCodec100EthernetReservedSigs _ethernetExtender;
     private readonly string _username;
     private readonly string _password;
-    private readonly string _name;
     private readonly string _filePath;
-    private bool _enableLogs;
 
     /// <summary>
     /// Creates an instance of the file uploader that's automatically loads the file
@@ -30,15 +30,15 @@ public class DisplayListLoader
     /// <param name="username">Touchpanel's username for SSH and SFTP access</param>
     /// <param name="password">Touchpanel's password for SSH and SFTP access</param>
     public DisplayListLoader(string name, TsxCcsUcCodec100EthernetReservedSigs ethernetExtender, string fileName, string username, string password)
+        : base(name)
     {
-        _name = name;
         _ethernetExtender = ethernetExtender;
         _username = username;
         _password = password;
         _filePath = $"{Directory.GetApplicationDirectory()}/{fileName}";
 
         _ethernetExtender.DeviceExtenderSigChange += EthernetExtenderSigChange;
-        Log("Ready to load");
+        Debug("Ready to load");
     }
 
     private void EthernetExtenderSigChange(DeviceExtender currentDeviceExtender, SigEventArgs args)
@@ -48,30 +48,21 @@ public class DisplayListLoader
         if (args.Sig != _ethernetExtender.IpAddressFeedback)
             return;
         
-        Log($"Uploading - Local path: {_filePath}, TP Path: {RemoteTpPath}, TP IP: {_ethernetExtender.IpAddressFeedback.StringValue}");
+        Debug($"Uploading - Local path: {_filePath}, TP Path: {RemoteTpPath}, TP IP: {_ethernetExtender.IpAddressFeedback.StringValue}");
         var uploadSuccess = Ssh.UploadFile(
             new SftpClient(_ethernetExtender.IpAddressFeedback.StringValue, 22, _username, _password),
-            _filePath, RemoteTpPath, _name);
+            _filePath, RemoteTpPath, Name);
 
         if (!uploadSuccess)
         {
-            Log("DisplayList Upload failure");
+            Debug("DisplayList Upload failure");
             return;
         }
-        Log("Issuing project load");
+        Debug("Issuing project load");
         Ssh.RunCommand(
             new SshClient(_ethernetExtender.IpAddressFeedback.StringValue, 22, _username, _password), 
-            "PROJECTLOAD", _name);
-        Log("Done!");
+            "PROJECTLOAD", Name);
+        Debug("Done!");
         _ethernetExtender.DeviceExtenderSigChange -= EthernetExtenderSigChange;
-    }
-
-
-    public void EnableLogs(bool enable) => _enableLogs = enable;
-
-    private void Log(string message)
-    {
-        if(_enableLogs)
-            CrestronConsole.PrintLine($"{DateTime.Now} - {_name} - DisplayListLoader - {message}");
     }
 }

@@ -1,5 +1,9 @@
 ﻿using AVCoders.Core;
 using AVCoders.Crestron.SmartGraphics;
+using Serilog;
+using Serilog.Core;
+using Serilog.Events;
+using Serilog.Filters;
 
 namespace AVCoders.Crestron.TouchPanel;
 
@@ -9,6 +13,9 @@ public class AvCodersCommsStatus
     private readonly List<List<string>> _logMessages;
     private readonly List<SmartObject> _smartObjects;
     private readonly SubpageReferenceListHelper _srlHelper;
+    private readonly TouchpanelLoggerSink _sink;
+    private readonly string _logKey = Guid.NewGuid().ToString().Substring(0,10);
+    private readonly string _logVlaue = Guid.NewGuid().ToString().Substring(0,10);
 
     public const uint TxIndicator = 1;
     public const uint RxIndicator = 2;
@@ -30,6 +37,13 @@ public class AvCodersCommsStatus
         
         _smartObjects = smartObjects;
         _smartObjects.ForEach(x => x.UShortInput["Set Number of Items"].ShortValue = (short)_communicationClients.Count);
+        _sink = new TouchpanelLoggerSink();
+        _sink.SerilogEventHandlers += HandleCommsClientLogEvent;
+
+        Log.Logger = new LoggerConfiguration()
+            .WriteTo.Sink((ILogEventSink)Log.Logger)
+            .WriteTo.Logger(l => l.Filter.ByIncludingOnly(Matching.WithProperty(_logKey, _logVlaue)).WriteTo.Sink(_sink))
+            .CreateLogger();
 
         _logMessages = new List<List<string>>{};
         
@@ -37,15 +51,24 @@ public class AvCodersCommsStatus
         {
             var deviceIndex = i;
             _communicationClients[deviceIndex].ConnectionStateHandlers += _ => FeedbackForDevice(deviceIndex);
-            _communicationClients[deviceIndex].LogHandlers += (response, level) =>  LogHandlers(response, level, deviceIndex);
+            _communicationClients[deviceIndex].AddLogProperty("AvCodersCommsStatusIndex", deviceIndex.ToString());
+            _communicationClients[deviceIndex].AddLogProperty(_logKey, _logVlaue);
             _logMessages.Add(new List<string>{ "Module started" });
             FeedbackForDevice(deviceIndex);
         }
     }
 
-    private void LogHandlers(string response, EventLevel level, int deviceIndex)
+    private void HandleCommsClientLogEvent(LogEvent logEvent)
     {
-        _logMessages[deviceIndex].Add($"{DateTime.Now} - {level} - {response}");
+        if (!logEvent.Properties.ContainsKey("AvCodersCommsStatusIndex"))
+        {
+            Log.Error("A log event has been handed over without a device index.");
+            return;
+        }
+        
+        int deviceIndex = Convert.ToInt32(logEvent.Properties["AvCodersCommsStatusIndex"]);
+        _logMessages[deviceIndex].Add($"{DateTime.Now} - {logEvent.Level.ToString()} - {logEvent.RenderMessage()}");
+
         while (_logMessages[deviceIndex].Count > 5)
         {
             _logMessages[deviceIndex].RemoveRange(0, 1);

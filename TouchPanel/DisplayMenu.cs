@@ -1,6 +1,8 @@
 ﻿using AVCoders.Core;
 using AVCoders.Crestron.SmartGraphics;
 using AVCoders.Display;
+using Serilog;
+using Serilog.Context;
 
 namespace AVCoders.Crestron.TouchPanel;
 
@@ -14,7 +16,6 @@ public class DisplayMenu
     private readonly List<SmartObject> _smartObjects;
     private readonly SubpageReferenceListHelper _srlHelper;
     private readonly string _name;
-    private bool _enableLogs;
 
     public const uint PowerOnJoin = 1;
     public const uint PowerOffJoin = 2;
@@ -89,7 +90,7 @@ public class DisplayMenu
     private void HandleDisplayPress(GenericBase currentDevice, SmartObjectEventArgs args)
     {
         var selectionInfo = _srlHelper.GetSigInfo(args.Sig);
-        Log($"Display Join, id {args.Sig.Number}. Type: {args.Sig.Type.ToString()} Index {selectionInfo.Index}, Join: {selectionInfo.Join}");
+        Debug($"Display Join, id {args.Sig.Number}. Type: {args.Sig.Type.ToString()} Index {selectionInfo.Index}, Join: {selectionInfo.Join}");
         
         switch (args.Sig.Type)
         {
@@ -98,11 +99,11 @@ public class DisplayMenu
                 {
                     case PowerOnJoin:
                         _displays[selectionInfo.Index].Display.PowerOn();
-                        Log($"Turning on display {selectionInfo.Index}");
+                        Debug($"Turning on display {selectionInfo.Index}");
                         break;
                     case PowerOffJoin:
                         _displays[selectionInfo.Index].Display.PowerOff();
-                        Log($"Turning off display {selectionInfo.Index}");
+                        Debug($"Turning off display {selectionInfo.Index}");
                         break;
                     case MuteJoin:
                         _displays[selectionInfo.Index].Display.ToggleAudioMute();
@@ -111,28 +112,28 @@ public class DisplayMenu
                     {
                         var input = _displays[selectionInfo.Index].Inputs[0].Input;
                         _displays[selectionInfo.Index].Display.SetInput(input);
-                        Log($"Turning setting display {selectionInfo.Index} to {input}");
+                        Debug($"Turning setting display {selectionInfo.Index} to {input}");
                         break;
                     }
                     case Input2Join:
                     {
                         var input = _displays[selectionInfo.Index].Inputs[1].Input;
                         _displays[selectionInfo.Index].Display.SetInput(input);
-                        Log($"Turning setting display {selectionInfo.Index} to {input}");
+                        Debug($"Turning setting display {selectionInfo.Index} to {input}");
                         break;
                     }
                     case Input3Join:
                     {
                         var input = _displays[selectionInfo.Index].Inputs[2].Input;
                         _displays[selectionInfo.Index].Display.SetInput(input);
-                        Log($"Turning setting display {selectionInfo.Index} to {input}");
+                        Debug($"Turning setting display {selectionInfo.Index} to {input}");
                         break;
                     }
                     case Input4Join:
                     {
                         var input = _displays[selectionInfo.Index].Inputs[3].Input;
                         _displays[selectionInfo.Index].Display.SetInput(input);
-                        Log($"Turning setting display {selectionInfo.Index} to {input}");
+                        Debug($"Turning setting display {selectionInfo.Index} to {input}");
                         break;
                     }
                 }
@@ -274,11 +275,12 @@ public class DisplayMenu
         
     }
 
-    public void EnableLogs(bool enable) => _enableLogs = enable;
-
-    private void Log(string message)
+    private void Debug(string message)
     {
-        if(_enableLogs)
-            CrestronConsole.PrintLine($"{DateTime.Now} - {_name} - Display Menu - {message}");
+        using (LogContext.PushProperty("class", GetType()))
+        using (LogContext.PushProperty("instance_name", _name))
+        {
+            Log.Debug(message);
+        }
     }
 }

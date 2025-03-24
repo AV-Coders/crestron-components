@@ -1,6 +1,8 @@
 ﻿using AVCoders.MediaPlayer;
 using Crestron.SimplSharp;
 using Crestron.SimplSharpPro;
+using Serilog;
+using Serilog.Context;
 using Directory = Crestron.SimplSharp.CrestronIO.Directory;
 
 namespace AVCoders.Crestron.MediaPlayer;
@@ -65,9 +67,16 @@ public class SetTopBoxOverCrestronIr : ISetTopBox
 
     private void Pulse(string key)
     {
-        Log($"Pulsing {key}");
+        Debug($"Pulsing {key}");
         _port.PressAndRelease(key, _pulseTimeInMs);
     }
     
-    private void Log(string message) => CrestronConsole.PrintLine($"{DateTime.Now} - {_name} - Mainline - {message}");
+    private void Debug(string message)
+    { 
+        using (LogContext.PushProperty("class", GetType()))
+        using (LogContext.PushProperty("instance_name", _name))
+        {
+            Log.Debug(message);
+        }
+    }
 }

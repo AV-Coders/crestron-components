@@ -1,9 +1,11 @@
+using AVCoders.Core;
 using AVCoders.Crestron.SmartGraphics;
 using Crestron.SimplSharpPro.DeviceSupport;
+using Serilog;
 
 namespace AVCoders.Crestron.TouchPanel;
 
-public class Confirmation
+public class Confirmation : LogBase
 {
     private readonly List<BasicTriListWithSmartObject> _panels;
     private readonly List<SmartObject> _smartObjects;
@@ -12,17 +14,14 @@ public class Confirmation
     private readonly uint _pageJoin;
     private readonly uint[] _relatedPages;
     private readonly uint _cancelJoin;
-    private readonly string _name;
-    private bool _enableLogs;
     private List<KeyValuePair<string, Action?>> _options;
 
     private const uint SelectJoin = 1;
         
 
     public Confirmation(string name, List<BasicTriListWithSmartObject> panels, uint smartObjectId, uint questionJoin,
-        uint pageJoin, uint[] relatedPages, uint cancelJoin)
+        uint pageJoin, uint[] relatedPages, uint cancelJoin) : base(name)
     {
-        _name = name;
         _panels = panels;
         _questionJoin = questionJoin;
         _pageJoin = pageJoin;
@@ -61,7 +60,7 @@ public class Confirmation
         var info = _srlHelper.GetBooleanSigInfo(args.Sig.Number);
         if (info.Join != SelectJoin)
             return;
-        Log($"Option {info.Index} selected");
+        Log.Verbose($"Option {info.Index} selected");
         
         CrestronPanel.Interlock(_panels, 0, _relatedPages);
         Thread.Sleep(100);
@@ -88,13 +87,5 @@ public class Confirmation
         });
         
         CrestronPanel.Interlock(_panels, _pageJoin, _relatedPages);
-    }
-
-    public void EnableLogs(bool enable) => _enableLogs = enable;
-
-    private void Log(string message)
-    {
-        if(_enableLogs)
-            CrestronConsole.PrintLine($"{DateTime.Now} - {_name} - PIN - {message}");
     }
 }

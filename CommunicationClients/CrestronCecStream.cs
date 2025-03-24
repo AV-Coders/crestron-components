@@ -19,7 +19,7 @@ public class CrestronCecStream: SerialClient
 
     public override void Send(byte[] bytes) => _stream.Send.CharacterArrayValue = bytes.Select(b => (char)b).ToArray();
 
-    public override void ConfigurePort(SerialSpec serialSpec) => Log("This port can't be configured", EventLevel.Error);
+    public override void ConfigurePort(SerialSpec serialSpec) => Error("This port can't be configured");
 
     public override void Send(char[] chars) => _stream.Send.CharacterArrayValue = chars;
 }

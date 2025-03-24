@@ -1,8 +1,9 @@
 ﻿using System.Text;
+using AVCoders.Core;
 using Crestron.SimplSharpPro.DeviceSupport;
 
 namespace AVCoders.Crestron.TouchPanel;
-public class Pin
+public class Pin : LogBase
 {
     private readonly List<BasicTriListWithSmartObject> _panels;
     private readonly List<SmartObject> _smartObjects;
@@ -13,8 +14,6 @@ public class Pin
     private Action? _action;
     private string _pin = string.Empty;
     private string _input = string.Empty;
-    private readonly string _name;
-    private bool _enableLogs;
     
     
     public const uint ZeroJoin = 10;
@@ -28,14 +27,13 @@ public class Pin
     public const uint MaskedInputStringJoin = 12;
 
     public Pin(string name, List<BasicTriListWithSmartObject> panels, uint smartObjectId, 
-        uint pageJoin, uint[] relatedPages, uint cancelJoin)
+        uint pageJoin, uint[] relatedPages, uint cancelJoin) : base(name)
     {
         _smartObjectId = smartObjectId;
         _pageJoin = pageJoin;
         _relatedPages = relatedPages;
         _cancelJoin = cancelJoin;
         _panels = panels;
-        _name = name;
         _smartObjects = new List<SmartObject>();
         _panels.ForEach(panel =>
         {
@@ -64,7 +62,7 @@ public class Pin
             return;
         if (!args.Sig.BoolValue)
             return;
-        Log($"Button {args.Sig.Number} pressed");
+        Debug($"Button {args.Sig.Number} pressed");
         uint buttonNumber = args.Sig.Number - 4010;
         switch (buttonNumber)
         {
@@ -118,12 +116,12 @@ public class Pin
     {
         if (String.IsNullOrEmpty(expectedPin))
         {
-            Log("Authentication not required");
+            Debug("Authentication not required");
             successAction.Invoke();
             return;
         }
         ClearText();
-        Log("Authenticating...");
+        Debug("Authenticating...");
         CrestronPanel.Interlock(_panels, _pageJoin, _relatedPages);
         _action = successAction;
         _pin = expectedPin;
@@ -137,14 +135,6 @@ public class Pin
             x.StringInput[MaskedInputStringJoin + 10].StringValue = string.Empty;
         });
         _input = string.Empty;
-        Log("Cleared text");
-    }
-
-    public void EnableLogs(bool enable) => _enableLogs = enable;
-
-    private void Log(string message)
-    {
-        if(_enableLogs)
-            CrestronConsole.PrintLine($"{DateTime.Now} - {_name} - PIN - {message}");
+        Debug("Cleared text");
     }
 }

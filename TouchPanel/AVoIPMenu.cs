@@ -4,14 +4,12 @@ using AVCoders.Matrix;
 
 namespace AVCoders.Crestron.TouchPanel;
 
-public class AVoIPMenu
+public class AVoIPMenu : LogBase
 {
     public static readonly uint JoinIncrement = 30;
     private readonly List<AVoIPEndpoint> _devices;
     private readonly List<SmartObject> _smartObjects;
     private readonly SubpageReferenceListHelper _srlHelper;
-    private readonly string _name;
-    private bool _enableLogs;
 
     private const uint OnlineJoin = 1;
 
@@ -31,12 +29,11 @@ public class AVoIPMenu
     public const uint CommsStatusLabelJoin = 12;
 
 
-    public AVoIPMenu(List<AVoIPEndpoint> devices, List<SmartObject> smartObjects, string name)
+    public AVoIPMenu(List<AVoIPEndpoint> devices, List<SmartObject> smartObjects, string name) : base(name)
     {
         _devices = devices;
         _smartObjects = smartObjects;
         _srlHelper = new SubpageReferenceListHelper(JoinIncrement, JoinIncrement, JoinIncrement);
-        _name = name;
         _smartObjects.ForEach(x =>
         {
             x.UShortInput["Set Number of Items"].UShortValue = (ushort)_devices.Count;
@@ -181,13 +178,5 @@ public class AVoIPMenu
             smartObject.UShortInput[_srlHelper.AnalogJoinFor(deviceIndex, DriverStatusBlueJoin)].UShortValue = blueValue;
             smartObject.StringInput[_srlHelper.SerialJoinFor(deviceIndex, DriverStatusLabelJoin)].StringValue = driverText;
         });
-    }
-
-    public void EnableLogs(bool enable) => _enableLogs = enable;
-
-    private void Log(string message)
-    {
-        if(_enableLogs)
-            CrestronConsole.PrintLine($"{DateTime.Now} - {_name} - AVoIP Menu - {message}");
     }
 }

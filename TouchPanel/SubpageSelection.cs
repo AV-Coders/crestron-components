@@ -1,6 +1,8 @@
 ﻿using AVCoders.Core;
 using AVCoders.Crestron.SmartGraphics;
 using Crestron.SimplSharpPro.DeviceSupport;
+using Serilog;
+using Serilog.Context;
 
 namespace AVCoders.Crestron.TouchPanel;
 
@@ -11,9 +13,8 @@ public enum SubpageSelectionType
 }
 public record SubpageButtonConfig(ushort ButtonMode, uint PopupPageJoin, string Title, SubpageSelection? RelatedMenu = null, VisibilityChanged? VisibilityEvent = null, string? Pin = null);
 
-public class SubpageSelection : IDevice
+public class SubpageSelection : DeviceBase
 {
-    private readonly string _name;
     private readonly List<BasicTriListWithSmartObject> _panels;
     private readonly List<SmartObject> _smartObjects;
     private readonly List<SubpageButtonConfig> _buttonConfig;
@@ -22,7 +23,6 @@ public class SubpageSelection : IDevice
     private readonly Pin? _pin;
     private readonly uint _closeJoin;
     private int _activePage;
-    private bool _enableLogs;
     private readonly SubpageReferenceListHelper _srlHelper;
     private readonly uint[] _allSelectJoins;
 
@@ -39,11 +39,10 @@ public class SubpageSelection : IDevice
     private bool _rememberSelection;
 
     public SubpageSelection(string name, List<BasicTriListWithSmartObject> panels, SubpageSelectionType subpageSelectionType,
-        List<SubpageButtonConfig> buttonConfig, uint[] pages, uint smartObjectId, uint closeJoin, Pin? pin = null)
+        List<SubpageButtonConfig> buttonConfig, uint[] pages, uint smartObjectId, uint closeJoin, Pin? pin = null) : base(name)
     {
         _smartObjects = new List<SmartObject>();
         _srlHelper = new SubpageReferenceListHelper(JoinIncrement, JoinIncrement, JoinIncrement);
-        _name = name;
         _panels = panels;
         _panels.ForEach(panel =>
         {
@@ -85,14 +84,14 @@ public class SubpageSelection : IDevice
             return;
         if (args.Sig.Number < 4000)
             return;
-        Log($"Modal button {args.Sig.Number} pressed");
+        Debug($"Modal button {args.Sig.Number} pressed");
         HandleSubpages(args.Sig.Number);
     }
 
 
     private void ConfigurePopupButtons()
     {
-        Log("Configuring modal buttons");
+        Debug("Configuring modal buttons");
         _smartObjects.ForEach(x => x.UShortInput["Set Number of Items"].ShortValue = (short)_buttonConfig.Count);
 
         for (int i = 0; i < _buttonConfig.Count; i++)
@@ -128,7 +127,7 @@ public class SubpageSelection : IDevice
         HandleMenuItemVisibility(_buttonConfig[selection], Visibility.Shown);
         CrestronPanel.Interlock(_panels, _buttonConfig[selection].PopupPageJoin, _pages);
         CrestronPanel.Interlock(_smartObjects, _srlHelper.BooleanJoinFor(selection, SelectJoin), _allSelectJoins);
-        Log($"Showing modal {selection}");
+        Debug($"Showing modal {selection}");
     }
 
     public void ClearSubpages()
@@ -137,7 +136,7 @@ public class SubpageSelection : IDevice
         CrestronPanel.Interlock(_panels, 0, _pages);
         CrestronPanel.Interlock(_smartObjects, 0, _allSelectJoins);
         _buttonConfig.ForEach( button => HandleMenuItemVisibility(button, Visibility.Hidden));
-        Log("Clearing Subpages");
+        Debug("Clearing Subpages");
     }
 
     private void HandleMenuItemVisibility(SubpageButtonConfig button, Visibility visibility)
@@ -159,14 +158,6 @@ public class SubpageSelection : IDevice
 
     private int GetArrayIndexFromButton(uint sigNumber) => (int)((sigNumber - 4001) / 10) - 1;
 
-    public void EnableLogs(bool enable) => _enableLogs = enable;
-
-    private void Log(string message)
-    {
-        if (_enableLogs)
-            CrestronConsole.PrintLine($"{DateTime.Now} - {_name} - SubPageSelection - {message}");
-    }
-
     public void SetDefaultPage(int? page) => _defaultPage = page;
     
     public void RememberSelection(bool remember)
@@ -174,7 +165,7 @@ public class SubpageSelection : IDevice
         _rememberSelection = remember;
     }
 
-    public void PowerOn()
+    public override void PowerOn()
     {
         if(_defaultPage != null)
             ShowPopupPage((int)_defaultPage);
@@ -185,7 +176,7 @@ public class SubpageSelection : IDevice
         ShowPopupPage(_activePage);
     }
 
-    public void PowerOff() => ClearSubpages();
+    public override void PowerOff() => ClearSubpages();
     public PowerState GetCurrentPowerState() => PowerState.On;
 
     public CommunicationState GetCurrentCommunicationState() => CommunicationState.Okay;

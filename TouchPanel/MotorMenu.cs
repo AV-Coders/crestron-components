@@ -1,3 +1,4 @@
+using AVCoders.Core;
 using AVCoders.Crestron.SmartGraphics;
 
 namespace AVCoders.Crestron.TouchPanel;
@@ -11,11 +12,10 @@ public enum MotorType
 public record MotorInfo(Motor.Motor Motor, MotorType Type);
 
 
-public class MotorMenu
+public class MotorMenu :LogBase
 {
     private readonly List<MotorInfo> _motors;
     private readonly SubpageReferenceListHelper _srlHelper;
-    private readonly string _name;
 
     private const uint RaiseJoin = 1;
     private const uint LowerJoin = 2;
@@ -23,9 +23,8 @@ public class MotorMenu
 
     private const uint NameJoin = 4;
 
-    public MotorMenu(string name, List<MotorInfo> motors, List<SmartObject> smartObjects)
+    public MotorMenu(string name, List<MotorInfo> motors, List<SmartObject> smartObjects) : base(name)
     {
-        _name = name;
         _motors = motors;
         _srlHelper = new SubpageReferenceListHelper(10, 10, 10);
         
@@ -66,24 +65,22 @@ public class MotorMenu
             return;
         if (args.Sig.BoolValue == false)
             return;
-        Log($"Button {args.Sig.Number} pressed");
+        Debug($"Button {args.Sig.Number} pressed");
         var joinInfo = _srlHelper.GetSigInfo(args.Sig);
         switch (joinInfo.Join)
         {
             case RaiseJoin:
                 _motors[joinInfo.Index].Motor.Raise();
-                Log($"Raising");
+                Debug($"Raising");
                 break;
             case LowerJoin:
                 _motors[joinInfo.Index].Motor.Lower();
-                Log($"Lowering");
+                Debug($"Lowering");
                 break;
             case StopJoin:
                 _motors[joinInfo.Index].Motor.Stop();
-                Log($"Stopping");
+                Debug($"Stopping");
                 break;
         }
     }
-
-    private void Log(string message) => CrestronConsole.PrintLine($"{DateTime.Now} - {_name} - Motor Menu - {message}");
 }

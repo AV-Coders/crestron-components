@@ -20,7 +20,7 @@ public class QsysSourceSelect : LevelControls
 
         for (int i = 0; i < audioBlocks.Count; i++)
         {
-            Log($"Setting up source select {i}");
+            Debug($"Setting up source select {i}");
             var faderIndex = i;
             if (_audioBlocks[faderIndex].SelectInstanceTag == string.Empty)
                 throw new InvalidOperationException($"Audio block at index {faderIndex} does not have a select instance tag");
@@ -64,10 +64,10 @@ public class QsysSourceSelect : LevelControls
         if (sourceIndex > _sources.Count)
             return;
         
-        Log($"Source button pressed, id {args.Sig.Number}.  Index {sourceIndex}, Join: {joinInfo.Join}");
+        Debug($"Source button pressed, id {args.Sig.Number}.  Index {sourceIndex}, Join: {joinInfo.Join}");
         string instanceTag = _audioBlocks[joinInfo.Index].SelectInstanceTag;
         string inputSelection = _sources[sourceIndex].InputNumber.ToString();
-        Log($"Setting source for {instanceTag} to {inputSelection}");
+        Debug($"Setting source for {instanceTag} to {inputSelection}");
         _dsp.SetValue(instanceTag, inputSelection);
     }
 

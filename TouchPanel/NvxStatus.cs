@@ -1,5 +1,6 @@
 ﻿using AVCoders.Crestron.SmartGraphics;
 using Crestron.SimplSharpPro.DM.Streaming;
+using Serilog;
 
 namespace AVCoders.Crestron.TouchPanel;
 
@@ -42,7 +43,7 @@ public class NvxStatus
 
     private void ConfigureSmartObject()
     {
-        Log("Configuring modal buttons");
+        Log.Debug("Configuring modal buttons");
         _smartObject.UShortInput["Set Number of Items"].ShortValue = (short)_nvxDevices.Count;
 
         for (int i = 0; i < _nvxDevices.Count; i++)
@@ -57,10 +58,5 @@ public class NvxStatus
         _smartObject.StringInput[_srlHelper.SerialJoinFor(deviceIndex, IpIdJoin)].StringValue = $"IP ID: {_nvxDevices[deviceIndex].ID:x2}";
         _smartObject.BooleanInput[_srlHelper.BooleanJoinFor(deviceIndex, OnlineJoin)].BoolValue = _nvxDevices[deviceIndex].IsOnline;
         _smartObject.StringInput[_srlHelper.SerialJoinFor(deviceIndex, ModeJoin)].StringValue = $"Mode: {_nvxDevices[deviceIndex].Control.DeviceMode.ToString()}";
-    }
-
-    private void Log(string message)
-    {
-        CrestronConsole.PrintLine($"{_name} - NVX Status - {message}");
     }
 }
