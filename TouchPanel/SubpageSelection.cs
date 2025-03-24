@@ -177,7 +177,4 @@ public class SubpageSelection : DeviceBase
     }
 
     public override void PowerOff() => ClearSubpages();
-    public PowerState GetCurrentPowerState() => PowerState.On;
-
-    public CommunicationState GetCurrentCommunicationState() => CommunicationState.Okay;
 }
