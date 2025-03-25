@@ -1,4 +1,5 @@
 ﻿using AVCoders.Core;
+using Serilog.Context;
 
 namespace AVCoders.Crestron.TouchPanel;
 
@@ -9,19 +10,23 @@ public class GenericLevelControls : LevelControls
     public GenericLevelControls(string name, List<VolumeControl> faders, List<SmartObject> smartObjects, uint joinIncrement = DefaultJoinIncrement) :
         base(name, (ushort)faders.Count, smartObjects, joinIncrement)
     {
-        _faders = faders;
-
-        for (int i = 0; i < faders.Count; i++)
+        using (LogContext.PushProperty(MethodProperty, "Constructor"))
         {
-            Debug($"Setting up fader {i}");
-            var faderIndex = i;
-            _faders[i].VolumeLevelHandlers += volumeLevel => HandleVolumeLevel(volumeLevel, faderIndex); 
-            _faders[i].MuteStateHandlers += muteState => HandleMuteState(muteState, faderIndex);
-            SmartObjects.ForEach(smartObject =>
+            _faders = faders;
+
+            for (int i = 0; i < faders.Count; i++)
             {
-                smartObject.StringInput[SrlHelper.SerialJoinFor(i, NameJoin)].StringValue = faders[i].Name;
-                smartObject.UShortInput[SrlHelper.AnalogJoinFor(i, FaderTypeJoin)].UShortValue = (ushort) faders[i].Type;
-            });
+                Debug($"Setting up fader {i}");
+                var faderIndex = i;
+                _faders[i].VolumeLevelHandlers += volumeLevel => HandleVolumeLevel(volumeLevel, faderIndex);
+                _faders[i].MuteStateHandlers += muteState => HandleMuteState(muteState, faderIndex);
+                SmartObjects.ForEach(smartObject =>
+                {
+                    smartObject.StringInput[SrlHelper.SerialJoinFor(i, NameJoin)].StringValue = faders[i].Name;
+                    smartObject.UShortInput[SrlHelper.AnalogJoinFor(i, FaderTypeJoin)].UShortValue =
+                        (ushort)faders[i].Type;
+                });
+            }
         }
     }
 
