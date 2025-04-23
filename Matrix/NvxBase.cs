@@ -33,7 +33,8 @@ public abstract class NvxBase : AVoIPEndpoint
         Device.PreviewImage.DmNvxPreviewImagePropertyChange += HandlePreviewImageChange;
         Device.OnlineStatusChange += HandleDeviceOnlineStatus;
 
-        PollWorker = new ThreadWorker(Poll, TimeSpan.FromSeconds(10));
+        PollWorker = new ThreadWorker(Poll, TimeSpan.FromSeconds(10), true);
+        PollWorker.Restart();
         
         HandleDeviceOnlineStatus(Device, new OnlineOfflineEventArgs(Device.IsOnline));
     }
