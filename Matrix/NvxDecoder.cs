@@ -61,11 +61,34 @@ public class NvxDecoder : NvxBase
         SetInput(source.Control.ServerUrl.StringValue);
     }
 
-    private void UpdateResolution() => OutputResolution = 
-            $"{Device.HdmiOut.VideoAttributes.HorizontalResolutionFeedback.UShortValue}x{Device.HdmiOut.VideoAttributes.VerticalResolutionFeedback.UShortValue}:{Device.HdmiOut.VideoAttributes.FramesPerSecondFeedback.UShortValue}p";
+    private void UpdateResolution()
+    {
+        try
+        {
+            OutputResolution =
+                $"{Device.HdmiOut.VideoAttributes.HorizontalResolutionFeedback.UShortValue}x{Device.HdmiOut.VideoAttributes.VerticalResolutionFeedback.UShortValue}:{Device.HdmiOut.VideoAttributes.FramesPerSecondFeedback.UShortValue}p";
+        }
+        catch (Exception e)
+        {
+            OutputResolution = "Exception";
+            LogException(e);
+        }
+    }
 
-    private void UpdateSyncState() => OutputConnectionStatus = 
-            Device.HdmiOut.SyncDetectedFeedback.BoolValue ? ConnectionStatus.Connected : ConnectionStatus.Disconnected;
+    private void UpdateSyncState()
+    {
+        try
+        {
+            OutputConnectionStatus =
+                Device.HdmiOut.SyncDetectedFeedback.BoolValue 
+                    ? ConnectionStatus.Connected 
+                    : ConnectionStatus.Disconnected;
+        }
+        catch (Exception e)
+        {
+            LogException(e);
+        }
+    }
 
     protected override Task Poll(CancellationToken token)
     {

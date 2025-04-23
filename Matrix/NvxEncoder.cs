@@ -49,11 +49,34 @@ public class NvxEncoder : NvxBase
         }
     }
 
-    private void UpdateResolution() => InputResolution = 
-            $"{Device.HdmiIn[1]!.VideoAttributes.HorizontalResolutionFeedback.UShortValue}x{Device.HdmiIn[1]!.VideoAttributes.VerticalResolutionFeedback.UShortValue}:{Device.HdmiIn[1]!.VideoAttributes.FramesPerSecondFeedback.UShortValue}p";
+    private void UpdateResolution()
+    {
+        try
+        {
+            InputResolution =
+                $"{Device.HdmiIn[1]!.VideoAttributes.HorizontalResolutionFeedback.UShortValue}x{Device.HdmiIn[1]!.VideoAttributes.VerticalResolutionFeedback.UShortValue}:{Device.HdmiIn[1]!.VideoAttributes.FramesPerSecondFeedback.UShortValue}p";
+        }
+        catch (Exception e)
+        {
+            OutputResolution = "Exception";
+            LogException(e);
+        }
+    }
 
-    private void UpdateSyncState() => InputConnectionStatus = 
-            Device.HdmiIn[1]!.SyncDetectedFeedback.BoolValue ? ConnectionStatus.Connected : ConnectionStatus.Disconnected;
+    private void UpdateSyncState()
+    {
+        try
+        {
+        InputConnectionStatus =
+            Device.HdmiIn[1]!.SyncDetectedFeedback.BoolValue
+                ? ConnectionStatus.Connected
+                : ConnectionStatus.Disconnected;
+    }
+    catch (Exception e)
+    {
+        LogException(e);
+    }
+    }
 
     protected override Task Poll(CancellationToken token)
     {
