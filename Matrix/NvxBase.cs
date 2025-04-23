@@ -24,7 +24,7 @@ public class NvxCommunicationEmulator : CommunicationClient
 public abstract class NvxBase : AVoIPEndpoint
 {
     protected readonly DmNvxBaseClass Device;
-    // protected readonly ThreadWorker PollWorker;
+    protected readonly ThreadWorker PollWorker;
 
     protected NvxBase(string name, DmNvxBaseClass device, AVoIPDeviceType deviceType) : 
         base(name, deviceType, new NvxCommunicationEmulator(GetCommunicationClientName(deviceType, name)))
@@ -32,10 +32,13 @@ public abstract class NvxBase : AVoIPEndpoint
         Device = device;
         Device.PreviewImage.DmNvxPreviewImagePropertyChange += HandlePreviewImageChange;
         Device.OnlineStatusChange += HandleDeviceOnlineStatus;
-        
+
+        PollWorker = new ThreadWorker(Poll, TimeSpan.FromSeconds(10));
         
         HandleDeviceOnlineStatus(Device, new OnlineOfflineEventArgs(Device.IsOnline));
     }
+
+    protected abstract Task Poll(CancellationToken token);
 
     private void HandlePreviewImageChange(object sender, GenericEventArgs args)
     {

@@ -12,6 +12,8 @@ public class NvxEncoder : NvxBase
 {
     public NvxEncoder(string name, DmNvxE3x device) : base(name, device, AVoIPDeviceType.Encoder)
     {
+        if(device.Control.DeviceModeFeedback != eDeviceMode.Transmitter)
+            throw new InvalidOperationException($"The device at {Device.ID:x2} is not an Encoder");
         device.HdmiIn[1]!.StreamChange += HandleStreamChanges;
         device.BaseEvent += HandleBaseEvent;
         
@@ -52,4 +54,10 @@ public class NvxEncoder : NvxBase
 
     private void UpdateSyncState() => InputConnectionStatus = 
             Device.HdmiIn[1]!.SyncDetectedFeedback.BoolValue ? ConnectionStatus.Connected : ConnectionStatus.Disconnected;
+
+    protected override Task Poll(CancellationToken token)
+    {
+        StreamAddress = Device.Control.ServerUrlFeedback.StringValue;
+        return Task.CompletedTask;
+    }
 }

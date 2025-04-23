@@ -10,10 +10,9 @@ public class NvxDecoder : NvxBase
 {
     public NvxDecoder(string name, DmNvxBaseClass device) : base(name, device, AVoIPDeviceType.Decoder)
     {
-        device.HdmiOut.StreamChange += HandleStreamChanges;
         if(device.Control.DeviceModeFeedback != eDeviceMode.Receiver)
             throw new InvalidOperationException($"The device at {Device.ID:x2} is not a Decoder");
-        
+        device.HdmiOut.StreamChange += HandleStreamChanges;
         UpdateSyncState();
         UpdateResolution();
     }
@@ -44,6 +43,7 @@ public class NvxDecoder : NvxBase
     {
         if(source.Control.DeviceModeFeedback == eDeviceMode.Receiver)
             throw new InvalidOperationException($"You can't route a receiver to a receiver.  Transmitter: {source.ID:x2}, Receiver: {Device.ID:x2}");
+        SetInput(source.Control.ServerUrl.StringValue);
     }
 
     private void UpdateResolution() => OutputResolution = 
@@ -51,4 +51,10 @@ public class NvxDecoder : NvxBase
 
     private void UpdateSyncState() => OutputConnectionStatus = 
             Device.HdmiOut.SyncDetectedFeedback.BoolValue ? ConnectionStatus.Connected : ConnectionStatus.Disconnected;
+
+    protected override Task Poll(CancellationToken token)
+    {
+        StreamAddress = Device.Control.ServerUrlFeedback.StringValue;
+        return Task.CompletedTask;
+    }
 }
