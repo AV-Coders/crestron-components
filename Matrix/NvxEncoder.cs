@@ -12,6 +12,8 @@ public class NvxEncoder : NvxBase
 {
     public NvxEncoder(string name, DmNvxE3x device) : base(name, device, AVoIPDeviceType.Encoder)
     {
+        if(device.Control.DeviceModeFeedback != eDeviceMode.Transmitter)
+            Log.Fatal($"The device at {Device.ID:x2} is not an Encoder");
         device.HdmiIn[1]!.StreamChange += HandleStreamChanges;
         device.BaseEvent += HandleBaseEvent;
         
@@ -25,7 +27,7 @@ public class NvxEncoder : NvxBase
         {
             case DMInputEventIds.DeviceModeFeedbackEventId:
                 if(Device.Control.DeviceModeFeedback != eDeviceMode.Transmitter)
-                    Log.Fatal($"The device at {Device.ID:x2} is not a Transmitter");
+                    Log.Fatal($"The device at {Device.ID:x2} is not an Encoder");
                 break;
         }
     }

@@ -1,7 +1,9 @@
 using AVCoders.Matrix;
+using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DeviceSupport;
 using Crestron.SimplSharpPro.DM;
 using Crestron.SimplSharpPro.DM.Streaming;
+using Serilog;
 using Stream = Crestron.SimplSharpPro.DeviceSupport.Stream;
 
 namespace AvCoders.Crestron.Matrix;
@@ -11,8 +13,10 @@ public class NvxDecoder : NvxBase
     public NvxDecoder(string name, DmNvxBaseClass device) : base(name, device, AVoIPDeviceType.Decoder)
     {
         if(device.Control.DeviceModeFeedback != eDeviceMode.Receiver)
-            throw new InvalidOperationException($"The device at {Device.ID:x2} is not a Decoder");
+            Log.Fatal($"The device at {Device.ID:x2} is not a Decoder");
         device.HdmiOut.StreamChange += HandleStreamChanges;
+        device.BaseEvent += HandleBaseEvent;
+        
         UpdateSyncState();
         UpdateResolution();
     }
@@ -34,6 +38,17 @@ public class NvxDecoder : NvxBase
         }
     }
 
+    private void HandleBaseEvent(GenericBase device, BaseEventArgs args)
+    {
+        switch (args.EventId)
+        {
+            case DMInputEventIds.DeviceModeFeedbackEventId:
+                if(Device.Control.DeviceModeFeedback != eDeviceMode.Receiver)
+                    Log.Fatal($"The device at {Device.ID:x2} is not a Decoder");
+                break;
+        }
+    }
+
     public void SetInput(string serverUrl)
     {
         Device.Control.ServerUrl.StringValue = serverUrl;
@@ -42,7 +57,7 @@ public class NvxDecoder : NvxBase
     public void SetInput(DmNvxBaseClass source)
     {
         if(source.Control.DeviceModeFeedback == eDeviceMode.Receiver)
-            throw new InvalidOperationException($"You can't route a receiver to a receiver.  Transmitter: {source.ID:x2}, Receiver: {Device.ID:x2}");
+            throw new InvalidOperationException($"You can't route a decoder to a decoder.  Encoder: {source.ID:x2}, Decoder: {Device.ID:x2}");
         SetInput(source.Control.ServerUrl.StringValue);
     }
 
