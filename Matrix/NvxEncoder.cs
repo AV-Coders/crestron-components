@@ -8,15 +8,15 @@ using Stream = Crestron.SimplSharpPro.DeviceSupport.Stream;
 
 namespace AvCoders.Crestron.Matrix;
 
-public class NvxEncoder : NvxBase
+public abstract class NvxEncoder : NvxBase
 {
-    public NvxEncoder(string name, DmNvxE3x device) : base(name, device, AVoIPDeviceType.Encoder)
+    public NvxEncoder(string name, DmNvxBaseClass device) : base(name, device, AVoIPDeviceType.Encoder)
     {
-        if(device.Control.DeviceModeFeedback != eDeviceMode.Transmitter)
+        if (device.Control.DeviceModeFeedback != eDeviceMode.Transmitter)
             Log.Fatal($"The device at {Device.ID:x2} is not an Encoder");
         device.HdmiIn[1]!.StreamChange += HandleStreamChanges;
         device.BaseEvent += HandleBaseEvent;
-        
+
         UpdateSyncState();
         UpdateResolution();
     }
@@ -26,7 +26,7 @@ public class NvxEncoder : NvxBase
         switch (args.EventId)
         {
             case DMInputEventIds.DeviceModeFeedbackEventId:
-                if(Device.Control.DeviceModeFeedback != eDeviceMode.Transmitter)
+                if (Device.Control.DeviceModeFeedback != eDeviceMode.Transmitter)
                     Log.Fatal($"The device at {Device.ID:x2} is not an Encoder");
                 break;
         }
@@ -67,15 +67,15 @@ public class NvxEncoder : NvxBase
     {
         try
         {
-        InputConnectionStatus =
-            Device.HdmiIn[1]!.SyncDetectedFeedback.BoolValue
-                ? ConnectionStatus.Connected
-                : ConnectionStatus.Disconnected;
-    }
-    catch (Exception e)
-    {
-        LogException(e);
-    }
+            InputConnectionStatus =
+                Device.HdmiIn[1]!.SyncDetectedFeedback.BoolValue
+                    ? ConnectionStatus.Connected
+                    : ConnectionStatus.Disconnected;
+        }
+        catch (Exception e)
+        {
+            LogException(e);
+        }
     }
 
     protected override Task Poll(CancellationToken token)
