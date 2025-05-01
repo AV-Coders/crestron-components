@@ -26,6 +26,7 @@ public class GenericLevelControls : LevelControls
                     smartObject.UShortInput[SrlHelper.AnalogJoinFor(i, FaderTypeJoin)].UShortValue =
                         (ushort)faders[i].Type;
                 });
+                HandleVolumeLevel(_faders[i].Volume, i);
             }
         }
     }
