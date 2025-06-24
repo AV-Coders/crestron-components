@@ -7,15 +7,15 @@
         <IsTestProject>true</IsTestProject>
         <AssemblyName>AVCoders.Crestron.SmartGraphics.Tests</AssemblyName>
         <RootNamespace>AVCoders.Crestron.SmartGraphics.Tests</RootNamespace>
-        <TargetFrameworks>net6.0;net8.0</TargetFrameworks>
         <LangVersion>default</LangVersion>
+        <TargetFramework>net8.0</TargetFramework>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Crestron.SimplSharp.SDK.Program" Version="2.21.110" />
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
+        <PackageReference Include="Crestron.SimplSharp.SDK.Program" Version="2.21.121" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
         <PackageReference Include="xunit" Version="2.9.3" />
-        <PackageReference Include="xunit.runner.visualstudio" Version="3.0.2">
+        <PackageReference Include="xunit.runner.visualstudio" Version="3.1.1">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>

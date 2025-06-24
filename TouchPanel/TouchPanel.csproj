@@ -10,16 +10,16 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="AVCoders.Camera" Version="2025.6.276" />
-      <PackageReference Include="avcoders.core" Version="2025.6.276" />
-      <PackageReference Include="avcoders.display" Version="2025.6.276" />
-      <PackageReference Include="AVCoders.Dsp" Version="2025.6.276" />
-      <PackageReference Include="AVCoders.Matrix" Version="2025.6.276" />
-      <PackageReference Include="AVCoders.MediaPlayer" Version="2025.6.276" />
-      <PackageReference Include="AVCoders.Motor" Version="2025.6.276" />
-      <PackageReference Include="avcoders.power" Version="2025.6.276" />
-      <PackageReference Include="Crestron.SimplSharp.SDK.Program" Version="2.21.110" />
-      <PackageReference Include="Serilog" Version="4.2.0" />
+      <PackageReference Include="AVCoders.Camera" Version="2025.6.284" />
+      <PackageReference Include="avcoders.core" Version="2025.6.284" />
+      <PackageReference Include="avcoders.display" Version="2025.6.284" />
+      <PackageReference Include="AVCoders.Dsp" Version="2025.6.284" />
+      <PackageReference Include="AVCoders.Matrix" Version="2025.6.284" />
+      <PackageReference Include="AVCoders.MediaPlayer" Version="2025.6.284" />
+      <PackageReference Include="AVCoders.Motor" Version="2025.6.284" />
+      <PackageReference Include="avcoders.power" Version="2025.6.284" />
+      <PackageReference Include="Crestron.SimplSharp.SDK.Program" Version="2.21.121" />
+      <PackageReference Include="Serilog" Version="4.3.0" />
       <PackageReference Include="SSH.NET" Version="2025.0.0" />
     </ItemGroup>
 
