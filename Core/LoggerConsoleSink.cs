@@ -33,18 +33,39 @@ public abstract class SinkBase : ILogEventSink
         }
         
         sb.Append(logEvent.RenderMessage());
-        DoEmit(sb.ToString());
+        DoEmit(sb.ToString(), logEvent.Level);
     }
 
-    protected abstract void DoEmit(string message);
+    protected abstract void DoEmit(string message, LogEventLevel logEventLevel);
 }
 
 public class CrestronConsoleSink : SinkBase
 {
-    protected override void DoEmit(string message) => CrestronConsole.PrintLine(message);
+    protected override void DoEmit(string message, LogEventLevel logEventLevel) => CrestronConsole.PrintLine(message);
 }
 
 public class CrestronErrorLogSink : SinkBase
 {
-    protected override void DoEmit(string message) => ErrorLog.Error(message);
+    protected override void DoEmit(string message, LogEventLevel logEventLevel)
+    {
+        switch (logEventLevel)
+        {
+            case LogEventLevel.Error:
+                ErrorLog.Error(message);
+                break;
+            case LogEventLevel.Fatal:
+                ErrorLog.Error(message);
+                break;
+            case LogEventLevel.Warning:
+                ErrorLog.Warn(message);
+                break;
+            case LogEventLevel.Information:
+                ErrorLog.Info(message);
+                break;
+            default:
+                ErrorLog.Notice(message);
+                break;
+        }
+        
+    }
 }
