@@ -13,7 +13,7 @@ public abstract class SinkBase : ILogEventSink
         StringBuilder sb = new StringBuilder("[");
         sb.Append(DateTime.Now);
         sb.Append(" | ");
-        if (logEvent.Properties.TryGetValue("ProgramName", out var property))
+        if (logEvent.Properties.TryGetValue("service_name", out var property))
         {
             sb.Append(property);
             sb.Append(" | ");
