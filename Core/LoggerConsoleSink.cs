@@ -13,6 +13,11 @@ public abstract class SinkBase : ILogEventSink
         StringBuilder sb = new StringBuilder("[");
         sb.Append(DateTime.Now);
         sb.Append(" | ");
+        if (logEvent.Properties.TryGetValue("ProgramName", out var property))
+        {
+            sb.Append(property);
+            sb.Append(" | ");
+        }
         sb.Append(logEvent.Level.ToString());
         sb.Append("] ");
         if (logEvent.Properties.TryGetValue("Class", out var c))
@@ -39,12 +44,12 @@ public abstract class SinkBase : ILogEventSink
     protected abstract void DoEmit(string message, LogEventLevel logEventLevel);
 }
 
-public class CrestronConsoleSink : SinkBase
+public class CrestronConsoleSink() : SinkBase
 {
     protected override void DoEmit(string message, LogEventLevel logEventLevel) => CrestronConsole.PrintLine(message);
 }
 
-public class CrestronErrorLogSink : SinkBase
+public class CrestronErrorLogSink() : SinkBase
 {
     protected override void DoEmit(string message, LogEventLevel logEventLevel)
     {
