@@ -26,7 +26,7 @@ public abstract class NvxBase : AVoIPEndpoint
     protected readonly DmNvxBaseClass Device;
     protected readonly ThreadWorker PollWorker;
 
-    protected NvxBase(string name, DmNvxBaseClass device, AVoIPDeviceType deviceType) : 
+    protected NvxBase(string name, DmNvxBaseClass device, AVEndpointType deviceType) : 
         base(name, deviceType, new NvxCommunicationEmulator(GetCommunicationClientName(deviceType, name)))
     {
         Device = device;
@@ -75,5 +75,5 @@ public abstract class NvxBase : AVoIPEndpoint
         ((NvxCommunicationEmulator) CommunicationClient).SetConnectionState(args.DeviceOnLine ? ConnectionState.Connected : ConnectionState.Disconnected);
     }
 
-    private static string GetCommunicationClientName(AVoIPDeviceType type, string name) => $"{name} {type.ToString()}";
+    private static string GetCommunicationClientName(AVEndpointType type, string name) => $"{name} {type.ToString()}";
 }

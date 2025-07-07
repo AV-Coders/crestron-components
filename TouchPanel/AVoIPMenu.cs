@@ -47,11 +47,13 @@ public class AVoIPMenu : LogBase
             _devices[deviceIndex].CommunicationClient.ConnectionStateHandlers += state => CommsStateFeedback(deviceIndex, state);
             switch (devices[deviceIndex].DeviceType)
             {
-                case AVoIPDeviceType.Encoder:
-                    devices[deviceIndex].InputStatusChangedHandlers += (status, resolution) => HandleDeviceSync(deviceIndex, status, resolution);
+                case AVEndpointType.Encoder:
+                    devices[deviceIndex].InputStatusChangedHandlers += (status, resolution, hdcpStatus) 
+                        => HandleDeviceSync(deviceIndex, status, resolution, hdcpStatus);
                     break;
-                case AVoIPDeviceType.Decoder:
-                    devices[deviceIndex].OutputStatusChangedHandlers += (status, resolution) => HandleDeviceSync(deviceIndex, status, resolution);
+                case AVEndpointType.Decoder:
+                    devices[deviceIndex].OutputStatusChangedHandlers += (status, resolution, hdcpStatus) 
+                        => HandleDeviceSync(deviceIndex, status, resolution, hdcpStatus);
                     break;
             }
             CommsStateFeedback(deviceIndex, _devices[deviceIndex].CommunicationClient.GetConnectionState());
@@ -59,12 +61,12 @@ public class AVoIPMenu : LogBase
         }
     }
 
-    private void HandleDeviceSync(int deviceIndex, ConnectionStatus status, string resolution)
+    private void HandleDeviceSync(int deviceIndex, ConnectionState status, string resolution, HdcpStatus hdcpStatus)
     {
         string syncStatus = status switch
         {
-            ConnectionStatus.Disconnected => "Disconnected",
-            ConnectionStatus.Connected => $"Connected at {resolution}",
+            ConnectionState.Disconnected => "Disconnected",
+            ConnectionState.Connected => $"Connected at {resolution}",
             _ => "Unknown"
         };
         _smartObjects.ForEach(smartObject =>
@@ -80,7 +82,7 @@ public class AVoIPMenu : LogBase
             smartObject.StringInput[_srlHelper.SerialJoinFor(deviceIndex, NameJoin)].StringValue = _devices[deviceIndex].Name;
             smartObject.StringInput[_srlHelper.SerialJoinFor(deviceIndex, TypeJoin)].StringValue = _devices[deviceIndex].DeviceType.ToString();
             smartObject.StringInput[_srlHelper.SerialJoinFor(deviceIndex, StreamIdJoin)].StringValue = 
-                _devices[deviceIndex].DeviceType == AVoIPDeviceType.Encoder? 
+                _devices[deviceIndex].DeviceType == AVEndpointType.Encoder? 
                     $"Streaming to {_devices[deviceIndex].StreamAddress}" :
                     $"Source: {_devices[deviceIndex].StreamAddress}";
         });

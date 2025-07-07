@@ -1,3 +1,4 @@
+using AVCoders.Core;
 using AVCoders.Matrix;
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DeviceSupport;
@@ -10,7 +11,7 @@ namespace AvCoders.Crestron.Matrix;
 
 public abstract class NvxEncoder : NvxBase
 {
-    public NvxEncoder(string name, DmNvxBaseClass device) : base(name, device, AVoIPDeviceType.Encoder)
+    public NvxEncoder(string name, DmNvxBaseClass device) : base(name, device, AVEndpointType.Encoder)
     {
         if (device.Control.DeviceModeFeedback != eDeviceMode.Transmitter)
             Log.Fatal($"The device at {Device.ID:x2} is not an Encoder");
@@ -69,8 +70,8 @@ public abstract class NvxEncoder : NvxBase
         {
             InputConnectionStatus =
                 Device.HdmiIn[1]!.SyncDetectedFeedback.BoolValue
-                    ? ConnectionStatus.Connected
-                    : ConnectionStatus.Disconnected;
+                    ? ConnectionState.Connected
+                    : ConnectionState.Disconnected;
         }
         catch (Exception e)
         {

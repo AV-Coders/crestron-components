@@ -1,3 +1,4 @@
+using AVCoders.Core;
 using AVCoders.Matrix;
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DeviceSupport;
@@ -10,7 +11,7 @@ namespace AvCoders.Crestron.Matrix;
 
 public class NvxDecoder : NvxBase
 {
-    public NvxDecoder(string name, DmNvxBaseClass device) : base(name, device, AVoIPDeviceType.Decoder)
+    public NvxDecoder(string name, DmNvxBaseClass device) : base(name, device, AVEndpointType.Decoder)
     {
         if(device.Control.DeviceModeFeedback != eDeviceMode.Receiver)
             Log.Fatal($"The device at {Device.ID:x2} is not a Decoder");
@@ -81,8 +82,8 @@ public class NvxDecoder : NvxBase
         {
             OutputConnectionStatus =
                 Device.HdmiOut.SyncDetectedFeedback.BoolValue 
-                    ? ConnectionStatus.Connected 
-                    : ConnectionStatus.Disconnected;
+                    ? ConnectionState.Connected 
+                    : ConnectionState.Disconnected;
         }
         catch (Exception e)
         {
