@@ -94,12 +94,14 @@ public class Pin : LogBase
 
         if (_input != _pin)
             return;
-        
-        ClearText();
-        CrestronPanel.Interlock(_panels, 0, _relatedPages);
-        _pin = String.Empty;
-        Thread.Sleep(100);
-        _action?.Invoke();
+        Task.Run(async () =>
+        {
+            CrestronPanel.Interlock(_panels, 0, _relatedPages);
+            ClearText();
+            _pin = String.Empty;
+            await Task.Delay(TimeSpan.FromMilliseconds(500));
+            _action?.Invoke();
+        });
     }
     
     private string MaskInput()
