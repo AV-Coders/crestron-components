@@ -7,7 +7,7 @@ namespace AVCoders.Crestron.TouchPanel;
 
 public class CrestronStatus : LogBase
 {
-    private readonly GenericDevice[] _crestronDevices;
+    private readonly List<GenericDevice> _crestronDevices;
     private readonly List<SmartObject> _smartObjects;
     private readonly SubpageReferenceListHelper _srlHelper;
 
@@ -17,14 +17,14 @@ public class CrestronStatus : LogBase
     private const uint IpIdJoin = 2;
     private const uint NameJoin = 3;
 
-    public CrestronStatus(string name, GenericDevice[] crestronDevices, List<SmartObject> smartObjects) : base(name)
+    public CrestronStatus(string name, List<GenericDevice> crestronDevices, List<SmartObject> smartObjects) : base(name)
     {
         _crestronDevices = crestronDevices;
         _smartObjects = smartObjects;
         _srlHelper = new SubpageReferenceListHelper(10, 10, 10);
         ConfigureSmartObject();
 
-        for (int i = 0; i < _crestronDevices.Length; i++)
+        for (int i = 0; i < _crestronDevices.Count; i++)
         {
             var deviceIndex = i;
             _crestronDevices[i].OnlineStatusChange += (_, args) => HandleDeviceOnlineStatusChange(args, deviceIndex);
@@ -42,9 +42,9 @@ public class CrestronStatus : LogBase
     private void ConfigureSmartObject()
     {
         Debug("Configuring modal buttons");
-        _smartObjects.ForEach(x => x.UShortInput["Set Number of Items"].ShortValue = (short)_crestronDevices.Length);
+        _smartObjects.ForEach(x => x.UShortInput["Set Number of Items"].ShortValue = (short)_crestronDevices.Count);
 
-        for (int i = 0; i < _crestronDevices.Length; i++)
+        for (int i = 0; i < _crestronDevices.Count; i++)
         {
             FeedbackForDevice(i);
         }
