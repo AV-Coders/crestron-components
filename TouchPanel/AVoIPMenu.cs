@@ -67,7 +67,7 @@ public class AVoIPMenu : SrlPage
         };
         SmartObjects.ForEach(smartObject =>
         {
-            smartObject.StringInput[_srlHelper.SerialJoinFor(deviceIndex, SyncStatusJoin)].StringValue = syncStatus;
+            smartObject.StringInput[SrlHelper.SerialJoinFor(deviceIndex, SyncStatusJoin)].StringValue = syncStatus;
         });
     }
 
@@ -75,9 +75,9 @@ public class AVoIPMenu : SrlPage
     {
         SmartObjects.ForEach(smartObject =>
         {
-            smartObject.StringInput[_srlHelper.SerialJoinFor(deviceIndex, NameJoin)].StringValue = _devices[deviceIndex].Name;
-            smartObject.StringInput[_srlHelper.SerialJoinFor(deviceIndex, TypeJoin)].StringValue = _devices[deviceIndex].DeviceType.ToString();
-            smartObject.StringInput[_srlHelper.SerialJoinFor(deviceIndex, StreamIdJoin)].StringValue = 
+            smartObject.StringInput[SrlHelper.SerialJoinFor(deviceIndex, NameJoin)].StringValue = _devices[deviceIndex].Name;
+            smartObject.StringInput[SrlHelper.SerialJoinFor(deviceIndex, TypeJoin)].StringValue = _devices[deviceIndex].DeviceType.ToString();
+            smartObject.StringInput[SrlHelper.SerialJoinFor(deviceIndex, StreamIdJoin)].StringValue = 
                 _devices[deviceIndex].DeviceType == AVEndpointType.Encoder? 
                     $"Streaming to {_devices[deviceIndex].StreamAddress}" :
                     $"Source: {_devices[deviceIndex].StreamAddress}";
@@ -128,10 +128,10 @@ public class AVoIPMenu : SrlPage
         }
         SmartObjects.ForEach(smartObject =>
         {
-            smartObject.UShortInput[_srlHelper.AnalogJoinFor(deviceIndex, CommsStatusRedJoin)].UShortValue = redValue;
-            smartObject.UShortInput[_srlHelper.AnalogJoinFor(deviceIndex, CommsStatusGreenJoin)].UShortValue = greenValue;
-            smartObject.UShortInput[_srlHelper.AnalogJoinFor(deviceIndex, CommsStatusBlueJoin)].UShortValue = blueValue;
-            smartObject.StringInput[_srlHelper.SerialJoinFor(deviceIndex, CommsStatusLabelJoin)].StringValue = commsText;
+            smartObject.UShortInput[SrlHelper.AnalogJoinFor(deviceIndex, CommsStatusRedJoin)].UShortValue = redValue;
+            smartObject.UShortInput[SrlHelper.AnalogJoinFor(deviceIndex, CommsStatusGreenJoin)].UShortValue = greenValue;
+            smartObject.UShortInput[SrlHelper.AnalogJoinFor(deviceIndex, CommsStatusBlueJoin)].UShortValue = blueValue;
+            smartObject.StringInput[SrlHelper.SerialJoinFor(deviceIndex, CommsStatusLabelJoin)].StringValue = commsText;
         });
     }
     
@@ -171,10 +171,10 @@ public class AVoIPMenu : SrlPage
         }
         SmartObjects.ForEach(smartObject =>
         {
-            smartObject.UShortInput[_srlHelper.AnalogJoinFor(deviceIndex, DriverStatusRedJoin)].UShortValue = redValue;
-            smartObject.UShortInput[_srlHelper.AnalogJoinFor(deviceIndex, DriverStatusGreenJoin)].UShortValue = greenValue;
-            smartObject.UShortInput[_srlHelper.AnalogJoinFor(deviceIndex, DriverStatusBlueJoin)].UShortValue = blueValue;
-            smartObject.StringInput[_srlHelper.SerialJoinFor(deviceIndex, DriverStatusLabelJoin)].StringValue = driverText;
+            smartObject.UShortInput[SrlHelper.AnalogJoinFor(deviceIndex, DriverStatusRedJoin)].UShortValue = redValue;
+            smartObject.UShortInput[SrlHelper.AnalogJoinFor(deviceIndex, DriverStatusGreenJoin)].UShortValue = greenValue;
+            smartObject.UShortInput[SrlHelper.AnalogJoinFor(deviceIndex, DriverStatusBlueJoin)].UShortValue = blueValue;
+            smartObject.StringInput[SrlHelper.SerialJoinFor(deviceIndex, DriverStatusLabelJoin)].StringValue = driverText;
         });
     }
 

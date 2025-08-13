@@ -75,11 +75,11 @@ public class AvCodersCommsStatus : SrlPage
         }
         SmartObjects.ForEach(smartObject =>
         {
-            smartObject.StringInput[_srlHelper.SerialJoinFor(deviceIndex, LogJoins[4])].StringValue = _logMessages[deviceIndex].Count > 0 ? _logMessages[deviceIndex][0] : String.Empty;
-            smartObject.StringInput[_srlHelper.SerialJoinFor(deviceIndex, LogJoins[3])].StringValue = _logMessages[deviceIndex].Count > 1 ? _logMessages[deviceIndex][1] : String.Empty;
-            smartObject.StringInput[_srlHelper.SerialJoinFor(deviceIndex, LogJoins[2])].StringValue = _logMessages[deviceIndex].Count > 2 ? _logMessages[deviceIndex][2] : String.Empty;
-            smartObject.StringInput[_srlHelper.SerialJoinFor(deviceIndex, LogJoins[1])].StringValue = _logMessages[deviceIndex].Count > 3 ? _logMessages[deviceIndex][3] : String.Empty;
-            smartObject.StringInput[_srlHelper.SerialJoinFor(deviceIndex, LogJoins[0])].StringValue = _logMessages[deviceIndex].Count > 4 ? _logMessages[deviceIndex][4] : String.Empty;
+            smartObject.StringInput[SrlHelper.SerialJoinFor(deviceIndex, LogJoins[4])].StringValue = _logMessages[deviceIndex].Count > 0 ? _logMessages[deviceIndex][0] : String.Empty;
+            smartObject.StringInput[SrlHelper.SerialJoinFor(deviceIndex, LogJoins[3])].StringValue = _logMessages[deviceIndex].Count > 1 ? _logMessages[deviceIndex][1] : String.Empty;
+            smartObject.StringInput[SrlHelper.SerialJoinFor(deviceIndex, LogJoins[2])].StringValue = _logMessages[deviceIndex].Count > 2 ? _logMessages[deviceIndex][2] : String.Empty;
+            smartObject.StringInput[SrlHelper.SerialJoinFor(deviceIndex, LogJoins[1])].StringValue = _logMessages[deviceIndex].Count > 3 ? _logMessages[deviceIndex][3] : String.Empty;
+            smartObject.StringInput[SrlHelper.SerialJoinFor(deviceIndex, LogJoins[0])].StringValue = _logMessages[deviceIndex].Count > 4 ? _logMessages[deviceIndex][4] : String.Empty;
         });
     }
 
@@ -87,11 +87,11 @@ public class AvCodersCommsStatus : SrlPage
     {
         SmartObjects.ForEach(smartObject =>
         {
-            smartObject.StringInput[_srlHelper.SerialJoinFor(deviceIndex, NameJoin)].StringValue = _communicationClients[deviceIndex].Name;
-            smartObject.StringInput[_srlHelper.SerialJoinFor(deviceIndex, ClassJoin)].StringValue = _communicationClients[deviceIndex].GetType().ToString();
-            smartObject.StringInput[_srlHelper.SerialJoinFor(deviceIndex, IpJoin)].StringValue = _communicationClients[deviceIndex].GetHost();
-            smartObject.StringInput[_srlHelper.SerialJoinFor(deviceIndex, PortJoin)].StringValue = _communicationClients[deviceIndex].GetPort().ToString();
-            smartObject.StringInput[_srlHelper.SerialJoinFor(deviceIndex, ConnectionStatusJoin)].StringValue = _communicationClients[deviceIndex].GetConnectionState().ToString();
+            smartObject.StringInput[SrlHelper.SerialJoinFor(deviceIndex, NameJoin)].StringValue = _communicationClients[deviceIndex].Name;
+            smartObject.StringInput[SrlHelper.SerialJoinFor(deviceIndex, ClassJoin)].StringValue = _communicationClients[deviceIndex].GetType().ToString();
+            smartObject.StringInput[SrlHelper.SerialJoinFor(deviceIndex, IpJoin)].StringValue = _communicationClients[deviceIndex].GetHost();
+            smartObject.StringInput[SrlHelper.SerialJoinFor(deviceIndex, PortJoin)].StringValue = _communicationClients[deviceIndex].GetPort().ToString();
+            smartObject.StringInput[SrlHelper.SerialJoinFor(deviceIndex, ConnectionStatusJoin)].StringValue = _communicationClients[deviceIndex].GetConnectionState().ToString();
         });
         
     }

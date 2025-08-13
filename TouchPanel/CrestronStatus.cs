@@ -29,7 +29,7 @@ public class CrestronStatus : SrlPage
 
     private void HandleDeviceOnlineStatusChange(OnlineOfflineEventArgs args, int deviceIndex)
     {
-        SmartObjects.ForEach(x => x.BooleanInput[_srlHelper.BooleanJoinFor(deviceIndex, OnlineJoin)].BoolValue = args.DeviceOnLine);
+        SmartObjects.ForEach(x => x.BooleanInput[SrlHelper.BooleanJoinFor(deviceIndex, OnlineJoin)].BoolValue = args.DeviceOnLine);
         
         if(args.DeviceOnLine)
             FeedbackForDevice(deviceIndex);
@@ -50,10 +50,10 @@ public class CrestronStatus : SrlPage
     {
         SmartObjects.ForEach(x =>
         {
-            x.StringInput[_srlHelper.SerialJoinFor(deviceIndex, NameJoin)].StringValue = _crestronDevices[deviceIndex].Description;
-            x.StringInput[_srlHelper.SerialJoinFor(deviceIndex, IpIdJoin)].StringValue = $"IP ID: {_crestronDevices[deviceIndex].ID:x2}";
-            x.StringInput[_srlHelper.SerialJoinFor(deviceIndex, ModelJoin)].StringValue = _crestronDevices[deviceIndex].Name;
-            x.BooleanInput[_srlHelper.BooleanJoinFor(deviceIndex, OnlineJoin)].BoolValue = _crestronDevices[deviceIndex].IsOnline;
+            x.StringInput[SrlHelper.SerialJoinFor(deviceIndex, NameJoin)].StringValue = _crestronDevices[deviceIndex].Description;
+            x.StringInput[SrlHelper.SerialJoinFor(deviceIndex, IpIdJoin)].StringValue = $"IP ID: {_crestronDevices[deviceIndex].ID:x2}";
+            x.StringInput[SrlHelper.SerialJoinFor(deviceIndex, ModelJoin)].StringValue = _crestronDevices[deviceIndex].Name;
+            x.BooleanInput[SrlHelper.BooleanJoinFor(deviceIndex, OnlineJoin)].BoolValue = _crestronDevices[deviceIndex].IsOnline;
         });
     }
 

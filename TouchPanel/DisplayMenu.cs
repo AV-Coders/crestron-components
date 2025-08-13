@@ -76,8 +76,8 @@ public class DisplayMenu : SrlPage
             {
                 SmartObjects.ForEach(x =>
                 {
-                    x.BooleanInput[_srlHelper.BooleanJoinFor(deviceIndex, InputShowJoins[inputIndex])].BoolValue = true;
-                    x.StringInput[_srlHelper.SerialJoinFor(deviceIndex, InputNameJoins[inputIndex])].StringValue = _displays[deviceIndex].Inputs[inputIndex].Name;
+                    x.BooleanInput[SrlHelper.BooleanJoinFor(deviceIndex, InputShowJoins[inputIndex])].BoolValue = true;
+                    x.StringInput[SrlHelper.SerialJoinFor(deviceIndex, InputNameJoins[inputIndex])].StringValue = _displays[deviceIndex].Inputs[inputIndex].Name;
                 });
             }
         }
@@ -85,7 +85,7 @@ public class DisplayMenu : SrlPage
 
     private void HandleDisplayPress(GenericBase currentDevice, SmartObjectEventArgs args)
     {
-        var selectionInfo = _srlHelper.GetSigInfo(args.Sig);
+        var selectionInfo = SrlHelper.GetSigInfo(args.Sig);
         Debug($"Display Join, id {args.Sig.Number}. Type: {args.Sig.Type.ToString()} Index {selectionInfo.Index}, Join: {selectionInfo.Join}");
         
         switch (args.Sig.Type)
@@ -146,7 +146,7 @@ public class DisplayMenu : SrlPage
     {
         SmartObjects.ForEach(smartObject =>
         {
-            smartObject.UShortInput[_srlHelper.AnalogJoinFor(deviceIndex, VolumeJoin)].UShortValue =
+            smartObject.UShortInput[SrlHelper.AnalogJoinFor(deviceIndex, VolumeJoin)].UShortValue =
                 Math.PercentageFromRange(volume, _displays[deviceIndex].MaxVolume);
         });
     }
@@ -187,10 +187,10 @@ public class DisplayMenu : SrlPage
         }
         SmartObjects.ForEach(smartObject =>
         {
-            smartObject.UShortInput[_srlHelper.AnalogJoinFor(deviceIndex, DriverStatusRedJoin)].UShortValue = redValue;
-            smartObject.UShortInput[_srlHelper.AnalogJoinFor(deviceIndex, DriverStatusGreenJoin)].UShortValue = greenValue;
-            smartObject.UShortInput[_srlHelper.AnalogJoinFor(deviceIndex, DriverStatusBlueJoin)].UShortValue = blueValue;
-            smartObject.StringInput[_srlHelper.SerialJoinFor(deviceIndex, DriverStatusLabelJoin)].StringValue = driverText;
+            smartObject.UShortInput[SrlHelper.AnalogJoinFor(deviceIndex, DriverStatusRedJoin)].UShortValue = redValue;
+            smartObject.UShortInput[SrlHelper.AnalogJoinFor(deviceIndex, DriverStatusGreenJoin)].UShortValue = greenValue;
+            smartObject.UShortInput[SrlHelper.AnalogJoinFor(deviceIndex, DriverStatusBlueJoin)].UShortValue = blueValue;
+            smartObject.StringInput[SrlHelper.SerialJoinFor(deviceIndex, DriverStatusLabelJoin)].StringValue = driverText;
         });
     }
 
@@ -237,10 +237,10 @@ public class DisplayMenu : SrlPage
         }
         SmartObjects.ForEach(smartObject =>
         {
-            smartObject.UShortInput[_srlHelper.AnalogJoinFor(deviceIndex, CommsStatusRedJoin)].UShortValue = redValue;
-            smartObject.UShortInput[_srlHelper.AnalogJoinFor(deviceIndex, CommsStatusGreenJoin)].UShortValue = greenValue;
-            smartObject.UShortInput[_srlHelper.AnalogJoinFor(deviceIndex, CommsStatusBlueJoin)].UShortValue = blueValue;
-            smartObject.StringInput[_srlHelper.SerialJoinFor(deviceIndex, CommsStatusLabelJoin)].StringValue = commsText;
+            smartObject.UShortInput[SrlHelper.AnalogJoinFor(deviceIndex, CommsStatusRedJoin)].UShortValue = redValue;
+            smartObject.UShortInput[SrlHelper.AnalogJoinFor(deviceIndex, CommsStatusGreenJoin)].UShortValue = greenValue;
+            smartObject.UShortInput[SrlHelper.AnalogJoinFor(deviceIndex, CommsStatusBlueJoin)].UShortValue = blueValue;
+            smartObject.StringInput[SrlHelper.SerialJoinFor(deviceIndex, CommsStatusLabelJoin)].StringValue = commsText;
         });
     }
 
@@ -248,24 +248,24 @@ public class DisplayMenu : SrlPage
     {
         SmartObjects.ForEach(smartObject =>
         {
-            smartObject.StringInput[_srlHelper.SerialJoinFor(deviceIndex, NameJoin)].StringValue = _displays[deviceIndex].Name;
-            smartObject.BooleanInput[_srlHelper.BooleanJoinFor(deviceIndex, PowerOnJoin)].BoolValue =
+            smartObject.StringInput[SrlHelper.SerialJoinFor(deviceIndex, NameJoin)].StringValue = _displays[deviceIndex].Name;
+            smartObject.BooleanInput[SrlHelper.BooleanJoinFor(deviceIndex, PowerOnJoin)].BoolValue =
                 _displays[deviceIndex].Display.PowerState == PowerState.On;
-            smartObject.BooleanInput[_srlHelper.BooleanJoinFor(deviceIndex, PowerOffJoin)].BoolValue =
+            smartObject.BooleanInput[SrlHelper.BooleanJoinFor(deviceIndex, PowerOffJoin)].BoolValue =
                 _displays[deviceIndex].Display.PowerState == PowerState.Off;
-            smartObject.BooleanInput[_srlHelper.BooleanJoinFor(deviceIndex, MuteJoin)].BoolValue =
+            smartObject.BooleanInput[SrlHelper.BooleanJoinFor(deviceIndex, MuteJoin)].BoolValue =
                 _displays[deviceIndex].Display.AudioMute == MuteState.On;
             if (_displays[deviceIndex].Inputs.Length > 0)
-                smartObject.BooleanInput[_srlHelper.BooleanJoinFor(deviceIndex, Input1Join)].BoolValue =
+                smartObject.BooleanInput[SrlHelper.BooleanJoinFor(deviceIndex, Input1Join)].BoolValue =
                     _displays[deviceIndex].Inputs[0].Input == _displays[deviceIndex].Display.Input;
             if (_displays[deviceIndex].Inputs.Length > 1)
-                smartObject.BooleanInput[_srlHelper.BooleanJoinFor(deviceIndex, Input2Join)].BoolValue =
+                smartObject.BooleanInput[SrlHelper.BooleanJoinFor(deviceIndex, Input2Join)].BoolValue =
                     _displays[deviceIndex].Inputs[1].Input == _displays[deviceIndex].Display.Input;
             if (_displays[deviceIndex].Inputs.Length > 2)
-                smartObject.BooleanInput[_srlHelper.BooleanJoinFor(deviceIndex, Input3Join)].BoolValue =
+                smartObject.BooleanInput[SrlHelper.BooleanJoinFor(deviceIndex, Input3Join)].BoolValue =
                     _displays[deviceIndex].Inputs[2].Input == _displays[deviceIndex].Display.Input;
             if (_displays[deviceIndex].Inputs.Length > 3)
-                smartObject.BooleanInput[_srlHelper.BooleanJoinFor(deviceIndex, Input4Join)].BoolValue =
+                smartObject.BooleanInput[SrlHelper.BooleanJoinFor(deviceIndex, Input4Join)].BoolValue =
                     _displays[deviceIndex].Inputs[3].Input == _displays[deviceIndex].Display.Input;
         });
         

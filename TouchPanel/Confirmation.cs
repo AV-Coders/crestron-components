@@ -53,7 +53,7 @@ public class Confirmation : SrlPage
             return;
         if (!args.Sig.BoolValue)
             return;
-        var info = _srlHelper.GetBooleanSigInfo(args.Sig.Number);
+        var info = SrlHelper.GetBooleanSigInfo(args.Sig.Number);
         if (info.Join != SelectJoin)
             return;
         Log.Verbose($"Option {info.Index} selected");
@@ -77,7 +77,7 @@ public class Confirmation : SrlPage
             x.UShortInput["Set Number of Items"].UShortValue = (ushort)options.Count;
             for (int i = 0; i < options.Count; i++)
             {
-                x.StringInput[_srlHelper.SerialJoinFor(i, SelectJoin)].StringValue = options[i].Key;
+                x.StringInput[SrlHelper.SerialJoinFor(i, SelectJoin)].StringValue = options[i].Key;
             }
 
         });

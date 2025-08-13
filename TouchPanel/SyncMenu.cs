@@ -77,7 +77,7 @@ public class SyncMenu : SrlPage
         };
         SmartObjects.ForEach(smartObject =>
         {
-            smartObject.StringInput[_srlHelper.SerialJoinFor(deviceIndex, SyncStatusJoin)].StringValue = syncStatus;
+            smartObject.StringInput[SrlHelper.SerialJoinFor(deviceIndex, SyncStatusJoin)].StringValue = syncStatus;
         });
     }
 
@@ -85,9 +85,9 @@ public class SyncMenu : SrlPage
     {
         SmartObjects.ForEach(smartObject =>
         {
-            smartObject.StringInput[_srlHelper.SerialJoinFor(deviceIndex, NameJoin)].StringValue = _devices[deviceIndex].Name;
-            smartObject.StringInput[_srlHelper.SerialJoinFor(deviceIndex, TypeJoin)].StringValue = _devices[deviceIndex].DeviceType.ToString();
-            smartObject.StringInput[_srlHelper.SerialJoinFor(deviceIndex, StreamIdJoin)].StringValue = 
+            smartObject.StringInput[SrlHelper.SerialJoinFor(deviceIndex, NameJoin)].StringValue = _devices[deviceIndex].Name;
+            smartObject.StringInput[SrlHelper.SerialJoinFor(deviceIndex, TypeJoin)].StringValue = _devices[deviceIndex].DeviceType.ToString();
+            smartObject.StringInput[SrlHelper.SerialJoinFor(deviceIndex, StreamIdJoin)].StringValue = 
                 _devices[deviceIndex].DeviceType == AVEndpointType.Encoder? 
                     $"Streaming to {_devices[deviceIndex].StreamAddress}" :
                     $"Source: {_devices[deviceIndex].StreamAddress}";

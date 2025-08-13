@@ -32,14 +32,14 @@ public class MotorMenu : SrlPage
             smartObject.SigChange += HandleMotorPress;
             for (int i = 0; i < _motors.Count; i++)
             {
-                smartObject.StringInput[_srlHelper.SerialJoinFor(i, NameJoin)].StringValue = _motors[i].Motor.Name;
-                smartObject.StringInput[_srlHelper.SerialJoinFor(i, RaiseJoin)].StringValue = _motors[i].Type switch
+                smartObject.StringInput[SrlHelper.SerialJoinFor(i, NameJoin)].StringValue = _motors[i].Motor.Name;
+                smartObject.StringInput[SrlHelper.SerialJoinFor(i, RaiseJoin)].StringValue = _motors[i].Type switch
                 {
                     MotorType.Roller => "Up",
                     MotorType.Curtain => "Open",
                     _ => throw new ArgumentOutOfRangeException()
                 };
-                smartObject.StringInput[_srlHelper.SerialJoinFor(i, LowerJoin)].StringValue = _motors[i].Type switch
+                smartObject.StringInput[SrlHelper.SerialJoinFor(i, LowerJoin)].StringValue = _motors[i].Type switch
                 {
                     MotorType.Roller => "Down",
                     MotorType.Curtain => "Close",
@@ -51,8 +51,8 @@ public class MotorMenu : SrlPage
                     MotorType.Curtain => 1,
                     _ => throw new ArgumentOutOfRangeException()
                 };
-                smartObject.UShortInput[_srlHelper.AnalogJoinFor(i, RaiseJoin)].UShortValue = iconMode;
-                smartObject.UShortInput[_srlHelper.AnalogJoinFor(i, LowerJoin)].UShortValue = iconMode;
+                smartObject.UShortInput[SrlHelper.AnalogJoinFor(i, RaiseJoin)].UShortValue = iconMode;
+                smartObject.UShortInput[SrlHelper.AnalogJoinFor(i, LowerJoin)].UShortValue = iconMode;
             }
         });
     }
@@ -64,7 +64,7 @@ public class MotorMenu : SrlPage
         if (args.Sig.BoolValue == false)
             return;
         Debug($"Button {args.Sig.Number} pressed");
-        var joinInfo = _srlHelper.GetSigInfo(args.Sig);
+        var joinInfo = SrlHelper.GetSigInfo(args.Sig);
         switch (joinInfo.Join)
         {
             case RaiseJoin:

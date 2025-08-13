@@ -52,7 +52,7 @@ public class SubpageSelection : SrlPage
         _allSelectJoins = new uint[buttonConfig.Count];
         for (int i = 0; i < buttonConfig.Count; i++)
         {
-            _allSelectJoins[i] = _srlHelper.BooleanJoinFor(i, SelectJoin);
+            _allSelectJoins[i] = SrlHelper.BooleanJoinFor(i, SelectJoin);
         }
 
         ConfigurePopupButtons();
@@ -89,9 +89,9 @@ public class SubpageSelection : SrlPage
 
         for (int i = 0; i < _buttonConfig.Count; i++)
         {
-            SmartObjects.ForEach(x => x.BooleanInput[_srlHelper.BooleanJoinFor(i, VisibilityJoin)].BoolValue = true);
-            SmartObjects.ForEach(x => x.UShortInput[_srlHelper.AnalogJoinFor(i, ModeJoin)].UShortValue = _buttonConfig[i].ButtonMode);
-            SmartObjects.ForEach(x => x.StringInput[_srlHelper.SerialJoinFor(i, TitleJoin)].StringValue = _buttonConfig[i].Title);
+            SmartObjects.ForEach(x => x.BooleanInput[SrlHelper.BooleanJoinFor(i, VisibilityJoin)].BoolValue = true);
+            SmartObjects.ForEach(x => x.UShortInput[SrlHelper.AnalogJoinFor(i, ModeJoin)].UShortValue = _buttonConfig[i].ButtonMode);
+            SmartObjects.ForEach(x => x.StringInput[SrlHelper.SerialJoinFor(i, TitleJoin)].StringValue = _buttonConfig[i].Title);
         }
     }
 
@@ -119,7 +119,7 @@ public class SubpageSelection : SrlPage
             _defaultPage = _activePage;
         HandleMenuItemVisibility(_buttonConfig[selection], Visibility.Shown);
         CrestronPanel.Interlock(_panels, _buttonConfig[selection].PopupPageJoin, _pages);
-        CrestronPanel.Interlock(SmartObjects, _srlHelper.BooleanJoinFor(selection, SelectJoin), _allSelectJoins);
+        CrestronPanel.Interlock(SmartObjects, SrlHelper.BooleanJoinFor(selection, SelectJoin), _allSelectJoins);
         Debug($"Showing modal {selection}");
     }
 

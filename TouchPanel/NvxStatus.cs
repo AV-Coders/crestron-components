@@ -29,7 +29,7 @@ public class NvxStatus : SrlPage
 
     private void HandleDeviceOnlineStatusChange(OnlineOfflineEventArgs args, int deviceIndex)
     {
-        SmartObjects.ForEach(x => x.BooleanInput[_srlHelper.BooleanJoinFor(deviceIndex, OnlineJoin)].BoolValue = args.DeviceOnLine);
+        SmartObjects.ForEach(x => x.BooleanInput[SrlHelper.BooleanJoinFor(deviceIndex, OnlineJoin)].BoolValue = args.DeviceOnLine);
         
         if(args.DeviceOnLine)
             DeviceFeedback(deviceIndex);
@@ -48,10 +48,10 @@ public class NvxStatus : SrlPage
     
     private void DeviceFeedback(int deviceIndex)
     {
-        SmartObjects.ForEach(x => x.StringInput[_srlHelper.SerialJoinFor(deviceIndex, NameJoin)].StringValue = _nvxDevices[deviceIndex].Description);
-        SmartObjects.ForEach(x => x.StringInput[_srlHelper.SerialJoinFor(deviceIndex, IpIdJoin)].StringValue = $"IP ID: {_nvxDevices[deviceIndex].ID:x2}");
-        SmartObjects.ForEach(x => x.BooleanInput[_srlHelper.BooleanJoinFor(deviceIndex, OnlineJoin)].BoolValue = _nvxDevices[deviceIndex].IsOnline);
-        SmartObjects.ForEach(x => x.StringInput[_srlHelper.SerialJoinFor(deviceIndex, ModeJoin)].StringValue = $"Mode: {_nvxDevices[deviceIndex].Control.DeviceMode.ToString()}");
+        SmartObjects.ForEach(x => x.StringInput[SrlHelper.SerialJoinFor(deviceIndex, NameJoin)].StringValue = _nvxDevices[deviceIndex].Description);
+        SmartObjects.ForEach(x => x.StringInput[SrlHelper.SerialJoinFor(deviceIndex, IpIdJoin)].StringValue = $"IP ID: {_nvxDevices[deviceIndex].ID:x2}");
+        SmartObjects.ForEach(x => x.BooleanInput[SrlHelper.BooleanJoinFor(deviceIndex, OnlineJoin)].BoolValue = _nvxDevices[deviceIndex].IsOnline);
+        SmartObjects.ForEach(x => x.StringInput[SrlHelper.SerialJoinFor(deviceIndex, ModeJoin)].StringValue = $"Mode: {_nvxDevices[deviceIndex].Control.DeviceMode.ToString()}");
     }
 
     public override void PowerOn() { }

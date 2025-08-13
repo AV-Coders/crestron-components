@@ -45,14 +45,14 @@ public class PduControls : SrlPage
 
             SmartObjects.ForEach(x =>
             {
-                x.StringInput[_srlHelper.SerialJoinFor(deviceIndex, NameJoin)].StringValue = _outlets[deviceIndex].Name;
+                x.StringInput[SrlHelper.SerialJoinFor(deviceIndex, NameJoin)].StringValue = _outlets[deviceIndex].Name;
             });
         }
     }
     
     private void HandleOutletPress(GenericBase currentDevice, SmartObjectEventArgs args)
     {
-        var selectionInfo = _srlHelper.GetSigInfo(args.Sig);
+        var selectionInfo = SrlHelper.GetSigInfo(args.Sig);
         Debug($"Display Join, id {args.Sig.Number}. Type: {args.Sig.Type.ToString()} Index {selectionInfo.Index}, Join: {selectionInfo.Join}");
         
         switch (args.Sig.Type)
@@ -96,9 +96,9 @@ public class PduControls : SrlPage
     {
         SmartObjects.ForEach(smartObject =>
         {
-            smartObject.BooleanInput[_srlHelper.BooleanJoinFor(deviceIndex, PowerOnJoin)].BoolValue = state == PowerState.On;
-            smartObject.BooleanInput[_srlHelper.BooleanJoinFor(deviceIndex, PowerOffJoin)].BoolValue = state == PowerState.Off;
-            smartObject.BooleanInput[_srlHelper.BooleanJoinFor(deviceIndex, RebootJoin)].BoolValue = state == PowerState.Rebooting;
+            smartObject.BooleanInput[SrlHelper.BooleanJoinFor(deviceIndex, PowerOnJoin)].BoolValue = state == PowerState.On;
+            smartObject.BooleanInput[SrlHelper.BooleanJoinFor(deviceIndex, PowerOffJoin)].BoolValue = state == PowerState.Off;
+            smartObject.BooleanInput[SrlHelper.BooleanJoinFor(deviceIndex, RebootJoin)].BoolValue = state == PowerState.Rebooting;
         });
         
     }
