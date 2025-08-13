@@ -5,9 +5,8 @@ using Serilog.Context;
 
 namespace AVCoders.Crestron.TouchPanel;
 
-public abstract class LevelControls : LogBase
+public abstract class LevelControls : SrlPage
 {
-    protected readonly List<SmartObject> SmartObjects;
     
     protected readonly SubpageReferenceListHelper SrlHelper;
     protected bool ButtonHeld;
@@ -24,14 +23,13 @@ public abstract class LevelControls : LogBase
     public const uint DefaultJoinIncrement = 10;
     protected readonly uint JoinIncrement;
 
-    protected LevelControls(string name, ushort numberOfAudioBlocks, List<SmartObject> smartObjects, uint joinIncrement) : base(name)
+    protected LevelControls(string name, ushort numberOfAudioBlocks, List<SmartObject> smartObjects, uint joinIncrement) : base(name, smartObjects, joinIncrement)
     {
-        SmartObjects = smartObjects;
         JoinIncrement = joinIncrement;
         SrlHelper = new SubpageReferenceListHelper(JoinIncrement, JoinIncrement, JoinIncrement);
         
 
-        SmartObjects.ForEach(smartObject =>
+        smartObjects.ForEach(smartObject =>
         {
             smartObject.SigChange += HandleVolumePress;
             smartObject.UShortInput["Set Number of Items"].UShortValue = numberOfAudioBlocks;

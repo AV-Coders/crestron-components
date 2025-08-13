@@ -1,4 +1,5 @@
 ﻿using AVCoders.Core;
+using Serilog;
 using Serilog.Context;
 
 namespace AVCoders.Crestron.TouchPanel;
@@ -10,13 +11,13 @@ public class GenericLevelControls : LevelControls
     public GenericLevelControls(string name, List<VolumeControl> faders, List<SmartObject> smartObjects, uint joinIncrement = DefaultJoinIncrement) :
         base(name, (ushort)faders.Count, smartObjects, joinIncrement)
     {
-        using (LogContext.PushProperty(MethodProperty, "Constructor"))
+        using (PushProperties("Constructor"))
         {
             _faders = faders;
 
             for (int i = 0; i < faders.Count; i++)
             {
-                Debug($"Setting up fader {i}");
+                Log.Debug($"Setting up fader {i}");
                 var faderIndex = i;
                 _faders[i].VolumeLevelHandlers += volumeLevel => HandleVolumeLevel(volumeLevel, faderIndex);
                 _faders[i].MuteStateHandlers += muteState => HandleMuteState(muteState, faderIndex);
@@ -33,22 +34,31 @@ public class GenericLevelControls : LevelControls
 
     protected override void StartVolumeUp(int index)
     {
-        void Action() => _faders[index].LevelUp(2);
-        VolumeControl(Action);
-        Debug($"Queued volume up for fader {_faders[index].Name}");
+        using (PushProperties("StartVolumeUp"))
+        {
+            void Action() => _faders[index].LevelUp(2);
+            VolumeControl(Action);
+            Log.Debug("Queued volume up for fader {S}", _faders[index].Name);
+        }
     }
 
     protected override void StartVolumeDown(int index)
     {
-        void Action() => _faders[index].LevelDown(2);
-        VolumeControl(Action);
-        Debug($"Queued volume down for fader {_faders[index].Name}");
+        using (PushProperties("StartVolumeDown"))
+        {
+            void Action() => _faders[index].LevelDown(2);
+            VolumeControl(Action);
+            Log.Debug("Queued volume down for fader {S}", _faders[index].Name);
+        }
     }
 
     protected override void ToggleAudioMute(int index)
     {
-        _faders[index].ToggleAudioMute();
-        Debug($"Toggled mute for fader {_faders[index].Name}");
+        using (PushProperties("ToggleAudioMute"))
+        {
+            _faders[index].ToggleAudioMute();
+            Debug($"Toggled mute for fader {_faders[index].Name}");
+        }
     }
 
     protected override void SetNewLevel(Sig sig)
@@ -56,4 +66,8 @@ public class GenericLevelControls : LevelControls
         var selectionInfo = SrlHelper.GetSigInfo(sig);
         _faders[selectionInfo.Index].SetLevel(sig.ShortValue);
     }
+
+    public override void PowerOn() { }
+
+    public override void PowerOff() { }
 }

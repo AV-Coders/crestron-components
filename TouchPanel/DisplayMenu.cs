@@ -10,11 +10,9 @@ public record InputInfo(string Name, Input Input);
 
 public record DisplayInfo(Display.Display Display, CommunicationClient Client, string Name, InputInfo[] Inputs, int MaxVolume = 100);
 
-public class DisplayMenu
+public class DisplayMenu : SrlPage
 {
     private readonly List<DisplayInfo> _displays;
-    private readonly List<SmartObject> _smartObjects;
-    private readonly SubpageReferenceListHelper _srlHelper;
     private readonly string _name;
 
     public const uint PowerOnJoin = 1;
@@ -53,13 +51,11 @@ public class DisplayMenu
     
     public static readonly uint JoinIncrement = 30;
 
-    public DisplayMenu(string name, List<DisplayInfo> displays, List<SmartObject> smartObjects)
+    public DisplayMenu(string name, List<DisplayInfo> displays, List<SmartObject> smartObjects) : base(name, smartObjects, JoinIncrement)
     {
         _name = name;
         _displays = displays;
-        _srlHelper = new SubpageReferenceListHelper(JoinIncrement, JoinIncrement, JoinIncrement);
-        _smartObjects = smartObjects;
-        _smartObjects.ForEach(x =>
+        SmartObjects.ForEach(x =>
         {
             x.UShortInput["Set Number of Items"].ShortValue = (short)_displays.Count;
             x.SigChange += HandleDisplayPress;
@@ -78,7 +74,7 @@ public class DisplayMenu
 
             for (int inputIndex = 0; inputIndex < _displays[deviceIndex].Inputs.Length; inputIndex++)
             {
-                _smartObjects.ForEach(x =>
+                SmartObjects.ForEach(x =>
                 {
                     x.BooleanInput[_srlHelper.BooleanJoinFor(deviceIndex, InputShowJoins[inputIndex])].BoolValue = true;
                     x.StringInput[_srlHelper.SerialJoinFor(deviceIndex, InputNameJoins[inputIndex])].StringValue = _displays[deviceIndex].Inputs[inputIndex].Name;
@@ -148,7 +144,7 @@ public class DisplayMenu
 
     private void VolumeFeedback(int deviceIndex, int volume)
     {
-        _smartObjects.ForEach(smartObject =>
+        SmartObjects.ForEach(smartObject =>
         {
             smartObject.UShortInput[_srlHelper.AnalogJoinFor(deviceIndex, VolumeJoin)].UShortValue =
                 Math.PercentageFromRange(volume, _displays[deviceIndex].MaxVolume);
@@ -189,7 +185,7 @@ public class DisplayMenu
                 break;
                 
         }
-        _smartObjects.ForEach(smartObject =>
+        SmartObjects.ForEach(smartObject =>
         {
             smartObject.UShortInput[_srlHelper.AnalogJoinFor(deviceIndex, DriverStatusRedJoin)].UShortValue = redValue;
             smartObject.UShortInput[_srlHelper.AnalogJoinFor(deviceIndex, DriverStatusGreenJoin)].UShortValue = greenValue;
@@ -239,7 +235,7 @@ public class DisplayMenu
                 break;
                 
         }
-        _smartObjects.ForEach(smartObject =>
+        SmartObjects.ForEach(smartObject =>
         {
             smartObject.UShortInput[_srlHelper.AnalogJoinFor(deviceIndex, CommsStatusRedJoin)].UShortValue = redValue;
             smartObject.UShortInput[_srlHelper.AnalogJoinFor(deviceIndex, CommsStatusGreenJoin)].UShortValue = greenValue;
@@ -250,7 +246,7 @@ public class DisplayMenu
 
     private void FeedbackForDevice(int deviceIndex)
     {
-        _smartObjects.ForEach(smartObject =>
+        SmartObjects.ForEach(smartObject =>
         {
             smartObject.StringInput[_srlHelper.SerialJoinFor(deviceIndex, NameJoin)].StringValue = _displays[deviceIndex].Name;
             smartObject.BooleanInput[_srlHelper.BooleanJoinFor(deviceIndex, PowerOnJoin)].BoolValue =
@@ -274,6 +270,10 @@ public class DisplayMenu
         });
         
     }
+
+    public override void PowerOn() { }
+
+    public override void PowerOff() { }
 
     private void Debug(string message)
     {

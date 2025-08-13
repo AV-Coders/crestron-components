@@ -5,11 +5,9 @@ using Serilog.Context;
 
 namespace AVCoders.Crestron.TouchPanel;
 
-public class CrestronStatus : LogBase
+public class CrestronStatus : SrlPage
 {
     private readonly List<GenericDevice> _crestronDevices;
-    private readonly List<SmartObject> _smartObjects;
-    private readonly SubpageReferenceListHelper _srlHelper;
 
     private const uint OnlineJoin = 1;
 
@@ -17,11 +15,9 @@ public class CrestronStatus : LogBase
     private const uint IpIdJoin = 2;
     private const uint NameJoin = 3;
 
-    public CrestronStatus(string name, List<GenericDevice> crestronDevices, List<SmartObject> smartObjects) : base(name)
+    public CrestronStatus(string name, List<GenericDevice> crestronDevices, List<SmartObject> smartObjects) : base(name, smartObjects)
     {
         _crestronDevices = crestronDevices;
-        _smartObjects = smartObjects;
-        _srlHelper = new SubpageReferenceListHelper(10, 10, 10);
         ConfigureSmartObject();
 
         for (int i = 0; i < _crestronDevices.Count; i++)
@@ -33,7 +29,7 @@ public class CrestronStatus : LogBase
 
     private void HandleDeviceOnlineStatusChange(OnlineOfflineEventArgs args, int deviceIndex)
     {
-        _smartObjects.ForEach(x => x.BooleanInput[_srlHelper.BooleanJoinFor(deviceIndex, OnlineJoin)].BoolValue = args.DeviceOnLine);
+        SmartObjects.ForEach(x => x.BooleanInput[_srlHelper.BooleanJoinFor(deviceIndex, OnlineJoin)].BoolValue = args.DeviceOnLine);
         
         if(args.DeviceOnLine)
             FeedbackForDevice(deviceIndex);
@@ -42,7 +38,7 @@ public class CrestronStatus : LogBase
     private void ConfigureSmartObject()
     {
         Debug("Configuring modal buttons");
-        _smartObjects.ForEach(x => x.UShortInput["Set Number of Items"].ShortValue = (short)_crestronDevices.Count);
+        SmartObjects.ForEach(x => x.UShortInput["Set Number of Items"].ShortValue = (short)_crestronDevices.Count);
 
         for (int i = 0; i < _crestronDevices.Count; i++)
         {
@@ -52,7 +48,7 @@ public class CrestronStatus : LogBase
     
     private void FeedbackForDevice(int deviceIndex)
     {
-        _smartObjects.ForEach(x =>
+        SmartObjects.ForEach(x =>
         {
             x.StringInput[_srlHelper.SerialJoinFor(deviceIndex, NameJoin)].StringValue = _crestronDevices[deviceIndex].Description;
             x.StringInput[_srlHelper.SerialJoinFor(deviceIndex, IpIdJoin)].StringValue = $"IP ID: {_crestronDevices[deviceIndex].ID:x2}";
@@ -60,4 +56,8 @@ public class CrestronStatus : LogBase
             x.BooleanInput[_srlHelper.BooleanJoinFor(deviceIndex, OnlineJoin)].BoolValue = _crestronDevices[deviceIndex].IsOnline;
         });
     }
+
+    public override void PowerOn() { }
+
+    public override void PowerOff() { }
 }

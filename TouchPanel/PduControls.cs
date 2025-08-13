@@ -4,12 +4,10 @@ using AVCoders.Power;
 
 namespace AVCoders.Crestron.TouchPanel;
 
-public class PduControls : LogBase
+public class PduControls : SrlPage
 {
     private readonly List<Outlet> _outlets;
-    private readonly List<SmartObject> _smartObjects;
     private readonly Confirmation _confirmation;
-    private readonly SubpageReferenceListHelper _srlHelper;
 
     public const uint PowerOnJoin = 1;
     public const uint PowerOffJoin = 2;
@@ -17,11 +15,9 @@ public class PduControls : LogBase
     
     public const uint NameJoin = 1;
 
-    public PduControls(string name, List<Outlet> outlets, List<SmartObject> smartObjects, Confirmation confirmation) : base(name)
+    public PduControls(string name, List<Outlet> outlets, List<SmartObject> smartObjects, Confirmation confirmation) : base(name, smartObjects)
     {
         _outlets = outlets;
-        _srlHelper = new SubpageReferenceListHelper(10, 10, 10);
-        _smartObjects = smartObjects;
         _confirmation = confirmation;
         UpdateOutletInfo();
     }
@@ -36,7 +32,7 @@ public class PduControls : LogBase
 
     private void UpdateOutletInfo()
     {
-        _smartObjects.ForEach(x =>
+        SmartObjects.ForEach(x =>
         {
             x.UShortInput["Set Number of Items"].ShortValue = (short)_outlets.Count;
             x.SigChange += HandleOutletPress;
@@ -47,7 +43,7 @@ public class PduControls : LogBase
             var deviceIndex = i;
             _outlets[deviceIndex].PowerStateHandlers += state => HandleOutletPowerState(deviceIndex, state);
 
-            _smartObjects.ForEach(x =>
+            SmartObjects.ForEach(x =>
             {
                 x.StringInput[_srlHelper.SerialJoinFor(deviceIndex, NameJoin)].StringValue = _outlets[deviceIndex].Name;
             });
@@ -98,7 +94,7 @@ public class PduControls : LogBase
     
     private void HandleOutletPowerState(int deviceIndex, PowerState state)
     {
-        _smartObjects.ForEach(smartObject =>
+        SmartObjects.ForEach(smartObject =>
         {
             smartObject.BooleanInput[_srlHelper.BooleanJoinFor(deviceIndex, PowerOnJoin)].BoolValue = state == PowerState.On;
             smartObject.BooleanInput[_srlHelper.BooleanJoinFor(deviceIndex, PowerOffJoin)].BoolValue = state == PowerState.Off;
@@ -106,4 +102,8 @@ public class PduControls : LogBase
         });
         
     }
+
+    public override void PowerOn() { }
+
+    public override void PowerOff() { }
 }

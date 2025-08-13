@@ -5,11 +5,9 @@ using Serilog;
 
 namespace AVCoders.Crestron.TouchPanel;
 
-public class Confirmation : LogBase
+public class Confirmation : SrlPage
 {
     private readonly List<BasicTriListWithSmartObject> _panels;
-    private readonly List<SmartObject> _smartObjects;
-    private readonly SubpageReferenceListHelper _srlHelper;
     private readonly uint _questionJoin;
     private readonly uint _pageJoin;
     private readonly uint[] _relatedPages;
@@ -20,22 +18,20 @@ public class Confirmation : LogBase
         
 
     public Confirmation(string name, List<BasicTriListWithSmartObject> panels, uint smartObjectId, uint questionJoin,
-        uint pageJoin, uint[] relatedPages, uint cancelJoin) : base(name)
+        uint pageJoin, uint[] relatedPages, uint cancelJoin) : base(name, [])
     {
         _panels = panels;
         _questionJoin = questionJoin;
         _pageJoin = pageJoin;
         _relatedPages = relatedPages;
         _cancelJoin = cancelJoin;
-        _srlHelper = new SubpageReferenceListHelper(10, 10, 10);
         _options = new List<KeyValuePair<string, Action?>>();
         
-        _smartObjects = new List<SmartObject>();
         _panels.ForEach(panel =>
         {
             var smartObject = panel.SmartObjects![smartObjectId]!;
             smartObject.SigChange += ConfirmationButtonPressed;
-            _smartObjects.Add(smartObject);
+            SmartObjects.Add(smartObject);
             panel.SigChange += HandlePanelButtonPress;
         });
     }
@@ -76,7 +72,7 @@ public class Confirmation : LogBase
         {
             panel.StringInput[_questionJoin].StringValue = question;
         });
-        _smartObjects.ForEach(x =>
+        SmartObjects.ForEach(x =>
         {
             x.UShortInput["Set Number of Items"].UShortValue = (ushort)options.Count;
             for (int i = 0; i < options.Count; i++)
@@ -88,4 +84,8 @@ public class Confirmation : LogBase
         
         CrestronPanel.Interlock(_panels, _pageJoin, _relatedPages);
     }
+
+    public override void PowerOn() { }
+
+    public override void PowerOff() { }
 }

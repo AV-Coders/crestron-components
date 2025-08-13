@@ -4,29 +4,24 @@ using AVCoders.Matrix;
 
 namespace AVCoders.Crestron.TouchPanel;
 
-public class SyncMenu : LogBase
+public class SyncMenu : SrlPage
 {
     public static readonly uint JoinIncrement = 30;
     private readonly List<SyncStatus> _devices = new ();
-    private readonly List<SmartObject> _smartObjects;
-    private readonly SubpageReferenceListHelper _srlHelper;
 
     private const uint NameJoin = 1;
     private const uint TypeJoin = 2;
     private const uint StreamIdJoin = 3;
     private const uint SyncStatusJoin = 4;
 
-    public SyncMenu(List<SyncStatus> devices, List<SmartObject> smartObjects, string name) : base(name)
+    public SyncMenu(List<SyncStatus> devices, List<SmartObject> smartObjects, string name) : base(name, smartObjects, JoinIncrement)
     {
-        _smartObjects = smartObjects;
-        _srlHelper = new SubpageReferenceListHelper(JoinIncrement, JoinIncrement, JoinIncrement);
-        
         RegisterFeedback(_devices);
     }
 
     private void RegisterFeedback(List<SyncStatus> devices)
     {
-        _smartObjects.ForEach(x =>
+        SmartObjects.ForEach(x =>
         {
             x.UShortInput["Set Number of Items"].UShortValue = (ushort)_devices.Count;
         });
@@ -80,7 +75,7 @@ public class SyncMenu : LogBase
             ConnectionState.Connected => $"Connected at {resolution}",
             _ => "Unknown"
         };
-        _smartObjects.ForEach(smartObject =>
+        SmartObjects.ForEach(smartObject =>
         {
             smartObject.StringInput[_srlHelper.SerialJoinFor(deviceIndex, SyncStatusJoin)].StringValue = syncStatus;
         });
@@ -88,7 +83,7 @@ public class SyncMenu : LogBase
 
     private void FeedbackForDevice(int deviceIndex)
     {
-        _smartObjects.ForEach(smartObject =>
+        SmartObjects.ForEach(smartObject =>
         {
             smartObject.StringInput[_srlHelper.SerialJoinFor(deviceIndex, NameJoin)].StringValue = _devices[deviceIndex].Name;
             smartObject.StringInput[_srlHelper.SerialJoinFor(deviceIndex, TypeJoin)].StringValue = _devices[deviceIndex].DeviceType.ToString();
@@ -99,4 +94,8 @@ public class SyncMenu : LogBase
         });
         
     }
+
+    public override void PowerOn() { }
+
+    public override void PowerOff() { }
 }

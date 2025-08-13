@@ -4,12 +4,10 @@ using AVCoders.Matrix;
 
 namespace AVCoders.Crestron.TouchPanel;
 
-public class AVoIPMenu : LogBase
+public class AVoIPMenu : SrlPage
 {
     public static readonly uint JoinIncrement = 30;
     private readonly List<AVoIPEndpoint> _devices;
-    private readonly List<SmartObject> _smartObjects;
-    private readonly SubpageReferenceListHelper _srlHelper;
 
     private const uint OnlineJoin = 1;
 
@@ -29,12 +27,10 @@ public class AVoIPMenu : LogBase
     public const uint CommsStatusLabelJoin = 12;
 
 
-    public AVoIPMenu(List<AVoIPEndpoint> devices, List<SmartObject> smartObjects, string name) : base(name)
+    public AVoIPMenu(List<AVoIPEndpoint> devices, List<SmartObject> smartObjects, string name) : base(name, smartObjects, JoinIncrement)
     {
         _devices = devices;
-        _smartObjects = smartObjects;
-        _srlHelper = new SubpageReferenceListHelper(JoinIncrement, JoinIncrement, JoinIncrement);
-        _smartObjects.ForEach(x =>
+        SmartObjects.ForEach(x =>
         {
             x.UShortInput["Set Number of Items"].UShortValue = (ushort)_devices.Count;
         });
@@ -69,7 +65,7 @@ public class AVoIPMenu : LogBase
             ConnectionState.Connected => $"Connected at {resolution}",
             _ => "Unknown"
         };
-        _smartObjects.ForEach(smartObject =>
+        SmartObjects.ForEach(smartObject =>
         {
             smartObject.StringInput[_srlHelper.SerialJoinFor(deviceIndex, SyncStatusJoin)].StringValue = syncStatus;
         });
@@ -77,7 +73,7 @@ public class AVoIPMenu : LogBase
 
     private void FeedbackForDevice(int deviceIndex)
     {
-        _smartObjects.ForEach(smartObject =>
+        SmartObjects.ForEach(smartObject =>
         {
             smartObject.StringInput[_srlHelper.SerialJoinFor(deviceIndex, NameJoin)].StringValue = _devices[deviceIndex].Name;
             smartObject.StringInput[_srlHelper.SerialJoinFor(deviceIndex, TypeJoin)].StringValue = _devices[deviceIndex].DeviceType.ToString();
@@ -130,7 +126,7 @@ public class AVoIPMenu : LogBase
                 break;
                 
         }
-        _smartObjects.ForEach(smartObject =>
+        SmartObjects.ForEach(smartObject =>
         {
             smartObject.UShortInput[_srlHelper.AnalogJoinFor(deviceIndex, CommsStatusRedJoin)].UShortValue = redValue;
             smartObject.UShortInput[_srlHelper.AnalogJoinFor(deviceIndex, CommsStatusGreenJoin)].UShortValue = greenValue;
@@ -173,7 +169,7 @@ public class AVoIPMenu : LogBase
                 break;
                 
         }
-        _smartObjects.ForEach(smartObject =>
+        SmartObjects.ForEach(smartObject =>
         {
             smartObject.UShortInput[_srlHelper.AnalogJoinFor(deviceIndex, DriverStatusRedJoin)].UShortValue = redValue;
             smartObject.UShortInput[_srlHelper.AnalogJoinFor(deviceIndex, DriverStatusGreenJoin)].UShortValue = greenValue;
@@ -181,4 +177,8 @@ public class AVoIPMenu : LogBase
             smartObject.StringInput[_srlHelper.SerialJoinFor(deviceIndex, DriverStatusLabelJoin)].StringValue = driverText;
         });
     }
+
+    public override void PowerOn() { }
+
+    public override void PowerOff() { }
 }

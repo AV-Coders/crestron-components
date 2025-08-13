@@ -12,10 +12,9 @@ public enum MotorType
 public record MotorInfo(Motor.Motor Motor, MotorType Type);
 
 
-public class MotorMenu :LogBase
+public class MotorMenu : SrlPage
 {
     private readonly List<MotorInfo> _motors;
-    private readonly SubpageReferenceListHelper _srlHelper;
 
     private const uint RaiseJoin = 1;
     private const uint LowerJoin = 2;
@@ -23,10 +22,9 @@ public class MotorMenu :LogBase
 
     private const uint NameJoin = 4;
 
-    public MotorMenu(string name, List<MotorInfo> motors, List<SmartObject> smartObjects) : base(name)
+    public MotorMenu(string name, List<MotorInfo> motors, List<SmartObject> smartObjects) : base(name, smartObjects)
     {
         _motors = motors;
-        _srlHelper = new SubpageReferenceListHelper(10, 10, 10);
         
         smartObjects.ForEach(smartObject =>
         {
@@ -83,4 +81,8 @@ public class MotorMenu :LogBase
                 break;
         }
     }
+
+    public override void PowerOn() { }
+
+    public override void PowerOff() { }
 }

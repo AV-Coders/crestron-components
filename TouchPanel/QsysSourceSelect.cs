@@ -78,4 +78,7 @@ public class QsysSourceSelect : LevelControls
     protected override void ToggleAudioMute(int index) {}
 
     protected override void SetNewLevel(Sig sig){}
+    public override void PowerOn() { }
+
+    public override void PowerOff() { }
 }

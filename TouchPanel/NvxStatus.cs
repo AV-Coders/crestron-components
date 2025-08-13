@@ -4,12 +4,9 @@ using Serilog;
 
 namespace AVCoders.Crestron.TouchPanel;
 
-public class NvxStatus
+public class NvxStatus : SrlPage
 {
     private readonly List<DmNvxBaseClass> _nvxDevices;
-    private readonly List<SmartObject> _smartObjects;
-    private readonly string _name;
-    private readonly SubpageReferenceListHelper _srlHelper;
 
     private const uint OnlineJoin = 1;
     
@@ -18,12 +15,9 @@ public class NvxStatus
     private const uint ModeJoin = 3;
     
 
-    public NvxStatus(string name, List<DmNvxBaseClass> nvxDevices, List<SmartObject> smartObjects)
+    public NvxStatus(string name, List<DmNvxBaseClass> nvxDevices, List<SmartObject> smartObjects) : base(name, smartObjects)
     {
-        _name = name;
         _nvxDevices = nvxDevices;
-        _srlHelper = new SubpageReferenceListHelper(10, 10, 10);
-        _smartObjects = smartObjects;
         ConfigureSmartObject();
 
         for (int i = 0; i < _nvxDevices.Count; i++)
@@ -35,7 +29,7 @@ public class NvxStatus
 
     private void HandleDeviceOnlineStatusChange(OnlineOfflineEventArgs args, int deviceIndex)
     {
-        _smartObjects.ForEach(x => x.BooleanInput[_srlHelper.BooleanJoinFor(deviceIndex, OnlineJoin)].BoolValue = args.DeviceOnLine);
+        SmartObjects.ForEach(x => x.BooleanInput[_srlHelper.BooleanJoinFor(deviceIndex, OnlineJoin)].BoolValue = args.DeviceOnLine);
         
         if(args.DeviceOnLine)
             DeviceFeedback(deviceIndex);
@@ -44,7 +38,7 @@ public class NvxStatus
     private void ConfigureSmartObject()
     {
         Log.Debug("Configuring modal buttons");
-        _smartObjects.ForEach(x => x.UShortInput["Set Number of Items"].ShortValue = (short)_nvxDevices.Count);
+        SmartObjects.ForEach(x => x.UShortInput["Set Number of Items"].ShortValue = (short)_nvxDevices.Count);
 
         for (int i = 0; i < _nvxDevices.Count; i++)
         {
@@ -54,9 +48,13 @@ public class NvxStatus
     
     private void DeviceFeedback(int deviceIndex)
     {
-        _smartObjects.ForEach(x => x.StringInput[_srlHelper.SerialJoinFor(deviceIndex, NameJoin)].StringValue = _nvxDevices[deviceIndex].Description);
-        _smartObjects.ForEach(x => x.StringInput[_srlHelper.SerialJoinFor(deviceIndex, IpIdJoin)].StringValue = $"IP ID: {_nvxDevices[deviceIndex].ID:x2}");
-        _smartObjects.ForEach(x => x.BooleanInput[_srlHelper.BooleanJoinFor(deviceIndex, OnlineJoin)].BoolValue = _nvxDevices[deviceIndex].IsOnline);
-        _smartObjects.ForEach(x => x.StringInput[_srlHelper.SerialJoinFor(deviceIndex, ModeJoin)].StringValue = $"Mode: {_nvxDevices[deviceIndex].Control.DeviceMode.ToString()}");
+        SmartObjects.ForEach(x => x.StringInput[_srlHelper.SerialJoinFor(deviceIndex, NameJoin)].StringValue = _nvxDevices[deviceIndex].Description);
+        SmartObjects.ForEach(x => x.StringInput[_srlHelper.SerialJoinFor(deviceIndex, IpIdJoin)].StringValue = $"IP ID: {_nvxDevices[deviceIndex].ID:x2}");
+        SmartObjects.ForEach(x => x.BooleanInput[_srlHelper.BooleanJoinFor(deviceIndex, OnlineJoin)].BoolValue = _nvxDevices[deviceIndex].IsOnline);
+        SmartObjects.ForEach(x => x.StringInput[_srlHelper.SerialJoinFor(deviceIndex, ModeJoin)].StringValue = $"Mode: {_nvxDevices[deviceIndex].Control.DeviceMode.ToString()}");
     }
+
+    public override void PowerOn() { }
+
+    public override void PowerOff() { }
 }

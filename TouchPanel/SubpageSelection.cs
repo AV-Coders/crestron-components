@@ -1,8 +1,5 @@
-﻿using AVCoders.Core;
-using AVCoders.Crestron.SmartGraphics;
+﻿using AVCoders.Crestron.SmartGraphics;
 using Crestron.SimplSharpPro.DeviceSupport;
-using Serilog;
-using Serilog.Context;
 
 namespace AVCoders.Crestron.TouchPanel;
 
@@ -13,17 +10,15 @@ public enum SubpageSelectionType
 }
 public record SubpageButtonConfig(ushort ButtonMode, uint PopupPageJoin, string Title, SubpageSelection? RelatedMenu = null, VisibilityChanged? VisibilityEvent = null, string? Pin = null);
 
-public class SubpageSelection : DeviceBase
+public class SubpageSelection : SrlPage
 {
     private readonly List<BasicTriListWithSmartObject> _panels;
-    private readonly List<SmartObject> _smartObjects;
     private readonly List<SubpageButtonConfig> _buttonConfig;
     private readonly uint[] _pages;
     private readonly SubpageSelectionType _subpageSelectionType;
     private readonly Pin? _pin;
     private readonly uint _closeJoin;
     private int _activePage;
-    private readonly SubpageReferenceListHelper _srlHelper;
     private readonly uint[] _allSelectJoins;
 
     private const uint SelectJoin = 1;
@@ -39,17 +34,15 @@ public class SubpageSelection : DeviceBase
     private bool _rememberSelection;
 
     public SubpageSelection(string name, List<BasicTriListWithSmartObject> panels, SubpageSelectionType subpageSelectionType,
-        List<SubpageButtonConfig> buttonConfig, uint[] pages, uint smartObjectId, uint closeJoin, Pin? pin = null) : base(name)
+        List<SubpageButtonConfig> buttonConfig, uint[] pages, uint smartObjectId, uint closeJoin, Pin? pin = null) : base(name, [])
     {
-        _smartObjects = new List<SmartObject>();
-        _srlHelper = new SubpageReferenceListHelper(JoinIncrement, JoinIncrement, JoinIncrement);
         _panels = panels;
         _panels.ForEach(panel =>
         {
             panel.SigChange += HandleButtonPress;
-            _smartObjects.Add(panel.SmartObjects![smartObjectId]!);
+            SmartObjects.Add(panel.SmartObjects![smartObjectId]!);
         });
-        _smartObjects.ForEach(smartObject => smartObject.SigChange += ModalButtonPressed);
+        SmartObjects.ForEach(smartObject => smartObject.SigChange += ModalButtonPressed);
         _pages = pages;
         _buttonConfig = buttonConfig;
         _subpageSelectionType = subpageSelectionType;
@@ -92,13 +85,13 @@ public class SubpageSelection : DeviceBase
     private void ConfigurePopupButtons()
     {
         Debug("Configuring modal buttons");
-        _smartObjects.ForEach(x => x.UShortInput["Set Number of Items"].ShortValue = (short)_buttonConfig.Count);
+        SmartObjects.ForEach(x => x.UShortInput["Set Number of Items"].ShortValue = (short)_buttonConfig.Count);
 
         for (int i = 0; i < _buttonConfig.Count; i++)
         {
-            _smartObjects.ForEach(x => x.BooleanInput[_srlHelper.BooleanJoinFor(i, VisibilityJoin)].BoolValue = true);
-            _smartObjects.ForEach(x => x.UShortInput[_srlHelper.AnalogJoinFor(i, ModeJoin)].UShortValue = _buttonConfig[i].ButtonMode);
-            _smartObjects.ForEach(x => x.StringInput[_srlHelper.SerialJoinFor(i, TitleJoin)].StringValue = _buttonConfig[i].Title);
+            SmartObjects.ForEach(x => x.BooleanInput[_srlHelper.BooleanJoinFor(i, VisibilityJoin)].BoolValue = true);
+            SmartObjects.ForEach(x => x.UShortInput[_srlHelper.AnalogJoinFor(i, ModeJoin)].UShortValue = _buttonConfig[i].ButtonMode);
+            SmartObjects.ForEach(x => x.StringInput[_srlHelper.SerialJoinFor(i, TitleJoin)].StringValue = _buttonConfig[i].Title);
         }
     }
 
@@ -126,7 +119,7 @@ public class SubpageSelection : DeviceBase
             _defaultPage = _activePage;
         HandleMenuItemVisibility(_buttonConfig[selection], Visibility.Shown);
         CrestronPanel.Interlock(_panels, _buttonConfig[selection].PopupPageJoin, _pages);
-        CrestronPanel.Interlock(_smartObjects, _srlHelper.BooleanJoinFor(selection, SelectJoin), _allSelectJoins);
+        CrestronPanel.Interlock(SmartObjects, _srlHelper.BooleanJoinFor(selection, SelectJoin), _allSelectJoins);
         Debug($"Showing modal {selection}");
     }
 
@@ -134,7 +127,7 @@ public class SubpageSelection : DeviceBase
     {
         _activePage = -1;
         CrestronPanel.Interlock(_panels, 0, _pages);
-        CrestronPanel.Interlock(_smartObjects, 0, _allSelectJoins);
+        CrestronPanel.Interlock(SmartObjects, 0, _allSelectJoins);
         _buttonConfig.ForEach( button => HandleMenuItemVisibility(button, Visibility.Hidden));
         Debug("Clearing Subpages");
     }

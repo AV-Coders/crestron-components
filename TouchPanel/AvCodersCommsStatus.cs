@@ -7,12 +7,10 @@ using Serilog.Filters;
 
 namespace AVCoders.Crestron.TouchPanel;
 
-public class AvCodersCommsStatus
+public class AvCodersCommsStatus : SrlPage
 {
     private readonly List<IpComms> _communicationClients;
     private readonly List<List<string>> _logMessages;
-    private readonly List<SmartObject> _smartObjects;
-    private readonly SubpageReferenceListHelper _srlHelper;
     private readonly TouchpanelLoggerSink _sink;
     private readonly string _logKey = Guid.NewGuid().ToString().Substring(0,10);
     private readonly string _logVlaue = Guid.NewGuid().ToString().Substring(0,10);
@@ -30,13 +28,10 @@ public class AvCodersCommsStatus
     
     public static readonly uint JoinIncrement = 30;
 
-    public AvCodersCommsStatus(List<IpComms> communicationClients, List<SmartObject> smartObjects)
+    public AvCodersCommsStatus(List<IpComms> communicationClients, List<SmartObject> smartObjects) : base("AvCodersCommsStatus", smartObjects, JoinIncrement)
     {
         _communicationClients = communicationClients;
-        _srlHelper = new SubpageReferenceListHelper(JoinIncrement, JoinIncrement, JoinIncrement);
-        
-        _smartObjects = smartObjects;
-        _smartObjects.ForEach(x => x.UShortInput["Set Number of Items"].ShortValue = (short)_communicationClients.Count);
+        SmartObjects.ForEach(x => x.UShortInput["Set Number of Items"].ShortValue = (short)_communicationClients.Count);
         _sink = new TouchpanelLoggerSink();
         _sink.SerilogEventHandlers += HandleCommsClientLogEvent;
 
@@ -78,7 +73,7 @@ public class AvCodersCommsStatus
         {
             _logMessages[deviceIndex].RemoveRange(0, 1);
         }
-        _smartObjects.ForEach(smartObject =>
+        SmartObjects.ForEach(smartObject =>
         {
             smartObject.StringInput[_srlHelper.SerialJoinFor(deviceIndex, LogJoins[4])].StringValue = _logMessages[deviceIndex].Count > 0 ? _logMessages[deviceIndex][0] : String.Empty;
             smartObject.StringInput[_srlHelper.SerialJoinFor(deviceIndex, LogJoins[3])].StringValue = _logMessages[deviceIndex].Count > 1 ? _logMessages[deviceIndex][1] : String.Empty;
@@ -90,7 +85,7 @@ public class AvCodersCommsStatus
 
     private void FeedbackForDevice(int deviceIndex)
     {
-        _smartObjects.ForEach(smartObject =>
+        SmartObjects.ForEach(smartObject =>
         {
             smartObject.StringInput[_srlHelper.SerialJoinFor(deviceIndex, NameJoin)].StringValue = _communicationClients[deviceIndex].Name;
             smartObject.StringInput[_srlHelper.SerialJoinFor(deviceIndex, ClassJoin)].StringValue = _communicationClients[deviceIndex].GetType().ToString();
@@ -100,4 +95,8 @@ public class AvCodersCommsStatus
         });
         
     }
+
+    public override void PowerOn() { }
+
+    public override void PowerOff() { }
 }
