@@ -6,8 +6,9 @@ namespace AVCoders.Crestron.TouchPanel;
 
 public class PduControls : SrlPage
 {
-    private readonly List<Outlet> _outlets;
+    private readonly List<Outlet> _allOutlets;
     private readonly Confirmation _confirmation;
+    private readonly Dictionary<string, List<Outlet>> _pduOutlets = new ();
 
     public const uint PowerOnJoin = 1;
     public const uint PowerOffJoin = 2;
@@ -15,37 +16,46 @@ public class PduControls : SrlPage
     
     public const uint NameJoin = 1;
 
-    public PduControls(string name, List<Outlet> outlets, List<SmartObject> smartObjects, Confirmation confirmation) : base(name, smartObjects)
+    public PduControls(string name, List<Outlet> allOutlets, List<SmartObject> smartObjects, Confirmation confirmation) : base(name, smartObjects)
     {
-        _outlets = outlets;
+        _allOutlets = allOutlets;
         _confirmation = confirmation;
         UpdateOutletInfo();
     }
 
-    public void HandleNewOutlets(List<Outlet> outlets)
+    public void HandleNewOutlets(List<Outlet> outlets) => CreateMasterOutletList(outlets);
+
+    public void HandleNewOutlets(string pduName, List<Outlet> outlets)
     {
-        _outlets.Clear();
-        outlets.ForEach(x => _outlets.Add(x));
-        UpdateOutletInfo();
+        _pduOutlets[pduName] = outlets;
         
+        var allOutlets = _pduOutlets.Values.SelectMany(x => x).ToList();
+        CreateMasterOutletList(allOutlets);
+    }
+
+    private void CreateMasterOutletList(List<Outlet> outlets)
+    {
+        _allOutlets.Clear();
+        outlets.ForEach(x => _allOutlets.Add(x));
+        UpdateOutletInfo();
     }
 
     private void UpdateOutletInfo()
     {
         SmartObjects.ForEach(x =>
         {
-            x.UShortInput["Set Number of Items"].ShortValue = (short)_outlets.Count;
+            x.UShortInput["Set Number of Items"].ShortValue = (short)_allOutlets.Count;
             x.SigChange += HandleOutletPress;
         });
         
-        for (int i = 0; i < _outlets.Count; i++)
+        for (int i = 0; i < _allOutlets.Count; i++)
         {
             var deviceIndex = i;
-            _outlets[deviceIndex].PowerStateHandlers += state => HandleOutletPowerState(deviceIndex, state);
+            _allOutlets[deviceIndex].PowerStateHandlers += state => HandleOutletPowerState(deviceIndex, state);
 
             SmartObjects.ForEach(x =>
             {
-                x.StringInput[SrlHelper.SerialJoinFor(deviceIndex, NameJoin)].StringValue = _outlets[deviceIndex].Name;
+                x.StringInput[SrlHelper.SerialJoinFor(deviceIndex, NameJoin)].StringValue = _allOutlets[deviceIndex].Name;
             });
         }
     }
@@ -61,30 +71,30 @@ public class PduControls : SrlPage
                 switch (selectionInfo.Join)
                 {
                     case PowerOnJoin:
-                        _outlets[selectionInfo.Index].PowerOn();
-                        Debug($"Turning on outlet {_outlets[selectionInfo.Index].Name}");
+                        _allOutlets[selectionInfo.Index].PowerOn();
+                        Debug($"Turning on outlet {_allOutlets[selectionInfo.Index].Name}");
                         break;
                     case PowerOffJoin:
                         _confirmation.Prompt(
-                            $"Are you sure you want to turn off the {_outlets[selectionInfo.Index].Name} outlet?",
+                            $"Are you sure you want to turn off the {_allOutlets[selectionInfo.Index].Name} outlet?",
                             new List<KeyValuePair<string, Action?>>
                             {
-                                new ("Yes", _outlets[selectionInfo.Index].PowerOff),
+                                new ("Yes", _allOutlets[selectionInfo.Index].PowerOff),
                                 new ("No", null)
                             }
                             );
-                        Debug($"Outlet power off requested for {_outlets[selectionInfo.Index].Name}");
+                        Debug($"Outlet power off requested for {_allOutlets[selectionInfo.Index].Name}");
                         break;
                     case RebootJoin:
                         _confirmation.Prompt(
-                            $"Are you sure you want to REBOOT the {_outlets[selectionInfo.Index].Name} outlet?",
+                            $"Are you sure you want to REBOOT the {_allOutlets[selectionInfo.Index].Name} outlet?",
                             new List<KeyValuePair<string, Action?>>
                             {
-                                new ("Yes", _outlets[selectionInfo.Index].Reboot),
+                                new ("Yes", _allOutlets[selectionInfo.Index].Reboot),
                                 new ("No", null)
                             }
                             );
-                        Debug($"Outlet reboot requested for {_outlets[selectionInfo.Index].Name}");
+                        Debug($"Outlet reboot requested for {_allOutlets[selectionInfo.Index].Name}");
                         break;
                     
                 }
