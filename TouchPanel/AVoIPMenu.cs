@@ -6,7 +6,7 @@ namespace AVCoders.Crestron.TouchPanel;
 
 public class AVoIPMenu : SrlPage
 {
-    public static readonly uint JoinIncrement = 30;
+    public new static readonly uint DefaultJoinIncrement = 30;
     private readonly List<AVoIPEndpoint> _devices;
 
     private const uint OnlineJoin = 1;
@@ -27,7 +27,7 @@ public class AVoIPMenu : SrlPage
     public const uint CommsStatusLabelJoin = 12;
 
 
-    public AVoIPMenu(List<AVoIPEndpoint> devices, List<SmartObject> smartObjects, string name) : base(name, smartObjects, JoinIncrement)
+    public AVoIPMenu(List<AVoIPEndpoint> devices, List<SmartObject> smartObjects, string name) : base(name, smartObjects, DefaultJoinIncrement)
     {
         _devices = devices;
         SmartObjects.ForEach(x =>

@@ -26,9 +26,9 @@ public class AvCodersCommsStatus : SrlPage
 
     public static readonly uint[] LogJoins = { 11, 12, 13, 14, 15 };
     
-    public static readonly uint JoinIncrement = 30;
+    public new static readonly uint DefaultJoinIncrement = 30;
 
-    public AvCodersCommsStatus(List<IpComms> communicationClients, List<SmartObject> smartObjects) : base("AvCodersCommsStatus", smartObjects, JoinIncrement)
+    public AvCodersCommsStatus(List<IpComms> communicationClients, List<SmartObject> smartObjects) : base("AvCodersCommsStatus", smartObjects, DefaultJoinIncrement)
     {
         _communicationClients = communicationClients;
         SmartObjects.ForEach(x => x.UShortInput["Set Number of Items"].ShortValue = (short)_communicationClients.Count);

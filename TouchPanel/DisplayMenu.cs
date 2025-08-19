@@ -49,9 +49,9 @@ public class DisplayMenu : SrlPage
     public const uint DriverStatusLabelJoin = 11;
     public const uint CommsStatusLabelJoin = 12;
     
-    public static readonly uint JoinIncrement = 30;
+    public new static readonly uint DefaultJoinIncrement = 30;
 
-    public DisplayMenu(string name, List<DisplayInfo> displays, List<SmartObject> smartObjects) : base(name, smartObjects, JoinIncrement)
+    public DisplayMenu(string name, List<DisplayInfo> displays, List<SmartObject> smartObjects) : base(name, smartObjects, DefaultJoinIncrement)
     {
         _name = name;
         _displays = displays;

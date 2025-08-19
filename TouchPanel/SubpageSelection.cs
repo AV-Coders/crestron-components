@@ -28,8 +28,6 @@ public class SubpageSelection : SrlPage
 
     private const uint TitleJoin = 1;
 
-    public static readonly uint JoinIncrement = 10;
-
     private int? _defaultPage = null;
     private bool _rememberSelection;
 

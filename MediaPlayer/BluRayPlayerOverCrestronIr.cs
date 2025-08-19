@@ -7,8 +7,6 @@ namespace AVCoders.Crestron.MediaPlayer;
 
 public class BluRayPlayerOverCrestronIr : AVCoders.MediaPlayer.MediaPlayer
 {
-    
-    private readonly string _name;
     private readonly IROutputPort _port;
     private readonly ushort _pulseTimeInMs;
     

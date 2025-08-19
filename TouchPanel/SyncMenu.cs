@@ -6,7 +6,7 @@ namespace AVCoders.Crestron.TouchPanel;
 
 public class SyncMenu : SrlPage
 {
-    public static readonly uint JoinIncrement = 30;
+    public new static readonly uint DefaultJoinIncrement = 30;
     private readonly List<SyncStatus> _devices = new ();
 
     private const uint NameJoin = 1;
@@ -14,7 +14,7 @@ public class SyncMenu : SrlPage
     private const uint StreamIdJoin = 3;
     private const uint SyncStatusJoin = 4;
 
-    public SyncMenu(List<SyncStatus> devices, List<SmartObject> smartObjects, string name) : base(name, smartObjects, JoinIncrement)
+    public SyncMenu(List<SyncStatus> devices, List<SmartObject> smartObjects, string name) : base(name, smartObjects, DefaultJoinIncrement)
     {
         RegisterFeedback(_devices);
     }

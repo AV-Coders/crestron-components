@@ -9,10 +9,12 @@ public abstract class SrlPage : DeviceBase
     
     protected readonly SubpageReferenceListHelper SrlHelper;
     protected readonly List<SmartObject> SmartObjects;
-    
+    protected readonly uint JoinIncrement;
+
     public SrlPage(string name, List<SmartObject> smartObjects, uint joinIncrement = DefaultJoinIncrement) : base(name)
     {
         SmartObjects = smartObjects;
+        JoinIncrement = joinIncrement;
         SrlHelper = new SubpageReferenceListHelper(joinIncrement, joinIncrement, joinIncrement);
     }
 }

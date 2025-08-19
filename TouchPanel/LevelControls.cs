@@ -7,8 +7,6 @@ namespace AVCoders.Crestron.TouchPanel;
 
 public abstract class LevelControls : SrlPage
 {
-    
-    protected readonly SubpageReferenceListHelper SrlHelper;
     protected bool ButtonHeld;
 
     public const uint VolumeUpJoin = 1;
@@ -20,15 +18,8 @@ public abstract class LevelControls : SrlPage
 
     public const uint NameJoin = 1;
 
-    public const uint DefaultJoinIncrement = 10;
-    protected readonly uint JoinIncrement;
-
     protected LevelControls(string name, ushort numberOfAudioBlocks, List<SmartObject> smartObjects, uint joinIncrement) : base(name, smartObjects, joinIncrement)
     {
-        JoinIncrement = joinIncrement;
-        SrlHelper = new SubpageReferenceListHelper(JoinIncrement, JoinIncrement, JoinIncrement);
-        
-
         smartObjects.ForEach(smartObject =>
         {
             smartObject.SigChange += HandleVolumePress;
