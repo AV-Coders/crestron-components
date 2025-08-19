@@ -38,10 +38,11 @@ public class Pin : LogBase
         _smartObjects = new List<SmartObject>();
         _panels.ForEach(panel =>
         {
-            _smartObjects.Add(panel.SmartObjects![_smartObjectId]!);
+            var smartObject = panel.SmartObjects![smartObjectId]!;
+            _smartObjects.Add(smartObject);
+            smartObject.SigChange += PinButtonPressed;
             panel.SigChange += HandlePanelButtonPress;
         });
-        _smartObjects.ForEach(smartObject => smartObject.SigChange += PinButtonPressed);
     }
 
     private void HandlePanelButtonPress(BasicTriList currentDevice, SigEventArgs args)
