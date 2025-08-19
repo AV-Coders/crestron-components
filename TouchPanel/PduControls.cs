@@ -1,6 +1,7 @@
 using AVCoders.Core;
 using AVCoders.Crestron.SmartGraphics;
 using AVCoders.Power;
+using Serilog;
 
 namespace AVCoders.Crestron.TouchPanel;
 
@@ -8,15 +9,16 @@ public class PduControls : SrlPage
 {
     private readonly List<Outlet> _allOutlets;
     private readonly Confirmation _confirmation;
-    private readonly Dictionary<string, List<Outlet>> _pduOutlets = new ();
+    private readonly Dictionary<string, List<Outlet>> _pduOutlets = new();
 
     public const uint PowerOnJoin = 1;
     public const uint PowerOffJoin = 2;
     public const uint RebootJoin = 3;
-    
+
     public const uint NameJoin = 1;
 
-    public PduControls(string name, List<Outlet> allOutlets, List<SmartObject> smartObjects, Confirmation confirmation) : base(name, smartObjects)
+    public PduControls(string name, List<Outlet> allOutlets, List<SmartObject> smartObjects, Confirmation confirmation)
+        : base(name, smartObjects)
     {
         _allOutlets = allOutlets;
         _confirmation = confirmation;
@@ -28,7 +30,7 @@ public class PduControls : SrlPage
     public void HandleNewOutlets(string pduName, List<Outlet> outlets)
     {
         _pduOutlets[pduName] = outlets;
-        
+
         var allOutlets = _pduOutlets.Values.SelectMany(x => x).ToList();
         CreateMasterOutletList(allOutlets);
     }
@@ -47,7 +49,7 @@ public class PduControls : SrlPage
             x.UShortInput["Set Number of Items"].ShortValue = (short)_allOutlets.Count;
             x.SigChange += HandleOutletPress;
         });
-        
+
         for (int i = 0; i < _allOutlets.Count; i++)
         {
             var deviceIndex = i;
@@ -55,65 +57,69 @@ public class PduControls : SrlPage
 
             SmartObjects.ForEach(x =>
             {
-                x.StringInput[SrlHelper.SerialJoinFor(deviceIndex, NameJoin)].StringValue = _allOutlets[deviceIndex].Name;
+                x.StringInput[SrlHelper.SerialJoinFor(deviceIndex, NameJoin)].StringValue =
+                    _allOutlets[deviceIndex].Name;
             });
         }
     }
-    
+
     private void HandleOutletPress(GenericBase currentDevice, SmartObjectEventArgs args)
     {
-        var selectionInfo = SrlHelper.GetSigInfo(args.Sig);
-        Debug($"Display Join, id {args.Sig.Number}. Type: {args.Sig.Type.ToString()} Index {selectionInfo.Index}, Join: {selectionInfo.Join}");
-        
-        switch (args.Sig.Type)
+        using (PushProperties("HandleOutletPress"))
         {
-            case eSigType.Bool when args.Sig.BoolValue:
-                switch (selectionInfo.Join)
-                {
-                    case PowerOnJoin:
-                        _allOutlets[selectionInfo.Index].PowerOn();
-                        Debug($"Turning on outlet {_allOutlets[selectionInfo.Index].Name}");
-                        break;
-                    case PowerOffJoin:
-                        _confirmation.Prompt(
-                            $"Are you sure you want to turn off the {_allOutlets[selectionInfo.Index].Name} outlet?",
-                            new List<KeyValuePair<string, Action?>>
-                            {
-                                new ("Yes", _allOutlets[selectionInfo.Index].PowerOff),
-                                new ("No", null)
-                            }
-                            );
-                        Debug($"Outlet power off requested for {_allOutlets[selectionInfo.Index].Name}");
-                        break;
-                    case RebootJoin:
-                        _confirmation.Prompt(
-                            $"Are you sure you want to REBOOT the {_allOutlets[selectionInfo.Index].Name} outlet?",
-                            new List<KeyValuePair<string, Action?>>
-                            {
-                                new ("Yes", _allOutlets[selectionInfo.Index].Reboot),
-                                new ("No", null)
-                            }
-                            );
-                        Debug($"Outlet reboot requested for {_allOutlets[selectionInfo.Index].Name}");
-                        break;
-                    
-                }
-                break;
+            if (!CrestronPanel.EventIsAButtonPress(args))
+                return;
+            var selectionInfo = SrlHelper.GetSigInfo(args.Sig);
+            switch (selectionInfo.Join)
+            {
+                case PowerOnJoin:
+                    _allOutlets[selectionInfo.Index].PowerOn();
+                    Log.Debug($"Turning on outlet {_allOutlets[selectionInfo.Index].Name}");
+                    break;
+                case PowerOffJoin:
+                    _confirmation.Prompt(
+                        $"Are you sure you want to turn off the {_allOutlets[selectionInfo.Index].Name} outlet?",
+                        new List<KeyValuePair<string, Action?>>
+                        {
+                            new("Yes", _allOutlets[selectionInfo.Index].PowerOff),
+                            new("No", null)
+                        }
+                    );
+                    Log.Debug($"Outlet power off requested for {_allOutlets[selectionInfo.Index].Name}");
+                    break;
+                case RebootJoin:
+                    _confirmation.Prompt(
+                        $"Are you sure you want to REBOOT the {_allOutlets[selectionInfo.Index].Name} outlet?",
+                        new List<KeyValuePair<string, Action?>>
+                        {
+                            new("Yes", _allOutlets[selectionInfo.Index].Reboot),
+                            new("No", null)
+                        }
+                    );
+                    Log.Debug($"Outlet reboot requested for {_allOutlets[selectionInfo.Index].Name}");
+                    break;
+            }
         }
     }
-    
+
     private void HandleOutletPowerState(int deviceIndex, PowerState state)
     {
         SmartObjects.ForEach(smartObject =>
         {
-            smartObject.BooleanInput[SrlHelper.BooleanJoinFor(deviceIndex, PowerOnJoin)].BoolValue = state == PowerState.On;
-            smartObject.BooleanInput[SrlHelper.BooleanJoinFor(deviceIndex, PowerOffJoin)].BoolValue = state == PowerState.Off;
-            smartObject.BooleanInput[SrlHelper.BooleanJoinFor(deviceIndex, RebootJoin)].BoolValue = state == PowerState.Rebooting;
+            smartObject.BooleanInput[SrlHelper.BooleanJoinFor(deviceIndex, PowerOnJoin)].BoolValue =
+                state == PowerState.On;
+            smartObject.BooleanInput[SrlHelper.BooleanJoinFor(deviceIndex, PowerOffJoin)].BoolValue =
+                state == PowerState.Off;
+            smartObject.BooleanInput[SrlHelper.BooleanJoinFor(deviceIndex, RebootJoin)].BoolValue =
+                state == PowerState.Rebooting;
         });
-        
     }
 
-    public override void PowerOn() { }
+    public override void PowerOn()
+    {
+    }
 
-    public override void PowerOff() { }
+    public override void PowerOff()
+    {
+    }
 }

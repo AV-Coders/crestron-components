@@ -1,5 +1,6 @@
 using AVCoders.Core;
 using AVCoders.Crestron.SmartGraphics;
+using Serilog;
 
 namespace AVCoders.Crestron.TouchPanel;
 
@@ -59,26 +60,27 @@ public class MotorMenu : SrlPage
 
     private void HandleMotorPress(GenericBase currentDevice, SmartObjectEventArgs args)
     {
-        if (args.Sig.Type != eSigType.Bool)
-            return;
-        if (args.Sig.BoolValue == false)
-            return;
-        Debug($"Button {args.Sig.Number} pressed");
-        var joinInfo = SrlHelper.GetSigInfo(args.Sig);
-        switch (joinInfo.Join)
+        using (PushProperties("HandleMotorPress"))
         {
-            case RaiseJoin:
-                _motors[joinInfo.Index].Motor.Raise();
-                Debug($"Raising");
-                break;
-            case LowerJoin:
-                _motors[joinInfo.Index].Motor.Lower();
-                Debug($"Lowering");
-                break;
-            case StopJoin:
-                _motors[joinInfo.Index].Motor.Stop();
-                Debug($"Stopping");
-                break;
+            if (!CrestronPanel.EventIsAButtonPress(args))
+                return;
+            Log.Debug($"Button {args.Sig.Number} pressed");
+            var joinInfo = SrlHelper.GetSigInfo(args.Sig);
+            switch (joinInfo.Join)
+            {
+                case RaiseJoin:
+                    _motors[joinInfo.Index].Motor.Raise();
+                    Log.Debug("Raising");
+                    break;
+                case LowerJoin:
+                    _motors[joinInfo.Index].Motor.Lower();
+                    Log.Debug("Lowering");
+                    break;
+                case StopJoin:
+                    _motors[joinInfo.Index].Motor.Stop();
+                    Log.Debug("Stopping");
+                    break;
+            }
         }
     }
 

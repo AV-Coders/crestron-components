@@ -74,6 +74,11 @@ public static class CrestronPanel
         return args.Sig is { Type: eSigType.Bool, BoolValue: true };
     }
 
+    public static bool EventIsASmartObjectButtonPress(SigEventArgs args)
+    {
+        return args.Sig is { Type: eSigType.Bool, BoolValue: true, Number: >= 4000 };
+    }
+
     public static bool EventIsAStringChange(SigEventArgs args)
     {
         return args.Sig is { Type: eSigType.String };

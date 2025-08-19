@@ -20,7 +20,6 @@ public class QsysSourceSelect : LevelControls
 
         for (int i = 0; i < audioBlocks.Count; i++)
         {
-            Debug($"Setting up source select {i}");
             var faderIndex = i;
             if (_audioBlocks[faderIndex].SelectInstanceTag == string.Empty)
                 throw new InvalidOperationException($"Audio block at index {faderIndex} does not have a select instance tag");
@@ -53,21 +52,15 @@ public class QsysSourceSelect : LevelControls
     
     private void HandleSourceSelect(GenericBase currentDevice, SmartObjectEventArgs args)
     {
-        if (args.Sig.Type != eSigType.Bool)
-            return;
-        if (!args.Sig.BoolValue)
-            return;
-        if (args.Sig.Number < 4000) // Some touch panels send a sig 1 event as well as the button press event.
+        if (!CrestronPanel.EventIsASmartObjectButtonPress(args))
             return;
         var joinInfo = SrlHelper.GetBooleanSigInfo(args.Sig.Number);
         int sourceIndex = (int) joinInfo.Join - 4;
         if (sourceIndex > _sources.Count)
             return;
         
-        Debug($"Source button pressed, id {args.Sig.Number}.  Index {sourceIndex}, Join: {joinInfo.Join}");
         string instanceTag = _audioBlocks[joinInfo.Index].SelectInstanceTag;
         string inputSelection = _sources[sourceIndex].InputNumber.ToString();
-        Debug($"Setting source for {instanceTag} to {inputSelection}");
         _dsp.SetValue(instanceTag, inputSelection);
     }
 

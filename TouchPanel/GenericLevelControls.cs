@@ -57,7 +57,7 @@ public class GenericLevelControls : LevelControls
         using (PushProperties("ToggleAudioMute"))
         {
             _faders[index].ToggleAudioMute();
-            Debug($"Toggled mute for fader {_faders[index].Name}");
+            Log.Debug($"Toggled mute for fader {_faders[index].Name}");
         }
     }
 

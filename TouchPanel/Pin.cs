@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using AVCoders.Core;
 using Crestron.SimplSharpPro.DeviceSupport;
+using Serilog;
 
 namespace AVCoders.Crestron.TouchPanel;
 public class Pin : LogBase
@@ -58,11 +59,9 @@ public class Pin : LogBase
 
     private void PinButtonPressed(GenericBase currentDevice, SmartObjectEventArgs args)
     {
-        if (args.Sig.Type != eSigType.Bool)
+        
+        if (!CrestronPanel.EventIsAButtonPress(args))
             return;
-        if (!args.Sig.BoolValue)
-            return;
-        Debug($"Button {args.Sig.Number} pressed");
         uint buttonNumber = args.Sig.Number - 4010;
         switch (buttonNumber)
         {
@@ -118,12 +117,12 @@ public class Pin : LogBase
     {
         if (String.IsNullOrEmpty(expectedPin))
         {
-            Debug("Authentication not required");
+            Log.Debug("Authentication not required");
             successAction.Invoke();
             return;
         }
         ClearText();
-        Debug("Authenticating...");
+        Log.Debug("Authenticating...");
         CrestronPanel.Interlock(_panels, _pageJoin, _relatedPages);
         _action = successAction;
         _pin = expectedPin;
@@ -137,6 +136,6 @@ public class Pin : LogBase
             x.StringInput[MaskedInputStringJoin + 10].StringValue = string.Empty;
         });
         _input = string.Empty;
-        Debug("Cleared text");
+        Log.Debug("Cleared text");
     }
 }

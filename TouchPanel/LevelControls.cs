@@ -44,7 +44,7 @@ public abstract class LevelControls : SrlPage
             while (ButtonHeld)
             {
                 action.Invoke();
-                Debug("Volume command sent");
+                Log.Verbose("Volume command sent");
                 Thread.Sleep(250);
             }
         }).Start();
@@ -52,45 +52,50 @@ public abstract class LevelControls : SrlPage
 
     private void HandleVolumePress(GenericBase currentDevice, SmartObjectEventArgs args)
     {
-        var selectionInfo = SrlHelper.GetSigInfo(args.Sig);
-        switch (args.Sig.Type)
+        using (PushProperties("HandleVolumePress"))
         {
-            case eSigType.Bool when args.Sig.Number > 4000:
+            var selectionInfo = SrlHelper.GetSigInfo(args.Sig);
+            switch (args.Sig.Type)
             {
-                if (!args.Sig.BoolValue)
+                case eSigType.Bool when args.Sig.Number > 4000:
                 {
-                    ButtonHeld = false;
+                    if (!args.Sig.BoolValue)
+                    {
+                        ButtonHeld = false;
+                        return;
+                    }
+
+                    switch (selectionInfo.Join)
+                    {
+                        case VolumeUpJoin:
+                            Log.Debug($"Queueing Volume up for fader index {selectionInfo.Index}");
+                            StartVolumeUp(selectionInfo.Index);
+                            break;
+                        case VolumeDownJoin:
+                            Log.Debug($"Queueing Volume down for fader index {selectionInfo.Index}");
+                            StartVolumeDown(selectionInfo.Index);
+                            break;
+                        case MuteJoin:
+
+                            Log.Debug($"Toggling Volume mute for fader index {selectionInfo.Index}");
+                            ToggleAudioMute(selectionInfo.Index);
+                            break;
+                        default:
+                            Log.Debug(
+                                $"Join {selectionInfo.Join} for index {selectionInfo.Index} is not handled by this module");
+                            break;
+                    }
+
                     return;
                 }
-
-                switch (selectionInfo.Join)
-                {
-                    case VolumeUpJoin:
-                        Debug($"Queueing Volume up for fader index {selectionInfo.Index}");
-                        StartVolumeUp(selectionInfo.Index);
-                        break;
-                    case VolumeDownJoin:
-                        Debug($"Queueing Volume down for fader index {selectionInfo.Index}");
-                        StartVolumeDown(selectionInfo.Index);
-                        break;
-                    case MuteJoin:
-                        
-                        Debug($"Toggling Volume mute for fader index {selectionInfo.Index}");
-                        ToggleAudioMute(selectionInfo.Index);
-                        break;
-                    default:
-                        Debug($"Join {selectionInfo.Join} for index {selectionInfo.Index} is not handled by this module");
-                        break;
-                }
-                return;
+                case eSigType.UShort when args.Sig.Number > 10:
+                    Log.Debug($"Analog sig, Number: {args.Sig.Number}");
+                    SetNewLevel(args.Sig);
+                    return;
+                default:
+                    Log.Debug($"Ignoring Sig, Type: {args.Sig.Type.ToString()}, Number: {args.Sig.Number}");
+                    break;
             }
-            case eSigType.UShort when args.Sig.Number > 10:
-                Debug($"Analog sig, Number: {args.Sig.Number}");
-                SetNewLevel(args.Sig);
-                return;
-            default:
-                Debug($"Ignoring Sig, Type: {args.Sig.Type.ToString()}, Number: {args.Sig.Number}");
-                break;
         }
     }
     

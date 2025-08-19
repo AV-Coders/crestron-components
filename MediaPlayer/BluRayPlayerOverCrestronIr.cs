@@ -1,5 +1,6 @@
 ﻿using AVCoders.MediaPlayer;
 using Crestron.SimplSharpPro;
+using Serilog;
 using Directory = Crestron.SimplSharp.CrestronIO.Directory;
 
 namespace AVCoders.Crestron.MediaPlayer;
@@ -49,7 +50,7 @@ public class BluRayPlayerOverCrestronIr : AVCoders.MediaPlayer.MediaPlayer
 
     private void Pulse(string key)
     {
-        Debug($"Pulsing {key}");
+        Log.Debug($"Pulsing {key}");
         _port.PressAndRelease(key, _pulseTimeInMs);
     }
 }

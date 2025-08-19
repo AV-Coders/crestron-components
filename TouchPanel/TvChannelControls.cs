@@ -45,7 +45,6 @@ public class TvChannelControls : LogBase
             return;
         
         uint button = args.Sig.Number - 4010;
-        Debug($"Button {button} Pressed");
         
         if(_actions.TryGetValue(button, out var action))
         {
@@ -60,7 +59,6 @@ public class TvChannelControls : LogBase
         else
         {
             _stb.SetChannel((int)button);
-            Debug($"Channel {button}");
         }
     }
     

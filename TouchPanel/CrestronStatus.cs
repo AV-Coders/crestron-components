@@ -37,7 +37,6 @@ public class CrestronStatus : SrlPage
 
     private void ConfigureSmartObject()
     {
-        Debug("Configuring modal buttons");
         SmartObjects.ForEach(x => x.UShortInput["Set Number of Items"].ShortValue = (short)_crestronDevices.Count);
 
         for (int i = 0; i < _crestronDevices.Count; i++)

@@ -71,20 +71,14 @@ public class SubpageSelection : SrlPage
 
     private void ModalButtonPressed(GenericBase currentDevice, SmartObjectEventArgs args)
     {
-        if (args.Sig.Type != eSigType.Bool)
+        if (!CrestronPanel.EventIsASmartObjectButtonPress(args))
             return;
-        if (!args.Sig.BoolValue)
-            return;
-        if (args.Sig.Number < 4000)
-            return;
-        Debug($"Modal button {args.Sig.Number} pressed");
         HandleSubpages(args.Sig.Number);
     }
 
 
     private void ConfigurePopupButtons()
     {
-        Debug("Configuring modal buttons");
         SmartObjects.ForEach(x => x.UShortInput["Set Number of Items"].ShortValue = (short)_buttonConfig.Count);
 
         for (int i = 0; i < _buttonConfig.Count; i++)
@@ -120,7 +114,6 @@ public class SubpageSelection : SrlPage
         HandleMenuItemVisibility(_buttonConfig[selection], Visibility.Shown);
         CrestronPanel.Interlock(_panels, _buttonConfig[selection].PopupPageJoin, _pages);
         CrestronPanel.Interlock(SmartObjects, SrlHelper.BooleanJoinFor(selection, SelectJoin), _allSelectJoins);
-        Debug($"Showing modal {selection}");
     }
 
     public void ClearSubpages()
@@ -129,7 +122,6 @@ public class SubpageSelection : SrlPage
         CrestronPanel.Interlock(_panels, 0, _pages);
         CrestronPanel.Interlock(SmartObjects, 0, _allSelectJoins);
         _buttonConfig.ForEach( button => HandleMenuItemVisibility(button, Visibility.Hidden));
-        Debug("Clearing Subpages");
     }
 
     private void HandleMenuItemVisibility(SubpageButtonConfig button, Visibility visibility)
