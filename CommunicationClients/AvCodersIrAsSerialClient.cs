@@ -24,10 +24,10 @@ public class AvCodersIrAsSerialClient : SerialClient
     public sealed override void ConfigurePort(SerialSpec serialSpec)
     {
         _irPort.SetIRSerialSpec(
-            SerialMappings.IrBaudRatesMap[serialSpec.BaudRate],
-            SerialMappings.IrDataBitsMap[serialSpec.DataBits],
-            SerialMappings.IrParityMap[serialSpec.Parity],
-            SerialMappings.IrStopBitsMap[serialSpec.StopBits],
+            SerialMappings.ConvertIrBaudRate(serialSpec.BaudRate),
+            SerialMappings.ConvertIrDataBits(serialSpec.DataBits),
+            SerialMappings.ConvertIrParity(serialSpec.Parity),
+            SerialMappings.ConvertIrStopBits(serialSpec.StopBits),
             _encoding
             );
     }

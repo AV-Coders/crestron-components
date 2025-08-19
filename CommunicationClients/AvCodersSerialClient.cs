@@ -26,11 +26,11 @@ public class AvCodersSerialClient : SerialClient
     public sealed override void ConfigurePort(SerialSpec serialSpec)
     {
         _comPort.SetComPortSpec(
-            SerialMappings.BaudRatesMap[serialSpec.BaudRate],
-            SerialMappings.DataBitsMap[serialSpec.DataBits],
-            SerialMappings.ParityMap[serialSpec.Parity],
-            SerialMappings.StopBitsMap[serialSpec.StopBits],
-            SerialMappings.ProtocolMap[serialSpec.Protocol],
+            SerialMappings.ConvertBaudRate(serialSpec.BaudRate),
+            SerialMappings.ConvertDataBits(serialSpec.DataBits),
+            SerialMappings.ConvertParity(serialSpec.Parity),
+            SerialMappings.ConvertStopBits(serialSpec.StopBits),
+            SerialMappings.ConvertProtocol(serialSpec.Protocol),
             ComPort.eComHardwareHandshakeType
                 .ComspecHardwareHandshakeNone, // I've never seen this needed in any devices i've controlled
             ComPort.eComSoftwareHandshakeType.ComspecSoftwareHandshakeNone,
