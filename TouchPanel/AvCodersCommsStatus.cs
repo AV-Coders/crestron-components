@@ -88,7 +88,7 @@ public class AvCodersCommsStatus : SrlPage
         SmartObjects.ForEach(smartObject =>
         {
             smartObject.StringInput[SrlHelper.SerialJoinFor(deviceIndex, NameJoin)].StringValue = _communicationClients[deviceIndex].Name;
-            smartObject.StringInput[SrlHelper.SerialJoinFor(deviceIndex, ClassJoin)].StringValue = _communicationClients[deviceIndex].GetType().ToString();
+            smartObject.StringInput[SrlHelper.SerialJoinFor(deviceIndex, ClassJoin)].StringValue = _communicationClients[deviceIndex].GetType().Name;
             smartObject.StringInput[SrlHelper.SerialJoinFor(deviceIndex, IpJoin)].StringValue = _communicationClients[deviceIndex].GetHost();
             smartObject.StringInput[SrlHelper.SerialJoinFor(deviceIndex, PortJoin)].StringValue = _communicationClients[deviceIndex].GetPort().ToString();
             smartObject.StringInput[SrlHelper.SerialJoinFor(deviceIndex, ConnectionStatusJoin)].StringValue = _communicationClients[deviceIndex].GetConnectionState().ToString();
