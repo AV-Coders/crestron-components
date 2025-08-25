@@ -2,13 +2,8 @@
 using AVCoders.Crestron.SmartGraphics;
 using AVCoders.Display;
 using Serilog;
-using Serilog.Context;
 
 namespace AVCoders.Crestron.TouchPanel;
-
-public record InputInfo(string Name, Input Input);
-
-public record DisplayInfo(Display.Display Display, CommunicationClient Client, string Name, InputInfo[] Inputs, int MaxVolume = 100);
 
 public class DisplayMenu : SrlPage
 {
@@ -70,7 +65,7 @@ public class DisplayMenu : SrlPage
             _displays[deviceIndex].Display.VolumeLevelHandlers += volume => VolumeFeedback(deviceIndex, volume);
             _displays[deviceIndex].Display.MuteStateHandlers += _ => FeedbackForDevice(deviceIndex);
             _displays[deviceIndex].Display.CommunicationStateHandlers += state => DriverStateFeedback(deviceIndex, state);
-            _displays[deviceIndex].Client.ConnectionStateHandlers += state => CommsStateFeedback(deviceIndex, state);
+            _displays[deviceIndex].Display.CommunicationClient.ConnectionStateHandlers += state => CommsStateFeedback(deviceIndex, state);
 
             for (int inputIndex = 0; inputIndex < _displays[deviceIndex].Inputs.Length; inputIndex++)
             {
@@ -85,60 +80,68 @@ public class DisplayMenu : SrlPage
 
     private void HandleDisplayPress(GenericBase currentDevice, SmartObjectEventArgs args)
     {
-        var selectionInfo = SrlHelper.GetSigInfo(args.Sig);
-        Debug($"Display Join, id {args.Sig.Number}. Type: {args.Sig.Type.ToString()} Index {selectionInfo.Index}, Join: {selectionInfo.Join}");
-        
-        switch (args.Sig.Type)
+        using (PushProperties("HandleDisplayPress"))
         {
-            case eSigType.Bool when args.Sig.BoolValue:
-                switch (selectionInfo.Join)
-                {
-                    case PowerOnJoin:
-                        _displays[selectionInfo.Index].Display.PowerOn();
-                        Debug($"Turning on display {selectionInfo.Index}");
-                        break;
-                    case PowerOffJoin:
-                        _displays[selectionInfo.Index].Display.PowerOff();
-                        Debug($"Turning off display {selectionInfo.Index}");
-                        break;
-                    case MuteJoin:
-                        _displays[selectionInfo.Index].Display.ToggleAudioMute();
-                        break;
-                    case Input1Join:
-                    {
-                        var input = _displays[selectionInfo.Index].Inputs[0].Input;
-                        _displays[selectionInfo.Index].Display.SetInput(input);
-                        Debug($"Turning setting display {selectionInfo.Index} to {input}");
-                        break;
-                    }
-                    case Input2Join:
-                    {
-                        var input = _displays[selectionInfo.Index].Inputs[1].Input;
-                        _displays[selectionInfo.Index].Display.SetInput(input);
-                        Debug($"Turning setting display {selectionInfo.Index} to {input}");
-                        break;
-                    }
-                    case Input3Join:
-                    {
-                        var input = _displays[selectionInfo.Index].Inputs[2].Input;
-                        _displays[selectionInfo.Index].Display.SetInput(input);
-                        Debug($"Turning setting display {selectionInfo.Index} to {input}");
-                        break;
-                    }
-                    case Input4Join:
-                    {
-                        var input = _displays[selectionInfo.Index].Inputs[3].Input;
-                        _displays[selectionInfo.Index].Display.SetInput(input);
-                        Debug($"Turning setting display {selectionInfo.Index} to {input}");
-                        break;
-                    }
-                }
+            var selectionInfo = SrlHelper.GetSigInfo(args.Sig);
+            Log.Debug("Display Join, id {SigNumber}. Type: {S} Index {SelectionInfoIndex}, Join: {SelectionInfoJoin}",
+                args.Sig.Number, args.Sig.Type.ToString(), selectionInfo.Index, selectionInfo.Join);
 
-                break;
-            case eSigType.UShort when args.Sig.Number > 10:
-                _displays[selectionInfo.Index].Display.SetVolume(
-                    Math.PercentageToRange(args.Sig.UShortValue, _displays[selectionInfo.Index].MaxVolume));
-                break;
+            switch (args.Sig.Type)
+            {
+                case eSigType.Bool when args.Sig.BoolValue:
+                    switch (selectionInfo.Join)
+                    {
+                        case PowerOnJoin:
+                            _displays[selectionInfo.Index].Display.PowerOn();
+                            Log.Debug("Turning on display {SelectionInfoIndex}", selectionInfo.Index);
+                            break;
+                        case PowerOffJoin:
+                            _displays[selectionInfo.Index].Display.PowerOff();
+                            Log.Debug("Turning off display {SelectionInfoIndex}", selectionInfo.Index);
+                            break;
+                        case MuteJoin:
+                            _displays[selectionInfo.Index].Display.ToggleAudioMute();
+                            break;
+                        case Input1Join:
+                        {
+                            var input = _displays[selectionInfo.Index].Inputs[0].Input;
+                            _displays[selectionInfo.Index].Display.SetInput(input);
+                            Log.Debug("Turning setting display {SelectionInfoIndex} to {Input}", selectionInfo.Index,
+                                input);
+                            break;
+                        }
+                        case Input2Join:
+                        {
+                            var input = _displays[selectionInfo.Index].Inputs[1].Input;
+                            _displays[selectionInfo.Index].Display.SetInput(input);
+                            Log.Debug("Turning setting display {SelectionInfoIndex} to {Input}", selectionInfo.Index,
+                                input);
+                            break;
+                        }
+                        case Input3Join:
+                        {
+                            var input = _displays[selectionInfo.Index].Inputs[2].Input;
+                            _displays[selectionInfo.Index].Display.SetInput(input);
+                            Log.Debug("Turning setting display {SelectionInfoIndex} to {Input}", selectionInfo.Index,
+                                input);
+                            break;
+                        }
+                        case Input4Join:
+                        {
+                            var input = _displays[selectionInfo.Index].Inputs[3].Input;
+                            _displays[selectionInfo.Index].Display.SetInput(input);
+                            Log.Debug("Turning setting display {SelectionInfoIndex} to {Input}", selectionInfo.Index,
+                                input);
+                            break;
+                        }
+                    }
+
+                    break;
+                case eSigType.UShort when args.Sig.Number > 10:
+                    _displays[selectionInfo.Index].Display.SetVolume(
+                        Math.PercentageToRange(args.Sig.UShortValue, _displays[selectionInfo.Index].MaxVolume));
+                    break;
+            }
         }
     }
 
@@ -274,13 +277,4 @@ public class DisplayMenu : SrlPage
     public override void PowerOn() { }
 
     public override void PowerOff() { }
-
-    private void Debug(string message)
-    {
-        using (LogContext.PushProperty("class", GetType()))
-        using (LogContext.PushProperty("instance_name", _name))
-        {
-            Log.Debug(message);
-        }
-    }
 }
