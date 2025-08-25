@@ -60,6 +60,8 @@ public class DisplayMenu : SrlPage
         {
             var deviceIndex = i;
             FeedbackForDevice(deviceIndex);
+            DriverStateFeedback(deviceIndex, _displays[deviceIndex].Display.CommunicationState);
+            CommsStateFeedback(deviceIndex, _displays[deviceIndex].Display.CommunicationClient.ConnectionState);
             _displays[deviceIndex].Display.InputHandlers += _ => FeedbackForDevice(deviceIndex);
             _displays[deviceIndex].Display.PowerStateHandlers += _ => FeedbackForDevice(deviceIndex);
             _displays[deviceIndex].Display.VolumeLevelHandlers += volume => VolumeFeedback(deviceIndex, volume);
@@ -251,7 +253,7 @@ public class DisplayMenu : SrlPage
     {
         SmartObjects.ForEach(smartObject =>
         {
-            smartObject.StringInput[SrlHelper.SerialJoinFor(deviceIndex, NameJoin)].StringValue = _displays[deviceIndex].Name;
+            smartObject.StringInput[SrlHelper.SerialJoinFor(deviceIndex, NameJoin)].StringValue = _displays[deviceIndex].Display.Name;
             smartObject.BooleanInput[SrlHelper.BooleanJoinFor(deviceIndex, PowerOnJoin)].BoolValue =
                 _displays[deviceIndex].Display.PowerState == PowerState.On;
             smartObject.BooleanInput[SrlHelper.BooleanJoinFor(deviceIndex, PowerOffJoin)].BoolValue =
