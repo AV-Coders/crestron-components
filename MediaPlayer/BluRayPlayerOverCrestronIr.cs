@@ -10,22 +10,32 @@ public class BluRayPlayerOverCrestronIr : AVCoders.MediaPlayer.MediaPlayer
     private readonly IROutputPort _port;
     private readonly ushort _pulseTimeInMs;
     
-    private static readonly Dictionary<RemoteButton, string> RemoteButtonMap = new()
+    private static string GetStringFromRemoteButtons(RemoteButton button) => button switch
     {
-        { RemoteButton.Play, "PLAY"},
-        { RemoteButton.Pause, "PAUSE"},
-        { RemoteButton.Stop, "STOP"},
-        { RemoteButton.Previous, "PREVIOUS"},
-        { RemoteButton.Next, "NEXT"},
-        { RemoteButton.Rewind, "REWIND"},
-        { RemoteButton.FastForward, "FASTFORWARD"},
-        { RemoteButton.Eject, "EJECTS"},
-        { RemoteButton.TopMenu, "TOPMENU"},
-        { RemoteButton.PopupMenu, "POPUPMENU"},
-        { RemoteButton.Subtitle, "SUBTITLE"},
-        { RemoteButton.Display, "DISPLAY"},
-        { RemoteButton.Back, "BACK"},
-        { RemoteButton.Power, "POWER"}
+        RemoteButton.Play => "PLAY",
+        RemoteButton.Pause => "PAUSE",
+        RemoteButton.Stop => "STOP",
+        RemoteButton.Previous => "PREVIOUS",
+        RemoteButton.Next => "NEXT",
+        RemoteButton.Rewind => "REWIND",
+        RemoteButton.FastForward => "FASTFORWARD",
+        RemoteButton.Eject => "EJECT",
+        RemoteButton.TopMenu => "TOPMENU",
+        RemoteButton.PopupMenu => "POPUPMENU",
+        RemoteButton.Subtitle => "SUBTITLE",
+        RemoteButton.Display => "DISPLAY",
+        RemoteButton.Back => "BACK",
+        RemoteButton.Power => "POWER",
+        RemoteButton.Up => "UP_ARROW",
+        RemoteButton.Down => "DN_ARROW",
+        RemoteButton.Left => "LEFT_ARROW",
+        RemoteButton.Right => "RIGHT_ARROW",
+        RemoteButton.Enter => "ENTER",
+        RemoteButton.Red => "RED",
+        RemoteButton.Green => "GREEN",
+        RemoteButton.Yellow => "YELLOW",
+        RemoteButton.Blue => "BLUE",
+        _ => throw new ArgumentOutOfRangeException($"The remote button {button.ToString()} is not in the map")
     };
     public BluRayPlayerOverCrestronIr(string name, IROutputPort port, string irFileName, ushort pulseTimeInMs = 25) : base(name)
     {
@@ -36,15 +46,15 @@ public class BluRayPlayerOverCrestronIr : AVCoders.MediaPlayer.MediaPlayer
 
     public override void PowerOn()
     {
-        Pulse(RemoteButtonMap[RemoteButton.Power]);
+        Pulse(GetStringFromRemoteButtons(RemoteButton.Power));
     }
 
     public override void PowerOff()
     {
-        Pulse(RemoteButtonMap[RemoteButton.Power]);
+        Pulse(GetStringFromRemoteButtons(RemoteButton.Power));
     }
     
-    public void SendIRCode(RemoteButton button) => Pulse(RemoteButtonMap[button]);
+    public void SendIRCode(RemoteButton button) => Pulse(GetStringFromRemoteButtons(button));
 
     private void Pulse(string key)
     {
