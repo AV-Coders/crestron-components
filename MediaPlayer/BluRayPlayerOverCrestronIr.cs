@@ -1,4 +1,5 @@
-﻿using AVCoders.MediaPlayer;
+﻿using AVCoders.Core;
+using AVCoders.MediaPlayer;
 using Crestron.SimplSharpPro;
 using Serilog;
 using Directory = Crestron.SimplSharp.CrestronIO.Directory;
@@ -37,7 +38,7 @@ public class BluRayPlayerOverCrestronIr : AVCoders.MediaPlayer.MediaPlayer
         RemoteButton.Blue => "BLUE",
         _ => throw new ArgumentOutOfRangeException($"The remote button {button.ToString()} is not in the map")
     };
-    public BluRayPlayerOverCrestronIr(string name, IROutputPort port, string irFileName, ushort pulseTimeInMs = 25) : base(name)
+    public BluRayPlayerOverCrestronIr(string name, IROutputPort port, string irFileName, ushort pulseTimeInMs = 25) : base(name, CommunicationClient.None)
     {
         _port = port;
         _pulseTimeInMs = pulseTimeInMs;

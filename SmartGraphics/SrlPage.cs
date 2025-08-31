@@ -11,7 +11,7 @@ public abstract class SrlPage : DeviceBase
     protected readonly List<SmartObject> SmartObjects;
     protected readonly uint JoinIncrement;
 
-    public SrlPage(string name, List<SmartObject> smartObjects, uint joinIncrement = DefaultJoinIncrement) : base(name)
+    public SrlPage(string name, List<SmartObject> smartObjects, uint joinIncrement = DefaultJoinIncrement) : base(name, CommunicationClient.None)
     {
         SmartObjects = smartObjects;
         JoinIncrement = joinIncrement;
