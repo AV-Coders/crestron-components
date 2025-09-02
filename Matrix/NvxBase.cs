@@ -9,7 +9,7 @@ namespace AvCoders.Crestron.Matrix;
 
 public class NvxCommunicationEmulator : CommunicationClient
 {
-    public NvxCommunicationEmulator(string name) : base(name)
+    public NvxCommunicationEmulator(string name, ushort port) : base(name, "IP ID", port)
     {
         ConnectionState = ConnectionState.Disconnected;
     }
@@ -27,7 +27,7 @@ public abstract class NvxBase : AVoIPEndpoint
     protected readonly ThreadWorker PollWorker;
 
     protected NvxBase(string name, DmNvxBaseClass device, AVEndpointType deviceType) : 
-        base(name, deviceType, new NvxCommunicationEmulator(GetCommunicationClientName(deviceType, name)))
+        base(name, deviceType, new NvxCommunicationEmulator(GetCommunicationClientName(deviceType, name), (ushort) device.ID))
     {
         Device = device;
         Device.PreviewImage.DmNvxPreviewImagePropertyChange += HandlePreviewImageChange;

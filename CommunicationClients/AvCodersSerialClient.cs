@@ -7,7 +7,8 @@ public class AvCodersSerialClient : SerialClient
 {
     private readonly ComPort _comPort;
 
-    public AvCodersSerialClient(ComPort comPort, SerialSpec serialSpec, string name) : base(name)
+    public AvCodersSerialClient(ComPort comPort, SerialSpec serialSpec, string name) 
+        : base(name, comPort.DeviceName, (ushort)comPort.ID)
     {
         _comPort = comPort;
         _comPort.Register();
