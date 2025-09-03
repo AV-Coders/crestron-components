@@ -9,7 +9,7 @@ namespace AVCoders.Crestron.TouchPanel;
 
 public class AvCodersCommsStatus : SrlPage
 {
-    private readonly List<IpComms> _communicationClients;
+    private readonly List<CommunicationClient> _communicationClients;
     private readonly List<List<string>> _logMessages;
     private readonly TouchpanelLoggerSink _sink;
     private readonly string _logKey = Guid.NewGuid().ToString().Substring(0,10);
@@ -28,7 +28,7 @@ public class AvCodersCommsStatus : SrlPage
     
     public new static readonly uint DefaultJoinIncrement = 30;
 
-    public AvCodersCommsStatus(List<IpComms> communicationClients, List<SmartObject> smartObjects) : base("AvCodersCommsStatus", smartObjects, DefaultJoinIncrement)
+    public AvCodersCommsStatus(List<CommunicationClient> communicationClients, List<SmartObject> smartObjects) : base("AvCodersCommsStatus", smartObjects, DefaultJoinIncrement)
     {
         _communicationClients = communicationClients;
         SmartObjects.ForEach(x => x.UShortInput["Set Number of Items"].ShortValue = (short)_communicationClients.Count);
