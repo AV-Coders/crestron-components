@@ -18,9 +18,17 @@ public class AvCodersIrAsSerialClient : SerialClient
         ConfigurePort(serialSpec);
     }
 
-    public override void Send(String message) => _irPort.SendSerialData(message);
+    public override void Send(String message)
+    {
+        _irPort.SendSerialData(message);
+        InvokeRequestHandlers(message);       
+    }
 
-    public override void Send(byte[] bytes) => Send(bytes.ToString() ?? throw new InvalidCastException("Bytes can't be converted to a string"));
+    public override void Send(byte[] bytes)
+    {
+        Send(bytes.ToString() ?? throw new InvalidCastException("Bytes can't be converted to a string"));
+        InvokeRequestHandlers(bytes);
+    }
 
     public sealed override void ConfigurePort(SerialSpec serialSpec)
     {

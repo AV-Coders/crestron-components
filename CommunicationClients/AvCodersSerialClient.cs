@@ -18,10 +18,18 @@ public class AvCodersSerialClient : SerialClient
 
     private void ComPortOnSerialDataReceived(ComPort receivingComPort, ComPortSerialDataEventArgs args) => ResponseHandlers?.Invoke(args.SerialData);
 
-    public override void Send(string message) => _comPort.Send(message);
-    
-    public override void Send(byte[] bytes) => Send(bytes.ToString() ?? throw new InvalidCastException("Bytes can't be a string"));
-    
+    public override void Send(string message)
+    {
+        _comPort.Send(message);
+        InvokeRequestHandlers(message);
+    }
+
+    public override void Send(byte[] bytes)
+    {
+        Send(bytes.ToString() ?? throw new InvalidCastException("Bytes can't be a string"));
+        InvokeRequestHandlers(bytes);
+    }
+
     public override void Send(char[] chars) => Send(new string(chars));
 
     public sealed override void ConfigurePort(SerialSpec serialSpec)
