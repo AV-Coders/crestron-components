@@ -5,7 +5,8 @@ namespace AVCoders.Crestron.CommunicationClients;
 
 public class CrestronGenericDeviceCommunicationClient : IpComms
 {
-    public CrestronGenericDeviceCommunicationClient(GenericDevice device) : base(String.Empty, 0, device.Description)
+    public CrestronGenericDeviceCommunicationClient(GenericDevice device) 
+        : base(String.Empty, 0, device.Description, CommandStringFormat.Ascii)
     {
         device.OnlineStatusChange += HandleOnlineStatusChange;
     }

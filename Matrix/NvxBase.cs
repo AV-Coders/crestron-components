@@ -9,7 +9,7 @@ namespace AvCoders.Crestron.Matrix;
 
 public class NvxCommunicationEmulator : CommunicationClient
 {
-    public NvxCommunicationEmulator(string name, ushort port) : base(name, "IP ID", port)
+    public NvxCommunicationEmulator(string name, ushort port) : base(name, "IP ID", port, CommandStringFormat.Ascii)
     {
         ConnectionState = ConnectionState.Disconnected;
     }

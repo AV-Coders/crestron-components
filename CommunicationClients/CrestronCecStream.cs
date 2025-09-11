@@ -8,7 +8,7 @@ public class CrestronCecStream: SerialClient
 {
     private readonly Cec _stream;
 
-    public CrestronCecStream(Cec stream, string name) : base(name, "CEC Steram", 0)
+    public CrestronCecStream(Cec stream, string name) : base(name, "CEC Steram", 0, CommandStringFormat.Hex)
     {
         _stream = stream;
         _stream.CecChange += HandleCecResponse;

@@ -52,7 +52,7 @@ public class AVoIPMenu : SrlPage
                         => HandleDeviceSync(deviceIndex, status, resolution, hdcpStatus);
                     break;
             }
-            CommsStateFeedback(deviceIndex, _devices[deviceIndex].CommunicationClient.GetConnectionState());
+            CommsStateFeedback(deviceIndex, _devices[deviceIndex].CommunicationClient.ConnectionState);
             FeedbackForDevice(deviceIndex);
         }
     }
