@@ -38,10 +38,6 @@ public class CrestronGenericDeviceCommunicationClient : IpComms
         return Task.CompletedTask;
     }
 
-    public override void SetHost(string host) => throw new NotSupportedException("This client does not support changing the host.");
-
-    public override void SetPort(ushort port) => throw new NotSupportedException("This client does not support changing the port.");
-
     public override void Connect() => throw new NotSupportedException("This client does not support connecting.");
 
     public override void Reconnect() => throw new NotSupportedException("This client does not support reconnecting.");

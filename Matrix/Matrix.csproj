@@ -3,17 +3,17 @@
     <PropertyGroup>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <TargetFrameworks>net8.0;net6.0</TargetFrameworks>
         <LangVersion>default</LangVersion>
         <AssemblyName>AvCoders.Crestron.Matrix</AssemblyName>
         <RootNamespace>AvCoders.Crestron.Matrix</RootNamespace>
+        <TargetFramework>net8.0</TargetFramework>
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="avcoders.core" Version="2025.9.368" />
-      <PackageReference Include="AVCoders.Matrix" Version="2025.9.368" />
-      <PackageReference Include="AVCoders.Motor" Version="2025.9.368" />
-      <PackageReference Include="Crestron.SimplSharp.SDK.Program" Version="2.21.133" />
+      <PackageReference Include="avcoders.core" Version="2025.9.371" />
+      <PackageReference Include="AVCoders.Matrix" Version="2025.9.371" />
+      <PackageReference Include="AVCoders.Motor" Version="2025.9.371" />
+      <PackageReference Include="Crestron.SimplSharp.SDK.Program" Version="2.21.157" />
       <PackageReference Include="Serilog" Version="4.3.0" />
     </ItemGroup>
 
