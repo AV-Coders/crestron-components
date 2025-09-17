@@ -1,0 +1,83 @@
+﻿using System.Text;
+using AVCoders.CommunicationClients;
+using AVCoders.Core;
+using Crestron.SimplSharp;
+using Crestron.SimplSharp.CrestronSockets;
+
+namespace AVCoders.Crestron.CommunicationClients;
+
+public class CrestronUdpClient : IpComms
+{
+    private UDPServer _server;
+    
+    private readonly Queue<QueuedPayload<byte[]>> _sendQueue = new();
+
+    public CrestronUdpClient(string name, string host, ushort port, CommandStringFormat commandStringFormat)
+        : base(host, port, name, commandStringFormat)
+    {
+        _server = new UDPServer(IPAddress.Any, port, 500, EthernetAdapterType.EthernetLANAdapter);
+    }
+
+    public override void Send(string message)
+    {
+        Send(Encoding.UTF8.GetBytes(message));
+        InvokeRequestHandlers(message);
+    }
+
+    public override void Send(byte[] bytes)
+    {
+        using (PushProperties("Send"))
+        {
+            try
+            {
+                _server.SendData(bytes, bytes.Length, Host, Port);
+                InvokeRequestHandlers(bytes);
+            }
+            catch (Exception e)
+            {
+                LogException(e, "There was an issue sending.");
+                _sendQueue.Enqueue(new QueuedPayload<byte[]>(DateTime.Now, bytes));
+            }
+        }
+    }
+
+    protected override async Task Receive(CancellationToken token)
+    {
+        using (PushProperties("Receive"))
+        {
+            while (_server.ReceiveData() > 0)
+            {
+                string response = Encoding.UTF8.GetString(_server.IncomingDataBuffer);
+                InvokeResponseHandlers(response, _server.IncomingDataBuffer);
+            }
+            await Task.Delay(TimeSpan.FromSeconds(1), token);
+        }
+    }
+
+    protected override async Task ProcessSendQueue(CancellationToken token)
+    {
+        while (_sendQueue.Count > 0)
+        {
+            try
+            {
+                var item = _sendQueue.Dequeue();
+                if (Math.Abs((DateTime.Now - item.Timestamp).TotalSeconds) < QueueTimeout)
+                    _server.SendData(item.Payload, item.Payload.Length, Host, Port);
+            }
+            catch (Exception e)
+            {
+                LogException(e, "There was an issue re-sending a message from the queue");
+            }
+            
+        }
+        await Task.Delay(TimeSpan.FromSeconds(2), token);
+    }
+
+    protected override Task CheckConnectionState(CancellationToken token) => ConnectionStateWorker.Stop();
+
+    public override void Connect() { }
+
+    public override void Reconnect() { }
+
+    public override void Disconnect() { }
+}
