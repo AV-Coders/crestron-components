@@ -3,6 +3,7 @@ using AVCoders.CommunicationClients;
 using AVCoders.Core;
 using Crestron.SimplSharp;
 using Crestron.SimplSharp.CrestronSockets;
+using Serilog;
 
 namespace AVCoders.Crestron.CommunicationClients;
 
@@ -18,6 +19,9 @@ public class CrestronMulticastClient : IMulticastClient
         _server = new UDPServer(IPAddress.Parse(host), port, 500, EthernetAdapterType.EthernetLANAdapter);
         _server.ClearIncomingDataBuffer = true;
         _server.EnableUDPServer();
+        
+        ReceiveThreadWorker.Restart();
+        SendQueueWorker.Restart();
     }
 
     public override void Send(string message)
@@ -47,12 +51,20 @@ public class CrestronMulticastClient : IMulticastClient
     {
         using (PushProperties("Receive"))
         {
+            Log.Verbose("Receive loop start");
+            while (!_server.DataAvailable)
+            {
+                Log.Verbose("Waiting for data");
+                await Task.Delay(TimeSpan.FromSeconds(1), token);
+            }
             while (_server.ReceiveData() > 0)
             {
+                Log.Verbose("Data received");
                 string response = Encoding.UTF8.GetString(_server.IncomingDataBuffer);
                 InvokeResponseHandlers(response, _server.IncomingDataBuffer);
             }
             await Task.Delay(TimeSpan.FromSeconds(1), token);
+            Log.Verbose("Receive loop end");       
         }
     }
 
