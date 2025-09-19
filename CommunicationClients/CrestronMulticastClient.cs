@@ -6,22 +6,24 @@ using Crestron.SimplSharp.CrestronSockets;
 
 namespace AVCoders.Crestron.CommunicationClients;
 
-public class CrestronUdpClient : IpComms
+public class CrestronMulticastClient : IpComms
 {
     private UDPServer _server;
     
     private readonly Queue<QueuedPayload<byte[]>> _sendQueue = new();
 
-    public CrestronUdpClient(string name, string host, ushort port, CommandStringFormat commandStringFormat)
+    public CrestronMulticastClient(string name, string host, ushort port, CommandStringFormat commandStringFormat)
         : base(host, port, name, commandStringFormat)
     {
-        _server = new UDPServer(IPAddress.Any, port, 500, EthernetAdapterType.EthernetLANAdapter);
+        _server = new UDPServer(IPAddress.Parse(host), port, 500, EthernetAdapterType.EthernetLANAdapter);
+        _server.ClearIncomingDataBuffer = true;
+        _server.EnableUDPServer();
     }
 
     public override void Send(string message)
     {
         Send(Encoding.UTF8.GetBytes(message));
-        InvokeRequestHandlers(message);
+        InvokeRequestHandlers($"{_server.ServerStatus.ToString()} - {message}");
     }
 
     public override void Send(byte[] bytes)
