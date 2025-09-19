@@ -6,14 +6,14 @@ using Crestron.SimplSharp.CrestronSockets;
 
 namespace AVCoders.Crestron.CommunicationClients;
 
-public class CrestronMulticastClient : AvCodersMulticastClient
+public class CrestronMulticastClient : IMulticastClient
 {
     private UDPServer _server;
     
     private readonly Queue<QueuedPayload<byte[]>> _sendQueue = new();
 
     public CrestronMulticastClient(string name, string host, ushort port)
-        : base(host, port, name)
+        : base(host, port, name, CommandStringFormat.Ascii)
     {
         _server = new UDPServer(IPAddress.Parse(host), port, 500, EthernetAdapterType.EthernetLANAdapter);
         _server.ClearIncomingDataBuffer = true;
