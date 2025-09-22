@@ -1,5 +1,6 @@
 ﻿using AVCoders.Crestron.SmartGraphics;
 using Crestron.SimplSharpPro.DeviceSupport;
+using Serilog;
 
 namespace AVCoders.Crestron.TouchPanel;
 
@@ -12,6 +13,7 @@ public record SubpageButtonConfig(ushort ButtonMode, uint PopupPageJoin, string 
 
 public class SubpageSelection : SrlPage
 {
+    public static readonly SubpageButtonConfig NoButton = new(0, 0, "");
     private readonly List<BasicTriListWithSmartObject> _panels;
     private readonly List<SubpageButtonConfig> _buttonConfig;
     private readonly uint[] _pages;
@@ -81,9 +83,19 @@ public class SubpageSelection : SrlPage
 
         for (int i = 0; i < _buttonConfig.Count; i++)
         {
-            SmartObjects.ForEach(x => x.BooleanInput[SrlHelper.BooleanJoinFor(i, VisibilityJoin)].BoolValue = true);
-            SmartObjects.ForEach(x => x.UShortInput[SrlHelper.AnalogJoinFor(i, ModeJoin)].UShortValue = _buttonConfig[i].ButtonMode);
-            SmartObjects.ForEach(x => x.StringInput[SrlHelper.SerialJoinFor(i, TitleJoin)].StringValue = _buttonConfig[i].Title);
+            SmartObjects.ForEach(x =>
+            {
+                if (_buttonConfig[i] == NoButton)
+                {
+                    x.BooleanInput[SrlHelper.BooleanJoinFor(i, VisibilityJoin)].BoolValue = false;
+                }
+                else
+                {
+                    x.BooleanInput[SrlHelper.BooleanJoinFor(i, VisibilityJoin)].BoolValue = true;
+                    x.UShortInput[SrlHelper.AnalogJoinFor(i, ModeJoin)].UShortValue = _buttonConfig[i].ButtonMode;
+                    x.StringInput[SrlHelper.SerialJoinFor(i, TitleJoin)].StringValue = _buttonConfig[i].Title;
+                }
+            });
         }
     }
 
@@ -93,6 +105,12 @@ public class SubpageSelection : SrlPage
         if (selection == _activePage && _subpageSelectionType == SubpageSelectionType.Toggling)
         {
             ClearSubpages();
+            return;
+        }
+
+        if (_buttonConfig[selection] == NoButton)
+        {
+            Log.Verbose("Ignoring a hidden button");
             return;
         }
 
