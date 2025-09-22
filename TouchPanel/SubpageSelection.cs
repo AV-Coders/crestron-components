@@ -12,7 +12,6 @@ public record SubpageButtonConfig(ushort ButtonMode, uint PopupPageJoin, string 
 
 public class SubpageSelection : SrlPage
 {
-    public static readonly SubpageButtonConfig NoButton = new(0, 0, "");
     private readonly List<BasicTriListWithSmartObject> _panels;
     private readonly List<SubpageButtonConfig> _buttonConfig;
     private readonly uint[] _pages;
@@ -82,15 +81,9 @@ public class SubpageSelection : SrlPage
 
         for (int i = 0; i < _buttonConfig.Count; i++)
         {
-            if(_buttonConfig[i] == NoButton)
-                continue;
-            SmartObjects.ForEach(x =>
-            {
-                x.BooleanInput[SrlHelper.BooleanJoinFor(i, VisibilityJoin)].BoolValue = true;
-                x.UShortInput[SrlHelper.AnalogJoinFor(i, ModeJoin)].UShortValue = _buttonConfig[i].ButtonMode;
-                x.StringInput[SrlHelper.SerialJoinFor(i, TitleJoin)].StringValue = _buttonConfig[i].Title;
-                x.BooleanInput[$"Item {i+1} Visible"].BoolValue = true;
-            });
+            SmartObjects.ForEach(x => x.BooleanInput[SrlHelper.BooleanJoinFor(i, VisibilityJoin)].BoolValue = true);
+            SmartObjects.ForEach(x => x.UShortInput[SrlHelper.AnalogJoinFor(i, ModeJoin)].UShortValue = _buttonConfig[i].ButtonMode);
+            SmartObjects.ForEach(x => x.StringInput[SrlHelper.SerialJoinFor(i, TitleJoin)].StringValue = _buttonConfig[i].Title);
         }
     }
 
