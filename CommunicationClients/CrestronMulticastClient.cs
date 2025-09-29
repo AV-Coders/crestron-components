@@ -51,20 +51,16 @@ public class CrestronMulticastClient : IMulticastClient
     {
         using (PushProperties("Receive"))
         {
-            Log.Verbose("Receive loop start");
             while (!_server.DataAvailable)
             {
-                Log.Verbose("Waiting for data");
                 await Task.Delay(TimeSpan.FromSeconds(1), token);
             }
             while (_server.ReceiveData() > 0)
             {
-                Log.Verbose("Data received");
                 string response = Encoding.UTF8.GetString(_server.IncomingDataBuffer);
                 InvokeResponseHandlers(response, _server.IncomingDataBuffer);
             }
             await Task.Delay(TimeSpan.FromSeconds(1), token);
-            Log.Verbose("Receive loop end");       
         }
     }
 
