@@ -19,6 +19,7 @@ public class CrestronMulticastClient : IMulticastClient
         _server = new UDPServer(IPAddress.Parse(host), port, 500, EthernetAdapterType.EthernetLANAdapter);
         _server.ClearIncomingDataBuffer = true;
         _server.EnableUDPServer();
+        ConnectionState = ConnectionState.Connected;
         
         ReceiveThreadWorker.Restart();
         SendQueueWorker.Restart();
@@ -27,7 +28,7 @@ public class CrestronMulticastClient : IMulticastClient
     public override void Send(string message)
     {
         Send(Encoding.UTF8.GetBytes(message));
-        InvokeRequestHandlers($"{_server.ServerStatus.ToString()} - {message}");
+        InvokeRequestHandlers(message);
     }
 
     public override void Send(byte[] bytes)
