@@ -1,5 +1,6 @@
 ﻿using AVCoders.Core;
 using Crestron.SimplSharpPro;
+using Serilog;
 
 namespace AVCoders.Crestron.CommunicationClients;
 
@@ -10,10 +11,24 @@ public class AvCodersSerialClient : SerialClient
     public AvCodersSerialClient(ComPort comPort, SerialSpec serialSpec, string name, CommandStringFormat commandStringFormat) 
         : base(name, comPort.DeviceName, (ushort)comPort.ID, commandStringFormat)
     {
-        _comPort = comPort;
-        _comPort.Register();
-        ConfigurePort(serialSpec);
-        _comPort.SerialDataReceived += ComPortOnSerialDataReceived;
+        using (PushProperties("Constructor"))
+        {
+            _comPort = comPort;
+            switch (_comPort.Register())
+            {
+                case eDeviceRegistrationUnRegistrationResponse.Success:
+                    ConnectionState = ConnectionState.Connected;
+                    break;
+                case eDeviceRegistrationUnRegistrationResponse.Failure:
+                    ConnectionState = ConnectionState.Error;
+                    Log.Error("Failed to register com port {ComPortName}.  Reason: {reason}", _comPort.DeviceName,
+                        _comPort.DeviceRegistrationFailureReason);
+                    break;
+            }
+
+            ConfigurePort(serialSpec);
+            _comPort.SerialDataReceived += ComPortOnSerialDataReceived;
+        }
     }
 
     private void ComPortOnSerialDataReceived(ComPort receivingComPort, ComPortSerialDataEventArgs args) => ResponseHandlers?.Invoke(args.SerialData);
