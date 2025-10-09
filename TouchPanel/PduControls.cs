@@ -57,8 +57,10 @@ public class PduControls : SrlPage
 
             SmartObjects.ForEach(x =>
             {
-                x.StringInput[SrlHelper.SerialJoinFor(deviceIndex, NameJoin)].StringValue =
-                    _allOutlets[deviceIndex].Name;
+                x.StringInput[SrlHelper.SerialJoinFor(deviceIndex, NameJoin)].StringValue = _allOutlets[deviceIndex].Name;
+                x.BooleanInput[SrlHelper.BooleanJoinFor(deviceIndex, PowerOnJoin)].BoolValue = _allOutlets[deviceIndex].PowerState == PowerState.On;
+                x.BooleanInput[SrlHelper.BooleanJoinFor(deviceIndex, PowerOffJoin)].BoolValue = _allOutlets[deviceIndex].PowerState == PowerState.Off;
+                x.BooleanInput[SrlHelper.BooleanJoinFor(deviceIndex, RebootJoin)].BoolValue = _allOutlets[deviceIndex].PowerState == PowerState.Rebooting;
             });
         }
     }
