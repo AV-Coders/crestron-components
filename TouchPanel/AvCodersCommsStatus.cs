@@ -36,6 +36,7 @@ public class AvCodersCommsStatus : SrlPage
         _sink.SerilogEventHandlers += HandleCommsClientLogEvent;
 
         Log.Logger = new LoggerConfiguration()
+            .MinimumLevel.Verbose()
             .WriteTo.Sink((ILogEventSink)Log.Logger)
             .WriteTo.Logger(l => l.Filter.ByIncludingOnly(Matching.WithProperty(_logKey, _logVlaue)).WriteTo.Sink(_sink))
             .CreateLogger();
