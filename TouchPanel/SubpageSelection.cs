@@ -98,6 +98,30 @@ public class SubpageSelection : SrlPage
             });
         }
     }
+    
+    public void ShowOnlyXTabs(ushort count)
+    {
+        using (PushProperties("ShowOnlyXTabs"))
+        {
+            if (count > _buttonConfig.Count)
+            {
+                Log.Error("You're asking for more tabs than there are buttons, {Count} > {ButtonCount}. Showing all", count, _buttonConfig.Count);
+                SmartObjects.ForEach(x => x.UShortInput["Set Number of Items"].ShortValue = (short)_buttonConfig.Count);
+                return;
+            }
+            SmartObjects.ForEach(x => x.UShortInput["Set Number of Items"].UShortValue = count);
+            Log.Verbose("Showing only {Count} tabs", count);
+        }
+    }
+    
+    public void ShowAllTabs()
+    {
+        using (PushProperties("ShowAllTabs"))
+        {
+            SmartObjects.ForEach(x => x.UShortInput["Set Number of Items"].ShortValue = (short)_buttonConfig.Count);
+            Log.Verbose("Showing all tabs");
+        }
+    }
 
     private void HandleSubpages(uint sigNumber)
     {
