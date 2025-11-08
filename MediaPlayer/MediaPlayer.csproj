@@ -16,4 +16,13 @@
       <PackageReference Include="Serilog" Version="4.3.0" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Update="IR\sony_bdp_series.ir">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="IR\Strong SRT-5432.ir">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
 </Project>
