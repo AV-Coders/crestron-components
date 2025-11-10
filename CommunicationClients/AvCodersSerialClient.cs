@@ -31,7 +31,13 @@ public class AvCodersSerialClient : SerialClient
         }
     }
 
-    private void ComPortOnSerialDataReceived(ComPort receivingComPort, ComPortSerialDataEventArgs args) => ResponseHandlers?.Invoke(args.SerialData);
+    private void ComPortOnSerialDataReceived(ComPort receivingComPort, ComPortSerialDataEventArgs args)
+    {
+        if(CommandStringFormat == CommandStringFormat.Ascii)
+            ResponseHandlers?.Invoke(args.SerialData);
+        if(CommandStringFormat == CommandStringFormat.Hex)
+            ResponseByteHandlers?.Invoke(System.Text.Encoding.ASCII.GetBytes(args.SerialData));
+    }
 
     public override void Send(string message)
     {
