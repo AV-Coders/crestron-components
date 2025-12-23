@@ -38,6 +38,23 @@ public abstract class SinkBase : ILogEventSink
         }
         
         sb.Append(logEvent.RenderMessage());
+        if (logEvent.Exception != null)
+        {
+            sb.Append(Environment.NewLine);
+            sb.Append(logEvent.Exception.GetType().Name);
+            sb.Append(" - ");
+            sb.Append(logEvent.Exception.Message);
+            sb.Append(Environment.NewLine);
+            sb.Append(logEvent.Exception.StackTrace ?? "No stack trace available");
+            if(logEvent.Exception.InnerException != null)
+            {
+                sb.Append(Environment.NewLine);
+                sb.Append("Inner Exception:");
+                sb.Append(logEvent.Exception.InnerException.Message);
+                sb.Append(Environment.NewLine);
+                sb.Append(logEvent.Exception.InnerException.StackTrace ?? "No inner stack trace available");
+            }
+        }
         DoEmit(sb.ToString(), logEvent.Level);
     }
 
