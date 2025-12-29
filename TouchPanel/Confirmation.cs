@@ -85,6 +85,22 @@ public class Confirmation : SrlPage
         CrestronPanel.Interlock(_panels, _pageJoin, _relatedPages);
     }
 
+    public void CancelPrompt()
+    {
+        
+        _options = [];
+        _panels.ForEach(panel =>
+        {
+            panel.StringInput[_questionJoin].StringValue = String.Empty;
+        });
+        SmartObjects.ForEach(x =>
+        {
+            x.UShortInput["Set Number of Items"].UShortValue = 0;
+        });
+        
+        CrestronPanel.Interlock(_panels, 0, _relatedPages);
+    }
+
     public override void PowerOn() { }
 
     public override void PowerOff() { }
