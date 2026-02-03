@@ -10,9 +10,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="avcoders.core" Version="2025.12.462" />
-      <PackageReference Include="AVCoders.Dsp" Version="2025.12.462" />
-      <PackageReference Include="Crestron.SimplSharp.SDK.Program" Version="2.21.182" />
+      <PackageReference Include="avcoders.core" Version="2026.2.471" />
+      <PackageReference Include="AVCoders.Dsp" Version="2026.2.471" />
+      <PackageReference Include="Crestron.SimplSharp.SDK.Program" Version="2.21.184" />
       <PackageReference Include="Serilog" Version="4.3.0" />
     </ItemGroup>
 
