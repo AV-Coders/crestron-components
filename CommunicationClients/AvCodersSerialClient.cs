@@ -1,4 +1,5 @@
-﻿using AVCoders.Core;
+﻿using System.Text;
+using AVCoders.Core;
 using Crestron.SimplSharpPro;
 using Serilog;
 
@@ -16,13 +17,13 @@ public class AvCodersSerialClient : SerialClient
             _comPort = comPort;
             switch (_comPort.Register())
             {
-                case eDeviceRegistrationUnRegistrationResponse.Success:
-                    ConnectionState = ConnectionState.Connected;
-                    break;
                 case eDeviceRegistrationUnRegistrationResponse.Failure:
                     ConnectionState = ConnectionState.Error;
                     Log.Error("Failed to register com port {ComPortName}.  Reason: {reason}", _comPort.DeviceName,
                         _comPort.DeviceRegistrationFailureReason);
+                    break;
+                default:
+                    ConnectionState = ConnectionState.Connected;
                     break;
             }
 
@@ -33,10 +34,7 @@ public class AvCodersSerialClient : SerialClient
 
     private void ComPortOnSerialDataReceived(ComPort receivingComPort, ComPortSerialDataEventArgs args)
     {
-        if(CommandStringFormat == CommandStringFormat.Ascii)
-            ResponseHandlers?.Invoke(args.SerialData);
-        if(CommandStringFormat == CommandStringFormat.Hex)
-            ResponseByteHandlers?.Invoke(System.Text.Encoding.ASCII.GetBytes(args.SerialData));
+        InvokeResponseHandlers(args.SerialData, Encoding.Latin1.GetBytes(args.SerialData));
     }
 
     public override void Send(string message)
@@ -47,7 +45,7 @@ public class AvCodersSerialClient : SerialClient
 
     public override void Send(byte[] bytes)
     {
-        Send(bytes.ToString() ?? throw new InvalidCastException("Bytes can't be a string"));
+        Send(Encoding.Latin1.GetString(bytes));
         InvokeRequestHandlers(bytes);
     }
 
@@ -62,7 +60,7 @@ public class AvCodersSerialClient : SerialClient
             SerialMappings.ConvertStopBits(serialSpec.StopBits),
             SerialMappings.ConvertProtocol(serialSpec.Protocol),
             ComPort.eComHardwareHandshakeType
-                .ComspecHardwareHandshakeNone, // I've never seen this needed in any devices i've controlled
+                .ComspecHardwareHandshakeNone, // I've never seen this needed in any devices I've controlled
             ComPort.eComSoftwareHandshakeType.ComspecSoftwareHandshakeNone,
             false);
     }
