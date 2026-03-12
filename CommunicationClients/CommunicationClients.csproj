@@ -10,10 +10,10 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="AVCoders.CommunicationClients" Version="2026.2.471" />
-      <PackageReference Include="AVCoders.Core" Version="2026.2.471" />
-      <PackageReference Include="Crestron.SimplSharp.SDK.Program" Version="2.21.184" />
-      <PackageReference Include="Serilog" Version="4.3.0" />
+      <PackageReference Include="AVCoders.CommunicationClients" Version="2026.3.487" />
+      <PackageReference Include="AVCoders.Core" Version="2026.3.487" />
+      <PackageReference Include="Crestron.SimplSharp.SDK.Program" Version="2.21.226" />
+      <PackageReference Include="Serilog" Version="4.3.1" />
     </ItemGroup>
 
 </Project>
