@@ -14,8 +14,8 @@ public class MemoryDump
 
     public MemoryDump()
     {
-        CrestronConsole.AddNewConsoleCommand(HandleDumpCommand, "dumpmemory",
-            "Capture a heap dump to the application directory (warning: dumps can be hundreds of MB)",
+        CrestronConsole.AddNewConsoleCommand(HandleDumpCommand, "dumpheap",
+            "Dump the current heap to the simpl app folder for this slot",
             ConsoleAccessLevelEnum.AccessOperator);
     }
 
