@@ -16,7 +16,7 @@ public class MemoryDump
     {
         CrestronConsole.AddNewConsoleCommand(HandleDumpCommand, "dumpheap",
             "Dump the current heap to the simpl app folder for this slot",
-            ConsoleAccessLevelEnum.AccessOperator);
+            ConsoleAccessLevelEnum.AccessAdministrator);
     }
 
     private void HandleDumpCommand(string args)
