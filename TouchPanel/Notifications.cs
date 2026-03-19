@@ -9,6 +9,7 @@ public class Notifications
     private readonly NotificationJoins _joins;
     private readonly BasicTriList _panel;
     private Guid _currentWarning;
+    private CTimer? _clearTimer;
 
     public Notifications(BasicTriList panel, NotificationJoins joins)
     {
@@ -19,12 +20,11 @@ public class Notifications
 
     public void Notify(string message, int timeout = 3000)
     {
+        _clearTimer?.Dispose();
         _panel.StringInput[_joins.MessageText].StringValue = message;
         SetBanner(_joins.Notify);
-        ClearTimer(x => SetBanner(0), timeout);
+        _clearTimer = new CTimer(x => SetBanner(0), timeout);
     }
-
-    private static void ClearTimer(CTimerCallbackFunction action, int timeout) => new CTimer(action, timeout);
 
     public Guid Warn(string message)
     {
