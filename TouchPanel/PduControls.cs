@@ -10,7 +10,6 @@ public class PduControls : SrlPage
     private readonly List<Outlet> _allOutlets;
     private readonly Confirmation _confirmation;
     private readonly Dictionary<string, List<Outlet>> _pduOutlets = new();
-    private readonly Dictionary<Outlet, List<PowerStateHandler>> _outletHandlers = new();
 
     public const uint PowerOnJoin = 1;
     public const uint PowerOffJoin = 2;
@@ -38,17 +37,9 @@ public class PduControls : SrlPage
 
     private void CreateMasterOutletList(List<Outlet> outlets)
     {
-        UnsubscribeOutletHandlers();
         _allOutlets.Clear();
         outlets.ForEach(x => _allOutlets.Add(x));
         UpdateOutletInfo();
-    }
-
-    private void UnsubscribeOutletHandlers()
-    {
-        foreach (var (outlet, handlers) in _outletHandlers)
-            handlers.ForEach(handler => outlet.PowerStateHandlers -= handler);
-        _outletHandlers.Clear();
     }
 
     private void UpdateOutletInfo()
@@ -56,19 +47,13 @@ public class PduControls : SrlPage
         SmartObjects.ForEach(x =>
         {
             x.UShortInput["Set Number of Items"].ShortValue = (short)_allOutlets.Count;
-            x.SigChange -= HandleOutletPress;
             x.SigChange += HandleOutletPress;
         });
 
         for (int i = 0; i < _allOutlets.Count; i++)
         {
             var deviceIndex = i;
-            PowerStateHandler handler = state => HandleOutletPowerState(deviceIndex, state);
-            var outlet = _allOutlets[deviceIndex];
-            if (!_outletHandlers.ContainsKey(outlet))
-                _outletHandlers[outlet] = new List<PowerStateHandler>();
-            _outletHandlers[outlet].Add(handler);
-            outlet.PowerStateHandlers += handler;
+            _allOutlets[deviceIndex].PowerStateHandlers += state => HandleOutletPowerState(deviceIndex, state);
 
             SmartObjects.ForEach(x =>
             {
