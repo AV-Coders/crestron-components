@@ -16,10 +16,12 @@ public class NvxDecoder : NvxBase
         if(device.Control.DeviceModeFeedback != eDeviceMode.Receiver)
             Log.Fatal($"The device at {Device.ID:x2} is not a Decoder");
         device.HdmiOut.StreamChange += HandleStreamChanges;
+        device.HdmiOut.VideoAttributes.AttributeChange += HandleAttributeChanges;
         device.BaseEvent += HandleBaseEvent;
-        
+
         UpdateSyncState();
         UpdateResolution();
+        UpdateHdcpStatus();
     }
 
     private void HandleStreamChanges(Stream stream, StreamEventArgs args)
@@ -60,6 +62,43 @@ public class NvxDecoder : NvxBase
         if(source.Control.DeviceModeFeedback == eDeviceMode.Receiver)
             throw new InvalidOperationException($"You can't route a decoder to a decoder.  Encoder: {source.ID:x2}, Decoder: {Device.ID:x2}");
         SetInput(source.Control.ServerUrl.StringValue);
+    }
+
+    private void HandleAttributeChanges(object sender, GenericEventArgs args)
+    {
+        switch (args.EventId)
+        {
+            case VideoAttributeEventIds.HdcpActiveFeedbackEventId:
+            case VideoAttributeEventIds.HdcpStateFeedbackEventId:
+                UpdateHdcpStatus();
+                return;
+        }
+    }
+
+    private void UpdateHdcpStatus()
+    {
+        try
+        {
+            OutputHdcpStatus = Device.HdmiOut.VideoAttributes.HdcpActiveFeedback.BoolValue
+                ? HdcpStatus.Active
+                : Device.HdmiOut.VideoAttributes.HdcpStateFeedback switch
+                {
+                    eDmHdcpState.HdmiOutHdcpReady or eDmHdcpState.HdmiOutAuthenticated or eDmHdcpState.Authenticated
+                        => HdcpStatus.Active,
+                    eDmHdcpState.HdmiOutNoHdcpReceiver or eDmHdcpState.NoHDCPsource or eDmHdcpState.HDCPnotRequired
+                        => HdcpStatus.NotSupported,
+                    eDmHdcpState.HdmiOutHdcpNotReady or eDmHdcpState.HdmiOutHdcpReadyTimeOut
+                        or eDmHdcpState.HdmiOutUnauthenticated or eDmHdcpState.HdmiOutUnauthenticatedDeviceCountExceeded
+                        or eDmHdcpState.HdmiOutUnauthenticatedCascadeDepthExceeded or eDmHdcpState.Unauthenticated
+                        or eDmHdcpState.Busy
+                        => HdcpStatus.Available,
+                    _ => HdcpStatus.Unknown,
+                };
+        }
+        catch (Exception e)
+        {
+            LogException(e);
+        }
     }
 
     private void UpdateResolution()

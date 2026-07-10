@@ -72,6 +72,7 @@ public abstract class NvxBase : AVoIPEndpoint
 
     private void HandleDeviceOnlineStatus(GenericBase currentDevice, OnlineOfflineEventArgs args)
     {
+        DeviceConnectionState = args.DeviceOnLine ? ConnectionState.Connected : ConnectionState.Disconnected;
         ((NvxCommunicationEmulator) CommunicationClient).SetConnectionState(args.DeviceOnLine ? ConnectionState.Connected : ConnectionState.Disconnected);
     }
 

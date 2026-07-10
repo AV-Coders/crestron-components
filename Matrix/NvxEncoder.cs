@@ -16,10 +16,12 @@ public abstract class NvxEncoder : NvxBase
         if (device.Control.DeviceModeFeedback != eDeviceMode.Transmitter)
             Log.Fatal($"The device at {Device.ID:x2} is not an Encoder");
         device.HdmiIn[1]!.StreamChange += HandleStreamChanges;
+        device.HdmiIn[1]!.VideoAttributes.AttributeChange += HandleAttributeChanges;
         device.BaseEvent += HandleBaseEvent;
 
         UpdateSyncState();
         UpdateResolution();
+        UpdateHdcpStatus();
     }
 
     private void HandleBaseEvent(GenericBase device, BaseEventArgs args)
@@ -47,6 +49,37 @@ public abstract class NvxEncoder : NvxBase
                 UpdateResolution();
                 return;
             }
+        }
+    }
+
+    private void HandleAttributeChanges(object sender, GenericEventArgs args)
+    {
+        switch (args.EventId)
+        {
+            case VideoAttributeEventIds.HdcpActiveFeedbackEventId:
+            case VideoAttributeEventIds.HdcpStateFeedbackEventId:
+                UpdateHdcpStatus();
+                return;
+        }
+    }
+
+    private void UpdateHdcpStatus()
+    {
+        try
+        {
+            InputHdcpStatus = Device.HdmiIn[1]!.VideoAttributes.HdcpActiveFeedback.BoolValue
+                ? HdcpStatus.Active
+                : Device.HdmiIn[1]!.VideoAttributes.HdcpStateFeedback switch
+                {
+                    eDmHdcpState.Authenticated => HdcpStatus.Active,
+                    eDmHdcpState.NoHDCPsource or eDmHdcpState.HDCPnotRequired => HdcpStatus.NotSupported,
+                    eDmHdcpState.Unauthenticated or eDmHdcpState.Busy => HdcpStatus.Available,
+                    _ => HdcpStatus.Unknown,
+                };
+        }
+        catch (Exception e)
+        {
+            LogException(e);
         }
     }
 
