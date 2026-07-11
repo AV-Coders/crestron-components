@@ -76,5 +76,25 @@ public abstract class NvxBase : AVoIPEndpoint
         ((NvxCommunicationEmulator) CommunicationClient).SetConnectionState(args.DeviceOnLine ? ConnectionState.Connected : ConnectionState.Disconnected);
     }
 
+    protected void HandleAttributeChanges(object sender, GenericEventArgs args)
+    {
+        switch (args.EventId)
+        {
+            case VideoAttributeEventIds.HdcpActiveFeedbackEventId:
+            case VideoAttributeEventIds.HdcpStateFeedbackEventId:
+                UpdateHdcpStatus();
+                return;
+            case VideoAttributeEventIds.HorizontalResolutionFeedbackEventId:
+            case VideoAttributeEventIds.VerticalResolutionFeedbackEventId:
+            case VideoAttributeEventIds.FramesPerSecondFeedbackEventId:
+                UpdateResolution();
+                return;
+        }
+    }
+
+    protected abstract void UpdateResolution();
+
+    protected abstract void UpdateHdcpStatus();
+
     private static string GetCommunicationClientName(AVEndpointType type, string name) => $"{name} {type.ToString()}";
 }

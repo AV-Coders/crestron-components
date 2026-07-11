@@ -64,18 +64,7 @@ public class NvxDecoder : NvxBase
         SetInput(source.Control.ServerUrl.StringValue);
     }
 
-    private void HandleAttributeChanges(object sender, GenericEventArgs args)
-    {
-        switch (args.EventId)
-        {
-            case VideoAttributeEventIds.HdcpActiveFeedbackEventId:
-            case VideoAttributeEventIds.HdcpStateFeedbackEventId:
-                UpdateHdcpStatus();
-                return;
-        }
-    }
-
-    private void UpdateHdcpStatus()
+    protected override void UpdateHdcpStatus()
     {
         try
         {
@@ -101,7 +90,7 @@ public class NvxDecoder : NvxBase
         }
     }
 
-    private void UpdateResolution()
+    protected override void UpdateResolution()
     {
         try
         {

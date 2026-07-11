@@ -52,18 +52,7 @@ public abstract class NvxEncoder : NvxBase
         }
     }
 
-    private void HandleAttributeChanges(object sender, GenericEventArgs args)
-    {
-        switch (args.EventId)
-        {
-            case VideoAttributeEventIds.HdcpActiveFeedbackEventId:
-            case VideoAttributeEventIds.HdcpStateFeedbackEventId:
-                UpdateHdcpStatus();
-                return;
-        }
-    }
-
-    private void UpdateHdcpStatus()
+    protected override void UpdateHdcpStatus()
     {
         try
         {
@@ -83,7 +72,7 @@ public abstract class NvxEncoder : NvxBase
         }
     }
 
-    private void UpdateResolution()
+    protected override void UpdateResolution()
     {
         try
         {
@@ -92,7 +81,7 @@ public abstract class NvxEncoder : NvxBase
         }
         catch (Exception e)
         {
-            OutputResolution = "Exception";
+            InputResolution = "Exception";
             LogException(e);
         }
     }
