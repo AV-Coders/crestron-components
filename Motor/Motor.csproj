@@ -9,8 +9,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="avcoders.core" Version="2026.7.522" />
-      <PackageReference Include="AVCoders.Motor" Version="2026.7.522" />
+      <PackageReference Include="avcoders.core" Version="2026.7.526" />
+      <PackageReference Include="AVCoders.Motor" Version="2026.7.526" />
       <PackageReference Include="Crestron.SimplSharp.SDK.Library" Version="2.21.274" />
       <PackageReference Include="Crestron.SimplSharp.SDK.Program" Version="2.21.274" />
       <PackageReference Include="Crestron.SimplSharp.SDK.ProgramLibrary" Version="2.21.274" />

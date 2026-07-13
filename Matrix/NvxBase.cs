@@ -9,12 +9,14 @@ namespace AvCoders.Crestron.Matrix;
 
 public class NvxCommunicationEmulator : CommunicationClient
 {
-    public NvxCommunicationEmulator(string name, ushort port) : base(name, "IP ID", port, CommandStringFormat.Ascii)
+    public NvxCommunicationEmulator(string name, string host, ushort port) : base(name, host, port, CommandStringFormat.Ascii)
     {
         ConnectionState = ConnectionState.Disconnected;
     }
 
     public void SetConnectionState(ConnectionState state) { ConnectionState = state; }
+
+    public void SetHost(string host) => Host = host;
 
     public override void Send(string message) { }
 
@@ -27,11 +29,12 @@ public abstract class NvxBase : AVoIPEndpoint
     protected readonly ThreadWorker PollWorker;
 
     protected NvxBase(string name, DmNvxBaseClass device, AVEndpointType deviceType) : 
-        base(name, deviceType, new NvxCommunicationEmulator(GetCommunicationClientName(deviceType, name), (ushort) device.ID))
+        base(name, deviceType, new NvxCommunicationEmulator(GetCommunicationClientName(deviceType, name), device.Network.IpAddressFeedback.StringValue, (ushort) device.ID))
     {
         Device = device;
         Device.PreviewImage.DmNvxPreviewImagePropertyChange += HandlePreviewImageChange;
         Device.OnlineStatusChange += HandleDeviceOnlineStatus;
+        Device.Network.NetworkChange += HandleNetworkChange;
 
         PollWorker = new ThreadWorker(Poll, TimeSpan.FromSeconds(10), true);
         PollWorker.Restart();
@@ -68,6 +71,12 @@ public abstract class NvxBase : AVoIPEndpoint
         }
 
         PreviewUrl = Device.PreviewImage.PreviewImages.ImageDetails[indexOfMaxRes]?.Ipv4PathFeedback.StringValue ?? String.Empty;
+    }
+
+    private void HandleNetworkChange(object sender, GenericEventArgs args)
+    {
+        if (args.EventId == DMInputEventIds.CurrentIpAddressEventId)
+            ((NvxCommunicationEmulator) CommunicationClient).SetHost(Device.Network.IpAddressFeedback.StringValue);
     }
 
     private void HandleDeviceOnlineStatus(GenericBase currentDevice, OnlineOfflineEventArgs args)
