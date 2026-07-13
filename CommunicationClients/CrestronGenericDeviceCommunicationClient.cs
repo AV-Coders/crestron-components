@@ -8,6 +8,7 @@ public class CrestronGenericDeviceCommunicationClient : IpComms
     public CrestronGenericDeviceCommunicationClient(GenericDevice device)
         : base(device.ConnectedIpList?.FirstOrDefault()?.DeviceIpAddress ?? String.Empty, (ushort) device.ID, device.Description, CommandStringFormat.Ascii)
     {
+        ConnectionState = ConnectionState.Disconnected;
         device.OnlineStatusChange += HandleOnlineStatusChange;
         if (device.ConnectedIpList != null)
             device.IpInformationChange += HandleIpInformationChange;
