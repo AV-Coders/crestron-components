@@ -1,7 +1,6 @@
 ﻿using AVCoders.Core;
 using Crestron.SimplSharpPro.DeviceSupport;
 using Renci.SshNet;
-using Serilog;
 using Directory = Crestron.SimplSharp.CrestronIO.Directory;
 using SshClient = Renci.SshNet.SshClient;
 
@@ -39,7 +38,7 @@ public class DisplayListLoader : LogBase
         _filePath = $"{Directory.GetApplicationDirectory()}/{fileName}";
 
         _ethernetExtender.DeviceExtenderSigChange += EthernetExtenderSigChange;
-        Log.Debug("Ready to load");
+        LogDebug("Ready to load");
     }
 
     private void EthernetExtenderSigChange(DeviceExtender currentDeviceExtender, SigEventArgs args)
@@ -49,21 +48,21 @@ public class DisplayListLoader : LogBase
         if (args.Sig != _ethernetExtender.IpAddressFeedback)
             return;
         
-        Log.Debug($"Uploading - Local path: {_filePath}, TP Path: {RemoteTpPath}, TP IP: {_ethernetExtender.IpAddressFeedback.StringValue}");
+        LogDebug($"Uploading - Local path: {_filePath}, TP Path: {RemoteTpPath}, TP IP: {_ethernetExtender.IpAddressFeedback.StringValue}");
         var uploadSuccess = Ssh.UploadFile(
             new SftpClient(_ethernetExtender.IpAddressFeedback.StringValue, 22, _username, _password),
             _filePath, RemoteTpPath, Name);
 
         if (!uploadSuccess)
         {
-            Log.Debug("DisplayList Upload failure");
+            LogDebug("DisplayList Upload failure");
             return;
         }
-        Log.Debug("Issuing project load");
+        LogDebug("Issuing project load");
         Ssh.RunCommand(
             new SshClient(_ethernetExtender.IpAddressFeedback.StringValue, 22, _username, _password), 
             "PROJECTLOAD", Name);
-        Log.Debug("Done!");
+        LogDebug("Done!");
         _ethernetExtender.DeviceExtenderSigChange -= EthernetExtenderSigChange;
     }
 }

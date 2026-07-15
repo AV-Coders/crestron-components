@@ -4,7 +4,6 @@ using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DeviceSupport;
 using Crestron.SimplSharpPro.DM;
 using Crestron.SimplSharpPro.DM.Streaming;
-using Serilog;
 using Stream = Crestron.SimplSharpPro.DeviceSupport.Stream;
 
 namespace AvCoders.Crestron.Matrix;
@@ -14,7 +13,7 @@ public abstract class NvxEncoder : NvxBase
     public NvxEncoder(string name, DmNvxBaseClass device) : base(name, device, AVEndpointType.Encoder)
     {
         if (device.Control.DeviceModeFeedback != eDeviceMode.Transmitter)
-            Log.Fatal($"The device at {Device.ID:x2} is not an Encoder");
+            LogError($"The device at {Device.ID:x2} is not an Encoder");
         device.HdmiIn[1]!.StreamChange += HandleStreamChanges;
         device.HdmiIn[1]!.VideoAttributes.AttributeChange += HandleAttributeChanges;
         device.BaseEvent += HandleBaseEvent;
@@ -30,7 +29,7 @@ public abstract class NvxEncoder : NvxBase
         {
             case DMInputEventIds.DeviceModeFeedbackEventId:
                 if (Device.Control.DeviceModeFeedback != eDeviceMode.Transmitter)
-                    Log.Fatal($"The device at {Device.ID:x2} is not an Encoder");
+                    LogError($"The device at {Device.ID:x2} is not an Encoder");
                 break;
         }
     }

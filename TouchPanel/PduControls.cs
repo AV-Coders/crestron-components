@@ -1,7 +1,6 @@
 using AVCoders.Core;
 using AVCoders.Crestron.SmartGraphics;
 using AVCoders.Power;
-using Serilog;
 
 namespace AVCoders.Crestron.TouchPanel;
 
@@ -76,7 +75,7 @@ public class PduControls : SrlPage
             {
                 case PowerOnJoin:
                     _allOutlets[selectionInfo.Index].PowerOn();
-                    Log.Debug($"Turning on outlet {_allOutlets[selectionInfo.Index].Name}");
+                    LogDebug($"Turning on outlet {_allOutlets[selectionInfo.Index].Name}");
                     break;
                 case PowerOffJoin:
                     _confirmation.Prompt(
@@ -87,7 +86,7 @@ public class PduControls : SrlPage
                             new("No", null)
                         }
                     );
-                    Log.Debug($"Outlet power off requested for {_allOutlets[selectionInfo.Index].Name}");
+                    LogDebug($"Outlet power off requested for {_allOutlets[selectionInfo.Index].Name}");
                     break;
                 case RebootJoin:
                     _confirmation.Prompt(
@@ -98,7 +97,7 @@ public class PduControls : SrlPage
                             new("No", null)
                         }
                     );
-                    Log.Debug($"Outlet reboot requested for {_allOutlets[selectionInfo.Index].Name}");
+                    LogDebug($"Outlet reboot requested for {_allOutlets[selectionInfo.Index].Name}");
                     break;
             }
         }

@@ -1,6 +1,5 @@
 ﻿using AVCoders.Crestron.SmartGraphics;
 using Crestron.SimplSharpPro.DM.Streaming;
-using Serilog;
 
 namespace AVCoders.Crestron.TouchPanel;
 
@@ -37,7 +36,7 @@ public class NvxStatus : SrlPage
 
     private void ConfigureSmartObject()
     {
-        Log.Debug("Configuring modal buttons");
+        LogDebug("Configuring modal buttons");
         SmartObjects.ForEach(x => x.UShortInput["Set Number of Items"].ShortValue = (short)_nvxDevices.Count);
 
         for (int i = 0; i < _nvxDevices.Count; i++)

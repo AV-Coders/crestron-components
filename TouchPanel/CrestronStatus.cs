@@ -1,7 +1,5 @@
 ﻿using AVCoders.Core;
 using AVCoders.Crestron.SmartGraphics;
-using Serilog;
-using Serilog.Context;
 
 namespace AVCoders.Crestron.TouchPanel;
 

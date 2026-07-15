@@ -1,7 +1,6 @@
 using AVCoders.Core;
 using AVCoders.Crestron.SmartGraphics;
 using Crestron.SimplSharpPro.DeviceSupport;
-using Serilog;
 
 namespace AVCoders.Crestron.TouchPanel;
 
@@ -56,7 +55,7 @@ public class Confirmation : SrlPage
         var info = SrlHelper.GetBooleanSigInfo(args.Sig.Number);
         if (info.Join != SelectJoin)
             return;
-        Log.Verbose($"Option {info.Index} selected");
+        LogVerbose($"Option {info.Index} selected");
         
         CrestronPanel.Interlock(_panels, 0, _relatedPages);
         Thread.Sleep(100);

@@ -1,6 +1,5 @@
 using AVCoders.Core;
 using Crestron.SimplSharpPro.DM;
-using Serilog;
 
 namespace AVCoders.Crestron.CommunicationClients;
 
@@ -24,7 +23,7 @@ public class CrestronCecStream: SerialClient
     {
         using (PushProperties("ConfigurePort"))
         {
-            Log.Error("This port can't be configured");
+            LogError("This port can't be configured");
         }
     }
 

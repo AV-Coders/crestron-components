@@ -1,18 +1,18 @@
 using System.Diagnostics;
+using AVCoders.Core;
 using Crestron.SimplSharp;
 using Microsoft.Diagnostics.NETCore.Client;
-using Serilog;
 using Directory = Crestron.SimplSharp.CrestronIO.Directory;
 using Interlocked = System.Threading.Interlocked;
 
 namespace AVCoders.Crestron.Processor;
 
-public class MemoryDump
+public class MemoryDump : LogBase
 {
     private readonly int _processId = Process.GetCurrentProcess().Id;
     private int _isDumping;
 
-    public MemoryDump()
+    public MemoryDump() : base("MemoryDump")
     {
         CrestronConsole.AddNewConsoleCommand(HandleDumpCommand, "dumpheap",
             "Dump the current heap to the simpl app folder for this slot",
@@ -28,7 +28,7 @@ public class MemoryDump
     {
         if (Interlocked.CompareExchange(ref _isDumping, 1, 0) != 0)
         {
-            Log.Warning("A memory dump is already in progress");
+            LogWarning("A memory dump is already in progress");
             return;
         }
 
@@ -41,13 +41,13 @@ public class MemoryDump
             client.WriteDump(DumpType.WithHeap, dumpPath);
 
             var fileInfo = new FileInfo(dumpPath);
-            Log.Information("Dump saved to {DumpPath} ({SizeMb:F1} MB)", dumpPath, fileInfo.Length / 1048576.0);
+            LogInformation("Dump saved to {DumpPath} ({SizeMb:F1} MB)", dumpPath, fileInfo.Length / 1048576.0);
 
             PruneOldDumps(appDir, dumpPath);
         }
         catch (Exception ex)
         {
-            Log.Error(ex, "Dump failed");
+            LogError(ex, "Dump failed");
         }
         finally
         {
@@ -66,12 +66,12 @@ public class MemoryDump
             foreach (var file in dumpFiles)
             {
                 file.Delete();
-                Log.Information("Pruned old dump {FileName}", file.Name);
+                LogInformation("Pruned old dump {FileName}", file.Name);
             }
         }
         catch (Exception ex)
         {
-            Log.Warning(ex, "Failed to prune old dumps");
+            LogWarning("Failed to prune old dumps: {Message}", ex.Message);
         }
     }
 }

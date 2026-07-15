@@ -1,7 +1,6 @@
 ﻿using AVCoders.Core;
 using AVCoders.MediaPlayer;
 using Crestron.SimplSharpPro;
-using Serilog;
 using Directory = Crestron.SimplSharp.CrestronIO.Directory;
 
 namespace AVCoders.Crestron.MediaPlayer;
@@ -59,7 +58,7 @@ public class SonyBdpSeriesOverCrestronIr : AVCoders.MediaPlayer.MediaPlayer
 
     private void Pulse(string key)
     {
-        Log.Information($"Pulsing {key}");
+        LogInformation($"Pulsing {key}");
         _port.PressAndRelease(key, _pulseTimeInMs);
     }
 }

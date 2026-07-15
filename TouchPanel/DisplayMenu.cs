@@ -1,7 +1,6 @@
 ﻿using AVCoders.Core;
 using AVCoders.Crestron.SmartGraphics;
 using AVCoders.Display;
-using Serilog;
 
 namespace AVCoders.Crestron.TouchPanel;
 
@@ -85,7 +84,7 @@ public class DisplayMenu : SrlPage
         using (PushProperties("HandleDisplayPress"))
         {
             var selectionInfo = SrlHelper.GetSigInfo(args.Sig);
-            Log.Debug("Display Join, id {SigNumber}. Type: {S} Index {SelectionInfoIndex}, Join: {SelectionInfoJoin}",
+            LogDebug("Display Join, id {SigNumber}. Type: {S} Index {SelectionInfoIndex}, Join: {SelectionInfoJoin}",
                 args.Sig.Number, args.Sig.Type.ToString(), selectionInfo.Index, selectionInfo.Join);
 
             switch (args.Sig.Type)
@@ -95,11 +94,11 @@ public class DisplayMenu : SrlPage
                     {
                         case PowerOnJoin:
                             _displays[selectionInfo.Index].Display.PowerOn();
-                            Log.Debug("Turning on display {SelectionInfoIndex}", selectionInfo.Index);
+                            LogDebug("Turning on display {SelectionInfoIndex}", selectionInfo.Index);
                             break;
                         case PowerOffJoin:
                             _displays[selectionInfo.Index].Display.PowerOff();
-                            Log.Debug("Turning off display {SelectionInfoIndex}", selectionInfo.Index);
+                            LogDebug("Turning off display {SelectionInfoIndex}", selectionInfo.Index);
                             break;
                         case MuteJoin:
                             _displays[selectionInfo.Index].Display.ToggleAudioMute();
@@ -108,7 +107,7 @@ public class DisplayMenu : SrlPage
                         {
                             var input = _displays[selectionInfo.Index].Inputs[0].Input;
                             _displays[selectionInfo.Index].Display.SetInput(input);
-                            Log.Debug("Turning setting display {SelectionInfoIndex} to {Input}", selectionInfo.Index,
+                            LogDebug("Turning setting display {SelectionInfoIndex} to {Input}", selectionInfo.Index,
                                 input);
                             break;
                         }
@@ -116,7 +115,7 @@ public class DisplayMenu : SrlPage
                         {
                             var input = _displays[selectionInfo.Index].Inputs[1].Input;
                             _displays[selectionInfo.Index].Display.SetInput(input);
-                            Log.Debug("Turning setting display {SelectionInfoIndex} to {Input}", selectionInfo.Index,
+                            LogDebug("Turning setting display {SelectionInfoIndex} to {Input}", selectionInfo.Index,
                                 input);
                             break;
                         }
@@ -124,7 +123,7 @@ public class DisplayMenu : SrlPage
                         {
                             var input = _displays[selectionInfo.Index].Inputs[2].Input;
                             _displays[selectionInfo.Index].Display.SetInput(input);
-                            Log.Debug("Turning setting display {SelectionInfoIndex} to {Input}", selectionInfo.Index,
+                            LogDebug("Turning setting display {SelectionInfoIndex} to {Input}", selectionInfo.Index,
                                 input);
                             break;
                         }
@@ -132,7 +131,7 @@ public class DisplayMenu : SrlPage
                         {
                             var input = _displays[selectionInfo.Index].Inputs[3].Input;
                             _displays[selectionInfo.Index].Display.SetInput(input);
-                            Log.Debug("Turning setting display {SelectionInfoIndex} to {Input}", selectionInfo.Index,
+                            LogDebug("Turning setting display {SelectionInfoIndex} to {Input}", selectionInfo.Index,
                                 input);
                             break;
                         }

@@ -1,7 +1,5 @@
 ﻿using AVCoders.Core;
 using AVCoders.Crestron.SmartGraphics;
-using Serilog;
-using Serilog.Context;
 
 namespace AVCoders.Crestron.TouchPanel;
 
@@ -35,7 +33,7 @@ public abstract class LevelControls : SrlPage
             while (ButtonHeld)
             {
                 action.Invoke();
-                Log.Verbose("Volume command sent");
+                LogVerbose("Volume command sent");
                 Thread.Sleep(250);
             }
         }).Start();
@@ -59,20 +57,20 @@ public abstract class LevelControls : SrlPage
                     switch (selectionInfo.Join)
                     {
                         case VolumeUpJoin:
-                            Log.Debug($"Queueing Volume up for fader index {selectionInfo.Index}");
+                            LogDebug($"Queueing Volume up for fader index {selectionInfo.Index}");
                             StartVolumeUp(selectionInfo.Index);
                             break;
                         case VolumeDownJoin:
-                            Log.Debug($"Queueing Volume down for fader index {selectionInfo.Index}");
+                            LogDebug($"Queueing Volume down for fader index {selectionInfo.Index}");
                             StartVolumeDown(selectionInfo.Index);
                             break;
                         case MuteJoin:
 
-                            Log.Debug($"Toggling Volume mute for fader index {selectionInfo.Index}");
+                            LogDebug($"Toggling Volume mute for fader index {selectionInfo.Index}");
                             ToggleAudioMute(selectionInfo.Index);
                             break;
                         default:
-                            Log.Debug(
+                            LogDebug(
                                 $"Join {selectionInfo.Join} for index {selectionInfo.Index} is not handled by this module");
                             break;
                     }
@@ -80,11 +78,11 @@ public abstract class LevelControls : SrlPage
                     return;
                 }
                 case eSigType.UShort when args.Sig.Number > 10:
-                    Log.Debug($"Analog sig, Number: {args.Sig.Number}");
+                    LogDebug($"Analog sig, Number: {args.Sig.Number}");
                     SetNewLevel(args.Sig);
                     return;
                 default:
-                    Log.Debug($"Ignoring Sig, Type: {args.Sig.Type.ToString()}, Number: {args.Sig.Number}");
+                    LogDebug($"Ignoring Sig, Type: {args.Sig.Type.ToString()}, Number: {args.Sig.Number}");
                     break;
             }
         }

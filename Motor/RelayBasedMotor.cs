@@ -1,7 +1,6 @@
 ﻿using AVCoders.Motor;
 using Crestron.SimplSharp;
 using Crestron.SimplSharpPro;
-using Serilog;
 
 namespace AVCoders.Crestron.Motor;
 
@@ -40,7 +39,7 @@ public class RelayBasedMotor : AVCoders.Motor.Motor
     public override void Raise()
     {
         if (CurrentMoveAction == RelayAction.Raise)
-            Log.Information("Not triggering the same move direction twice");
+            LogInformation("Not triggering the same move direction twice");
         else
             TriggerRelay(RelayAction.Raise);
     }
@@ -48,7 +47,7 @@ public class RelayBasedMotor : AVCoders.Motor.Motor
     public override void Lower()
     {
         if (CurrentMoveAction == RelayAction.Lower)
-            Log.Information("Not triggering the same move direction twice");
+            LogInformation("Not triggering the same move direction twice");
         else
             TriggerRelay(RelayAction.Lower);
     }
@@ -56,7 +55,7 @@ public class RelayBasedMotor : AVCoders.Motor.Motor
     private void TriggerRelay(RelayAction action)
     {
         Guid thisMove = Guid.NewGuid();
-        Log.Information($"Action: {action.ToString()}, move id: {thisMove}");
+        LogInformation($"Action: {action.ToString()}, move id: {thisMove}");
         CancelAndCreateANewToken();
         ClearRelays();
         _cs.RelayPorts[action == RelayAction.Lower? _relays.Lower : _relays.Raise]!.State = true;

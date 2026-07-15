@@ -1,6 +1,5 @@
 using AVCoders.Core;
 using AVCoders.Crestron.SmartGraphics;
-using Serilog;
 
 namespace AVCoders.Crestron.TouchPanel;
 
@@ -64,21 +63,21 @@ public class MotorMenu : SrlPage
         {
             if (!CrestronPanel.EventIsAButtonPress(args))
                 return;
-            Log.Debug($"Button {args.Sig.Number} pressed");
+            LogDebug($"Button {args.Sig.Number} pressed");
             var joinInfo = SrlHelper.GetSigInfo(args.Sig);
             switch (joinInfo.Join)
             {
                 case RaiseJoin:
                     _motors[joinInfo.Index].Motor.Raise();
-                    Log.Debug("Raising");
+                    LogDebug("Raising");
                     break;
                 case LowerJoin:
                     _motors[joinInfo.Index].Motor.Lower();
-                    Log.Debug("Lowering");
+                    LogDebug("Lowering");
                     break;
                 case StopJoin:
                     _motors[joinInfo.Index].Motor.Stop();
-                    Log.Debug("Stopping");
+                    LogDebug("Stopping");
                     break;
             }
         }

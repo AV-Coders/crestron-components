@@ -1,13 +1,12 @@
-﻿using AVCoders.MediaPlayer;
+﻿using AVCoders.Core;
+using AVCoders.MediaPlayer;
 using Crestron.SimplSharp;
 using Crestron.SimplSharpPro;
-using Serilog;
-using Serilog.Context;
 using Directory = Crestron.SimplSharp.CrestronIO.Directory;
 
 namespace AVCoders.Crestron.MediaPlayer;
 
-public class SetTopBoxOverCrestronIr : ISetTopBox
+public class SetTopBoxOverCrestronIr : LogBase, ISetTopBox
 {
     private static readonly Dictionary<RemoteButton, string> RemoteButtonMap = new()
     {
@@ -29,14 +28,13 @@ public class SetTopBoxOverCrestronIr : ISetTopBox
         { RemoteButton.Subtitle, "C"}
     };
     
-    private readonly string _name;
     private readonly IROutputPort _port;
     private readonly ushort _pulseTimeInMs;
     private readonly bool _sendEnterAfterChannel;
 
     public SetTopBoxOverCrestronIr(string name, IROutputPort port, string irFileName, bool sendEnterAfterChannel = true, ushort pulseTimeInMs = 25)
+        : base(name)
     {
-        _name = name;
         _port = port;
         _pulseTimeInMs = pulseTimeInMs;
         _sendEnterAfterChannel = sendEnterAfterChannel;
@@ -67,16 +65,10 @@ public class SetTopBoxOverCrestronIr : ISetTopBox
 
     private void Pulse(string key)
     {
-        Debug($"Pulsing {key}");
-        _port.PressAndRelease(key, _pulseTimeInMs);
-    }
-    
-    private void Debug(string message)
-    { 
-        using (LogContext.PushProperty("class", GetType()))
-        using (LogContext.PushProperty("instance_name", _name))
+        using (PushProperties())
         {
-            Log.Debug(message);
+            LogDebug("Pulsing {Key}", key);
+            _port.PressAndRelease(key, _pulseTimeInMs);
         }
     }
 }

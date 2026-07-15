@@ -1,11 +1,11 @@
+using AVCoders.Core;
 using AVCoders.MediaPlayer;
 using Crestron.SimplSharpPro;
-using Serilog;
 using Directory = Crestron.SimplSharp.CrestronIO.Directory;
 
 namespace Core;
 
-public class StrongSrt5432OverCrestronIr : ISetTopBox
+public class StrongSrt5432OverCrestronIr : LogBase, ISetTopBox
 {
     private static readonly Dictionary<RemoteButton, string> RemoteButtonMap = new()
     {
@@ -27,14 +27,13 @@ public class StrongSrt5432OverCrestronIr : ISetTopBox
         { RemoteButton.Subtitle, "C"}
     };
     
-    private readonly string _name;
     private readonly IROutputPort _port;
     private readonly ushort _pulseTimeInMs;
     private readonly bool _sendEnterAfterChannel;
 
     public StrongSrt5432OverCrestronIr(string name, IROutputPort port)
+        : base(name)
     {
-        _name = name;
         _port = port;
         _pulseTimeInMs = 25;
         _sendEnterAfterChannel = true;
@@ -72,7 +71,10 @@ public class StrongSrt5432OverCrestronIr : ISetTopBox
 
     private void Pulse(string key)
     {
-        Log.Information($"Pulsing {key}");
-        _port.PressAndRelease(key, _pulseTimeInMs);
+        using (PushProperties())
+        {
+            LogInformation("Pulsing {Key}", key);
+            _port.PressAndRelease(key, _pulseTimeInMs);
+        }
     }
 }

@@ -1,7 +1,6 @@
 ﻿using System.Text;
 using AVCoders.Core;
 using Crestron.SimplSharpPro;
-using Serilog;
 
 namespace AVCoders.Crestron.CommunicationClients;
 
@@ -19,7 +18,7 @@ public class AvCodersSerialClient : SerialClient
             {
                 case eDeviceRegistrationUnRegistrationResponse.Failure:
                     ConnectionState = ConnectionState.Error;
-                    Log.Error("Failed to register com port {ComPortName}.  Reason: {reason}", _comPort.DeviceName,
+                    LogError("Failed to register com port {ComPortName}.  Reason: {reason}", _comPort.DeviceName,
                         _comPort.DeviceRegistrationFailureReason);
                     break;
                 default:

@@ -1,6 +1,5 @@
 ﻿using AVCoders.Core;
-using Serilog;
-using Serilog.Context;
+using Microsoft.Extensions.Logging;
 
 namespace AVCoders.Crestron.TouchPanel;
 
@@ -8,6 +7,7 @@ public class Shutdown : SubPage, IDevice
 {
     public SubpageSelection? Controller = null;
     public PowerStateHandler? PowerStateHandlers;
+    private readonly ILogger _logger;
     private readonly string _name;
     private readonly List<SmartObject> _smartObjects;
     private readonly ShutdownMode _mode;
@@ -20,6 +20,7 @@ public class Shutdown : SubPage, IDevice
 
     public Shutdown(string name, List<SmartObject> smartObjects, ShutdownMode mode, ushort countdownTime = 10)
     {
+        _logger = LogBase.LoggerFactory.CreateLogger<Shutdown>();
         _smartObjects = smartObjects;
         _mode = mode;
         _name = name;
@@ -110,10 +111,10 @@ public class Shutdown : SubPage, IDevice
     
     private void Debug(string message)
     {
-        using (LogContext.PushProperty("class", GetType()))
-        using (LogContext.PushProperty("instance_name", _name))
+        using (_logger.BeginScope(new Dictionary<string, object>
+               { ["Class"] = GetType().Name, ["InstanceName"] = _name }))
         {
-            Log.Debug(message);
+            _logger.LogDebug("{Message}", message);
         }
     }
 

@@ -3,7 +3,6 @@ using AVCoders.CommunicationClients;
 using AVCoders.Core;
 using Crestron.SimplSharp;
 using Crestron.SimplSharp.CrestronSockets;
-using Serilog;
 
 namespace AVCoders.Crestron.CommunicationClients;
 

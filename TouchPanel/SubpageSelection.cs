@@ -1,6 +1,5 @@
 ﻿using AVCoders.Crestron.SmartGraphics;
 using Crestron.SimplSharpPro.DeviceSupport;
-using Serilog;
 
 namespace AVCoders.Crestron.TouchPanel;
 
@@ -105,12 +104,12 @@ public class SubpageSelection : SrlPage
         {
             if (count > _buttonConfig.Count)
             {
-                Log.Error("You're asking for more tabs than there are buttons, {Count} > {ButtonCount}. Showing all", count, _buttonConfig.Count);
+                LogError("You're asking for more tabs than there are buttons, {Count} > {ButtonCount}. Showing all", count, _buttonConfig.Count);
                 SmartObjects.ForEach(x => x.UShortInput["Set Number of Items"].ShortValue = (short)_buttonConfig.Count);
                 return;
             }
             SmartObjects.ForEach(x => x.UShortInput["Set Number of Items"].UShortValue = count);
-            Log.Verbose("Showing only {Count} tabs", count);
+            LogVerbose("Showing only {Count} tabs", count);
         }
     }
     
@@ -119,7 +118,7 @@ public class SubpageSelection : SrlPage
         using (PushProperties("ShowAllTabs"))
         {
             SmartObjects.ForEach(x => x.UShortInput["Set Number of Items"].ShortValue = (short)_buttonConfig.Count);
-            Log.Verbose("Showing all tabs");
+            LogVerbose("Showing all tabs");
         }
     }
 
@@ -134,7 +133,7 @@ public class SubpageSelection : SrlPage
 
         if (_buttonConfig[selection] == NoButton)
         {
-            Log.Verbose("Ignoring a hidden button");
+            LogVerbose("Ignoring a hidden button");
             return;
         }
 

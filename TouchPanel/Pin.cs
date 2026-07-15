@@ -1,7 +1,6 @@
 ﻿using System.Text;
 using AVCoders.Core;
 using Crestron.SimplSharpPro.DeviceSupport;
-using Serilog;
 
 namespace AVCoders.Crestron.TouchPanel;
 public class Pin : LogBase
@@ -118,12 +117,12 @@ public class Pin : LogBase
     {
         if (String.IsNullOrEmpty(expectedPin))
         {
-            Log.Debug("Authentication not required");
+            LogDebug("Authentication not required");
             successAction.Invoke();
             return;
         }
         ClearText();
-        Log.Debug("Authenticating...");
+        LogDebug("Authenticating...");
         CrestronPanel.Interlock(_panels, _pageJoin, _relatedPages);
         _action = successAction;
         _pin = expectedPin;
@@ -137,6 +136,6 @@ public class Pin : LogBase
             x.StringInput[MaskedInputStringJoin + 10].StringValue = string.Empty;
         });
         _input = string.Empty;
-        Log.Debug("Cleared text");
+        LogDebug("Cleared text");
     }
 }

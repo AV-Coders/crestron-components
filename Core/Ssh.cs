@@ -1,6 +1,8 @@
 ﻿using Crestron.SimplSharp;
+using Microsoft.Extensions.Logging;
 using Renci.SshNet;
 using Renci.SshNet.Common;
+using LogBase = AVCoders.Core.LogBase;
 
 namespace AVCoders.Crestron.Core;
 
@@ -70,7 +72,7 @@ public static class Ssh
     
     private static void Log(string name, string message)
     {
-        Serilog.Log.Verbose(message);
+        LogBase.LoggerFactory.CreateLogger(typeof(Ssh)).LogTrace("{Name} - SSH - {Message}", name, message);
         CrestronConsole.PrintLine($"{DateTime.Now} - {name} - SSH - {message}");
     }
 }

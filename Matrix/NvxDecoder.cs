@@ -4,7 +4,6 @@ using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DeviceSupport;
 using Crestron.SimplSharpPro.DM;
 using Crestron.SimplSharpPro.DM.Streaming;
-using Serilog;
 using Stream = Crestron.SimplSharpPro.DeviceSupport.Stream;
 
 namespace AvCoders.Crestron.Matrix;
@@ -14,7 +13,7 @@ public class NvxDecoder : NvxBase
     public NvxDecoder(string name, DmNvxBaseClass device) : base(name, device, AVEndpointType.Decoder)
     {
         if(device.Control.DeviceModeFeedback != eDeviceMode.Receiver)
-            Log.Fatal($"The device at {Device.ID:x2} is not a Decoder");
+            LogError($"The device at {Device.ID:x2} is not a Decoder");
         device.HdmiOut.StreamChange += HandleStreamChanges;
         device.HdmiOut.VideoAttributes.AttributeChange += HandleAttributeChanges;
         device.BaseEvent += HandleBaseEvent;
@@ -47,7 +46,7 @@ public class NvxDecoder : NvxBase
         {
             case DMInputEventIds.DeviceModeFeedbackEventId:
                 if(Device.Control.DeviceModeFeedback != eDeviceMode.Receiver)
-                    Log.Fatal($"The device at {Device.ID:x2} is not a Decoder");
+                    LogError($"The device at {Device.ID:x2} is not a Decoder");
                 break;
         }
     }
