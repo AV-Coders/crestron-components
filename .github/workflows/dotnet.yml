@@ -1,7 +1,7 @@
 # This workflow will build a .NET project
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
 
-name: GetToStaging
+name: .NET
 
 on:
   push:
@@ -15,57 +15,51 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Get current date
-      id: date
-      run: echo "::set-output name=date::$(date +'%Y.%m')"
-      
+    - name: Compute package version
+      id: version
+      run: |
+        VERSION="$(date +'%Y.%m').${{ github.run_number }}"
+        if [ "${{ github.ref }}" != "refs/heads/main" ]; then
+          VERSION="${VERSION}-beta"
+        fi
+        echo "Building version $VERSION"
+        echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
     - uses: actions/checkout@v4
-      
+
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: |
-          6.0.x
-          8.0.x
-        
+        dotnet-version: 8.0.x
+
     - name: Setup Github Packages
       run: dotnet nuget add source --username ant-car --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/AV-Coders/index.json"
 
     - name: Restore dependencies
+      id: restore
       run: dotnet restore
-      
+
     - name: Build
+      id: build
       run: dotnet build --no-restore
-      
+
     - name: Test
+      id: test
       run: dotnet test --no-build --verbosity normal
 
-    - name: Create Communication Clients Nuget Package
-      run: dotnet pack /home/runner/work/crestron-components/crestron-components/CommunicationClients/CommunicationClients.csproj --output /home/runner/work/crestron-components/package /p:Version=${{ steps.date.outputs.date }}.${{ github.run_number }} --configuration PackRelease
+    - name: Pack NuGet packages
+      id: pack
+      run: dotnet pack "Crestron Components.sln" --output ./package /p:Version=${{ steps.version.outputs.version }} --configuration Release
 
-    - name: Create Core Nuget Package
-      run: dotnet pack /home/runner/work/crestron-components/crestron-components/Core/Core.csproj --output /home/runner/work/crestron-components/package /p:Version=${{ steps.date.outputs.date }}.${{ github.run_number }} --configuration PackRelease
+    - name: Publish to GitHub Packages
+      id: publish
+      run: dotnet nuget push ./package/*.nupkg --api-key ${{ secrets.GITHUB_TOKEN }} --source "github"
 
-    - name: Create SmartGraphics Nuget Package
-      run: dotnet pack /home/runner/work/crestron-components/crestron-components/SmartGraphics/SmartGraphics.csproj --output /home/runner/work/crestron-components/package /p:Version=${{ steps.date.outputs.date }}.${{ github.run_number }} --configuration PackRelease
-
-    - name: Create TouchPanel Nuget Package
-      run: dotnet pack /home/runner/work/crestron-components/crestron-components/TouchPanel/TouchPanel.csproj --output /home/runner/work/crestron-components/package /p:Version=${{ steps.date.outputs.date }}.${{ github.run_number }} --configuration PackRelease
-    
-    - name: Create MediaPlayer Nuget Package
-      run: dotnet pack /home/runner/work/crestron-components/crestron-components/MediaPlayer/MediaPlayer.csproj --output /home/runner/work/crestron-components/package /p:Version=${{ steps.date.outputs.date }}.${{ github.run_number }} --configuration PackRelease
-      
-    - name: Create DSP Nuget Package
-      run: dotnet pack /home/runner/work/crestron-components/crestron-components/Dsp/Dsp.csproj --output /home/runner/work/crestron-components/package /p:Version=${{ steps.date.outputs.date }}.${{ github.run_number }} --configuration PackRelease
-      
-    - name: Create Matrix Nuget Package
-      run: dotnet pack /home/runner/work/crestron-components/crestron-components/Matrix/Matrix.csproj --output /home/runner/work/crestron-components/package /p:Version=${{ steps.date.outputs.date }}.${{ github.run_number }} --configuration PackRelease
-      
-    - name: Create Motor Nuget Package
-      run: dotnet pack /home/runner/work/crestron-components/crestron-components/Motor/Motor.csproj --output /home/runner/work/crestron-components/package /p:Version=${{ steps.date.outputs.date }}.${{ github.run_number }} --configuration PackRelease
-      
-    - name: Create Processor Nuget Package
-      run: dotnet pack /home/runner/work/crestron-components/crestron-components/Processor/Processor.csproj --output /home/runner/work/crestron-components/package /p:Version=${{ steps.date.outputs.date }}.${{ github.run_number }} --configuration PackRelease
-      
-    - name: Publish to GitHub Packages 
-      run: dotnet nuget push /home/runner/work/crestron-components/package/*.nupkg --api-key ${{ secrets.GITHUB_TOKEN }}  --source "github"
+    - name: Notify on Error
+      uses: skitionek/notify-microsoft-teams@master
+      if: failure()
+      with:
+        webhook_url: ${{ secrets.MSTEAMS_WEBHOOK }}
+        needs: ${{ toJson(needs) }}
+        job: ${{ toJson(job) }}
+        steps: ${{ toJson(steps) }}
