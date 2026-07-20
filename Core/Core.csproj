@@ -3,6 +3,8 @@
     <PropertyGroup>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <Description>Shared foundation for the AV Coders Crestron libraries: CrestronConsole logging providers, SSH helpers and common enums and delegates.</Description>
+        <PackageId>AVCoders.Crestron.Core</PackageId>
         <AssemblyName>AVCoders.Crestron.Core</AssemblyName>
         <RootNamespace>AVCoders.Crestron.Core</RootNamespace>
         <LangVersion>default</LangVersion>

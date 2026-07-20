@@ -3,6 +3,8 @@
     <PropertyGroup>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <Description>Relay-driven motor control over Crestron relays for screens, blinds and shades.</Description>
+        <PackageId>AVCoders.Crestron.Motor</PackageId>
         <AssemblyName>AVCoders.Crestron.Motor</AssemblyName>
         <RootNamespace>AVCoders.Crestron.Motor</RootNamespace>
         <TargetFramework>net8.0</TargetFramework>

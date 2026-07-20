@@ -1,10 +1,12 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <LangVersion>default</LangVersion>
-        <AssemblyName>AvCoders.Crestron.Matrix</AssemblyName>
+        <Description>Crestron NVX AV-over-IP endpoint wrappers for the AV Coders device library, with encoder and decoder support including the 36x and Exx series.</Description>
+        <PackageId>AVCoders.Crestron.Matrix</PackageId>
+        <AssemblyName>AVCoders.Crestron.Matrix</AssemblyName>
         <RootNamespace>AvCoders.Crestron.Matrix</RootNamespace>
         <TargetFramework>net8.0</TargetFramework>
     </PropertyGroup>

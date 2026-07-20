@@ -3,6 +3,8 @@
     <PropertyGroup>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <Description>Volume controls bound to Crestron signals, including sig-based volume and UC Engine / Teams room speaker volume.</Description>
+        <PackageId>AVCoders.Crestron.DSP</PackageId>
         <AssemblyName>AVCoders.Crestron.DSP</AssemblyName>
         <RootNamespace>AVCoders.Crestron.DSP</RootNamespace>
         <LangVersion>default</LangVersion>

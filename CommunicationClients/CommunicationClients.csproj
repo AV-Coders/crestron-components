@@ -3,6 +3,8 @@
     <PropertyGroup>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <Description>AV Coders communication clients backed by Crestron hardware: serial over COM ports, IR ports driven as serial, DM CEC streams, multicast UDP and generic-device IP status.</Description>
+        <PackageId>AVCoders.Crestron.CommunicationClients</PackageId>
         <AssemblyName>AVCoders.Crestron.CommunicationClients</AssemblyName>
         <RootNamespace>AVCoders.Crestron.CommunicationClients</RootNamespace>
         <LangVersion>default</LangVersion>

@@ -3,6 +3,8 @@
     <PropertyGroup>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <Description>Media player drivers over Crestron IR ports, including Sony BDP Blu-ray players and set-top boxes such as the Strong SRT 5432.</Description>
+        <PackageId>AVCoders.Crestron.MediaPlayer</PackageId>
         <AssemblyName>AVCoders.Crestron.MediaPlayer</AssemblyName>
         <RootNamespace>AVCoders.Crestron.MediaPlayer</RootNamespace>
         <LangVersion>default</LangVersion>

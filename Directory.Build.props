@@ -1,0 +1,29 @@
+<Project>
+
+    <!-- Shared NuGet package metadata applied to every project in the repository.
+         The repository LICENSE (MIT) is embedded in each package; repository/project URLs point at GitHub. -->
+    <PropertyGroup>
+        <Authors>AV Coders</Authors>
+        <Copyright>Copyright (c) 2026 AV Coders</Copyright>
+        <PackageIcon>icon.png</PackageIcon>
+        <PackageLicenseFile>LICENSE</PackageLicenseFile>
+        <PackageProjectUrl>https://github.com/AV-Coders/crestron-components</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/AV-Coders/crestron-components</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+    </PropertyGroup>
+
+    <!-- Pack the repository LICENSE and icon into every package (PackageLicenseFile/PackageIcon reference them by name). -->
+    <ItemGroup>
+        <None Include="$(MSBuildThisFileDirectory)LICENSE" Pack="true" PackagePath="" Visible="false" />
+        <None Include="$(MSBuildThisFileDirectory)icon.png" Pack="true" PackagePath="" Visible="false" />
+    </ItemGroup>
+
+    <!-- Each packable project supplies its own README.md, shown on its package feed page. -->
+    <PropertyGroup Condition="Exists('$(MSBuildProjectDirectory)/README.md')">
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+    </PropertyGroup>
+    <ItemGroup Condition="Exists('$(MSBuildProjectDirectory)/README.md')">
+        <None Include="README.md" Pack="true" PackagePath="" />
+    </ItemGroup>
+
+</Project>

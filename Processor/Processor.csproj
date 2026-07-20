@@ -1,9 +1,11 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <Description>Crestron processor utilities, including a dumpheap console command that captures heap dumps of the running program.</Description>
+        <PackageId>AVCoders.Crestron.Processor</PackageId>
         <AssemblyName>AVCoders.Crestron.Processor</AssemblyName>
         <RootNamespace>AVCoders.Crestron.Processor</RootNamespace>
     </PropertyGroup>

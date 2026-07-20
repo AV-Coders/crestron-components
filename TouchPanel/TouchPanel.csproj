@@ -3,6 +3,8 @@
     <PropertyGroup>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <Description>Touch panel menu and UI helpers for Crestron panels: display, motor, AVoIP, sync, level, PDU and Q-SYS source menus, PIN entry, confirmation and status pages.</Description>
+        <PackageId>AVCoders.Crestron.TouchPanel</PackageId>
         <AssemblyName>AVCoders.Crestron.TouchPanel</AssemblyName>
         <RootNamespace>AVCoders.Crestron.TouchPanel</RootNamespace>
         <LangVersion>default</LangVersion>

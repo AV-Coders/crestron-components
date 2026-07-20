@@ -3,6 +3,8 @@
     <PropertyGroup>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <Description>SmartGraphics helpers for Crestron touch panels: subpage reference list join math, SRL pages and tab buttons.</Description>
+        <PackageId>AVCoders.Crestron.SmartGraphics</PackageId>
         <AssemblyName>AVCoders.Crestron.SmartGraphics</AssemblyName>
         <RootNamespace>AVCoders.Crestron.SmartGraphics</RootNamespace>
         <LangVersion>default</LangVersion>
