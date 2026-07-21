@@ -53,7 +53,7 @@ jobs:
 
     - name: Publish to GitHub Packages
       id: publish
-      run: dotnet nuget push ./package/*.nupkg --api-key ${{ secrets.GITHUB_TOKEN }} --source "github"
+      run: dotnet nuget push ./package/*.nupkg --api-key ${{ secrets.GITHUB_TOKEN }} --source "github" --skip-duplicate
 
     - name: Notify on Error
       uses: skitionek/notify-microsoft-teams@master
