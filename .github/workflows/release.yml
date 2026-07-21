@@ -1,0 +1,88 @@
+# Manually-triggered release to nuget.org via trusted publishing (OIDC).
+# Versions are year.month.N where N counts this month's release runs.
+
+name: Release to nuget.org
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+  packages: read
+  id-token: write
+
+jobs:
+  release:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Require main and a passing dotnet.yml run for this commit
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: |
+        if [ "${{ github.ref }}" != "refs/heads/main" ]; then
+          echo "Releases only run from main — blocking the release."
+          exit 1
+        fi
+        RESULT=$(gh api --method GET "repos/${{ github.repository }}/actions/workflows/dotnet.yml/runs" -f "head_sha=${{ github.sha }}" -f per_page=1 --jq '.workflow_runs[0].conclusion // "missing"')
+        if [ "$RESULT" != "success" ]; then
+          echo "dotnet.yml for ${{ github.sha }} is '$RESULT' — blocking the release."
+          exit 1
+        fi
+
+    - name: Compute release version
+      id: version
+      env:
+        GH_TOKEN: ${{ github.token }}
+      run: |
+        RUNS=$(gh api --method GET "repos/${{ github.repository }}/actions/workflows/release.yml/runs" -f "created=>=$(date +'%Y-%m-01')" --jq '.total_count')
+        VERSION="$(date +'%Y.%-m').${RUNS}"
+        echo "Building version $VERSION"
+        echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+    - uses: actions/checkout@v7
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v6
+      with:
+        dotnet-version: 8.0.x
+
+    - name: Setup Github Packages
+      run: dotnet nuget add source --username ant-car --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/AV-Coders/index.json"
+
+    - name: Restore dependencies
+      id: restore
+      run: dotnet restore
+
+    - name: Build
+      id: build
+      run: dotnet build --no-restore
+
+    - name: Test
+      id: test
+      run: dotnet test --no-build --verbosity normal
+
+    - name: Pack NuGet packages
+      id: pack
+      run: dotnet pack "Crestron Components.sln" --output ./package /p:Version=${{ steps.version.outputs.version }} --configuration Release
+
+    - name: NuGet login
+      uses: NuGet/login@v1
+      id: nuget-login
+      with:
+        user: ${{ secrets.NUGET_USER }}
+
+    - name: Publish to nuget.org
+      id: publish
+      run: dotnet nuget push ./package/*.nupkg --api-key ${{ steps.nuget-login.outputs.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
+
+    - name: Notify on Error
+      uses: skitionek/notify-microsoft-teams@master
+      if: failure()
+      with:
+        webhook_url: ${{ secrets.MSTEAMS_WEBHOOK }}
+        needs: ${{ toJson(needs) }}
+        job: ${{ toJson(job) }}
+        steps: ${{ toJson(steps) }}
