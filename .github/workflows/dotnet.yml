@@ -18,10 +18,7 @@ jobs:
     - name: Compute package version
       id: version
       run: |
-        VERSION="$(date +'%Y.%m').${{ github.run_number }}"
-        if [ "${{ github.ref }}" != "refs/heads/main" ]; then
-          VERSION="${VERSION}-beta"
-        fi
+        VERSION="$(date +'%Y.%m').${{ github.run_number }}-beta"
         echo "Building version $VERSION"
         echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
