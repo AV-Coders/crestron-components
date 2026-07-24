@@ -13,14 +13,14 @@
 
     <ItemGroup>
       <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.3" />
-      <PackageReference Include="AVCoders.Camera" Version="2026.7.2" />
-      <PackageReference Include="AVCoders.Core" Version="2026.7.2" />
-      <PackageReference Include="AVCoders.Display" Version="2026.7.2" />
-      <PackageReference Include="AVCoders.Dsp" Version="2026.7.2" />
-      <PackageReference Include="AVCoders.Matrix" Version="2026.7.2" />
-      <PackageReference Include="AVCoders.MediaPlayer" Version="2026.7.2" />
-      <PackageReference Include="AVCoders.Motor" Version="2026.7.2" />
-      <PackageReference Include="AVCoders.Power" Version="2026.7.2" />
+      <PackageReference Include="AVCoders.Camera" Version="2026.7.542-beta" />
+      <PackageReference Include="AVCoders.Core" Version="2026.7.542-beta" />
+      <PackageReference Include="AVCoders.Display" Version="2026.7.542-beta" />
+      <PackageReference Include="AVCoders.Dsp" Version="2026.7.542-beta" />
+      <PackageReference Include="AVCoders.Matrix" Version="2026.7.542-beta" />
+      <PackageReference Include="AVCoders.MediaPlayer" Version="2026.7.542-beta" />
+      <PackageReference Include="AVCoders.Motor" Version="2026.7.542-beta" />
+      <PackageReference Include="AVCoders.Power" Version="2026.7.542-beta" />
       <PackageReference Include="Crestron.SimplSharp.SDK.Library" Version="2.21.274" />
       <PackageReference Include="Crestron.SimplSharp.SDK.Program" Version="2.21.274" />
       <PackageReference Include="Crestron.SimplSharp.SDK.ProgramLibrary" Version="2.21.274" />

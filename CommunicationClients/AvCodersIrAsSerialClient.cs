@@ -13,7 +13,22 @@ public class AvCodersIrAsSerialClient : SerialClient
         : base(name, irPort.DeviceName, (ushort)irPort.ID, commandStringFormat)
     {
         _irPort = irPort;
-        _irPort.Register();
+        switch (_irPort.Register())
+        {
+            case eDeviceRegistrationUnRegistrationResponse.Failure:
+                ConnectionState = ConnectionState.Error;
+                LogError("Failed to register IR port {IrPortName}.  Reason: {reason}", _irPort.DeviceName,
+                    _irPort.DeviceRegistrationFailureReason);
+                // Registration is one-shot with no retry, so this is raised as ongoing
+                // directly rather than via the momentary/threshold path.
+                RaiseOngoingIssue(ConnectionIssueKey,
+                    $"Failed to register IR port {_irPort.DeviceName}: {_irPort.DeviceRegistrationFailureReason}",
+                    IssueSeverity.Critical);
+                break;
+            default:
+                ConnectionState = ConnectionState.Connected;
+                break;
+        }
         _encoding = encoding ?? Encoding.ASCII;
         ConfigurePort(serialSpec);
     }

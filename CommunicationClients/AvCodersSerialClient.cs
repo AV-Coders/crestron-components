@@ -20,6 +20,11 @@ public class AvCodersSerialClient : SerialClient
                     ConnectionState = ConnectionState.Error;
                     LogError("Failed to register com port {ComPortName}.  Reason: {reason}", _comPort.DeviceName,
                         _comPort.DeviceRegistrationFailureReason);
+                    // Registration is one-shot with no retry, so this is raised as ongoing
+                    // directly rather than via the momentary/threshold path.
+                    RaiseOngoingIssue(ConnectionIssueKey,
+                        $"Failed to register com port {_comPort.DeviceName}: {_comPort.DeviceRegistrationFailureReason}",
+                        IssueSeverity.Critical);
                     break;
                 default:
                     ConnectionState = ConnectionState.Connected;
