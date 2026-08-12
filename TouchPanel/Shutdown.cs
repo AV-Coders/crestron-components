@@ -7,6 +7,8 @@ public class Shutdown : SubPage, IDevice
 {
     public SubpageSelection? Controller = null;
     public PowerStateHandler? PowerStateHandlers;
+    public PowerState PowerState => PowerState.On;
+    public PowerState DesiredPowerState => PowerState.On;
     private readonly ILogger _logger;
     private readonly string _name;
     private readonly List<SmartObject> _smartObjects;
@@ -121,8 +123,4 @@ public class Shutdown : SubPage, IDevice
     public void PowerOn() => UpdateRemainingTimeString();
 
     public void PowerOff() => UpdateRemainingTimeString();
-
-    public PowerState GetCurrentPowerState() => PowerState.On;
-
-    public CommunicationState GetCurrentCommunicationState() => CommunicationState.Okay;
 }
