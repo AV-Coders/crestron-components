@@ -148,9 +148,17 @@ public class CrestronCecStream : SerialClient
         }
     }
 
-    public override void Send(string message) => _stream.Send.StringValue = message;
+    public override void Send(string message)
+    {
+        _stream.Send.StringValue = message;
+        InvokeRequestHandlers(message);
+    }
 
-    public override void Send(byte[] bytes) => _stream.Send.CharacterArrayValue = bytes.Select(b => (char)b).ToArray();
+    public override void Send(byte[] bytes)
+    {
+        _stream.Send.CharacterArrayValue = bytes.Select(b => (char)b).ToArray();
+        InvokeRequestHandlers(bytes);
+    }
 
     public override void ConfigurePort(SerialSpec serialSpec)
     {
