@@ -48,7 +48,19 @@ public class SetTopBoxOverCrestronIr : LogBase, ISetTopBox
 
     public void VolumeDown() => Pulse("Vol-");
 
-    public void SendIRCode(RemoteButton button) => Pulse(RemoteButtonMap[button]);
+    public IReadOnlyCollection<RemoteButton> SupportedButtons => RemoteButtonMap.Keys;
+
+    public void SendIRCode(RemoteButton button)
+    {
+        if (!RemoteButtonMap.TryGetValue(button, out var key))
+        {
+            using (PushProperties("SendIRCode"))
+                LogError("Unsupported button - {UnsupportedRemoteButton}", button.ToString());
+            return;
+        }
+
+        Pulse(key);
+    }
 
     public void SetChannel(int channel)
     {

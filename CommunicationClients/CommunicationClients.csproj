@@ -12,11 +12,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="AVCoders.CommunicationClients" Version="2026.8.1" />
-      <PackageReference Include="AVCoders.Core" Version="2026.8.1" />
-      <PackageReference Include="Crestron.SimplSharp.SDK.Library" Version="2.21.274" />
-      <PackageReference Include="Crestron.SimplSharp.SDK.Program" Version="2.21.274" />
-      <PackageReference Include="Crestron.SimplSharp.SDK.ProgramLibrary" Version="2.21.274" />
+      <PackageReference Include="AVCoders.CommunicationClients" Version="2026.9.4" />
+      <PackageReference Include="AVCoders.Core" Version="2026.9.4" />
+      <PackageReference Include="Crestron.SimplSharp.SDK.Library" Version="2.22.15" />
+      <PackageReference Include="Crestron.SimplSharp.SDK.Program" Version="2.22.15" />
+      <PackageReference Include="Crestron.SimplSharp.SDK.ProgramLibrary" Version="2.22.15" />
     </ItemGroup>
 
 </Project>
