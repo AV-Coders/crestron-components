@@ -5,11 +5,14 @@ namespace AVCoders.Crestron.CommunicationClients;
 
 public class CrestronGenericDeviceCommunicationClient : IpComms
 {
+    private readonly GenericDevice _device;
+
     public CrestronGenericDeviceCommunicationClient(GenericDevice device)
         : base(device.ConnectedIpList?.FirstOrDefault()?.DeviceIpAddress ?? String.Empty, (ushort) device.ID, device.Description, CommandStringFormat.Ascii)
     {
-        ConnectionState = ConnectionState.Disconnected;
+        _device = device;
         device.OnlineStatusChange += HandleOnlineStatusChange;
+        ConnectionState = device.IsOnline? ConnectionState.Connected : ConnectionState.Disconnected;
         if (device.ConnectedIpList != null)
             device.IpInformationChange += HandleIpInformationChange;
         ConnectionStateWorker.Restart();
@@ -47,6 +50,7 @@ public class CrestronGenericDeviceCommunicationClient : IpComms
     // escalation; the Connected transition resolves it via the base setter.
     protected override async Task CheckConnectionState(CancellationToken token)
     {
+        ConnectionState = _device.IsOnline? ConnectionState.Connected : ConnectionState.Disconnected;
         if (ConnectionState != ConnectionState.Connected)
             ReportConnectionFailure(Host == string.Empty
                 ? $"{Name} is offline"
