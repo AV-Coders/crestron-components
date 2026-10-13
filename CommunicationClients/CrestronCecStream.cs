@@ -39,6 +39,8 @@ public class CrestronCecStream : SerialClient
 {
     private readonly Cec _stream;
     private readonly GenericBase? _device;
+    private const int RawPhysicalAddressLength = 2;
+    private const int PhysicalAddressHexDigits = 4;
 
     /// <summary>
     /// Raised with the new value of <see cref="Cec.ErrorFeedback"/> whenever it changes: <c>true</c> when the
@@ -80,6 +82,20 @@ public class CrestronCecStream : SerialClient
 
             _stream.CecChange += HandleCecResponse;
         }
+    }
+
+    public char[] PhysicalAddress => ToCecPhysicalAddress(_stream.PhysicalAddress.StringValue);
+
+    // The SDK documents Cec.PhysicalAddress only as "in hex format": raw bytes or text like 3.0.0.0 is unverified.
+    private static char[] ToCecPhysicalAddress(string value)
+    {
+        if (value.Length == RawPhysicalAddressLength)
+            return value.ToCharArray();
+        var hexDigits = new string(value.Where(Uri.IsHexDigit).ToArray());
+        if (hexDigits.Length != PhysicalAddressHexDigits)
+            return [];
+        var address = Convert.ToUInt16(hexDigits, 16);
+        return [(char)(address >> 8), (char)(address & 0xFF)];
     }
 
     /// <summary>
