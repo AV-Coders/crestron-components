@@ -11,7 +11,7 @@ public class SigBasedVolume : Fader
     private readonly ThreadWorker _pollWorker;
 
     public SigBasedVolume(UShortInputSig volumeControl, UShortOutputSig volumeFeedback, double minGain, double maxGain, VolumeLevelHandler volumeLevelHandler) :
-        base(volumeLevelHandler, false)
+        base(volumeLevelHandler)
     {
         _volumeControl = volumeControl;
         _volumeFeedback = volumeFeedback;
