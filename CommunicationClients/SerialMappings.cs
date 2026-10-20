@@ -1,10 +1,13 @@
-﻿using AVCoders.Core;
+﻿using System.Text;
+using AVCoders.Core;
 using Crestron.SimplSharpPro;
 
 namespace AVCoders.Crestron.CommunicationClients;
 
 public static class SerialMappings
 {
+    public static string ConvertBytes(byte[] bytes) => Encoding.Latin1.GetString(bytes);
+
     public static ComPort.eComBaudRates ConvertBaudRate(SerialBaud baudRate)
     {
         return baudRate switch

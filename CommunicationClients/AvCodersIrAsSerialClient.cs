@@ -41,7 +41,7 @@ public class AvCodersIrAsSerialClient : SerialClient
 
     public override void Send(byte[] bytes)
     {
-        Send(bytes.ToString() ?? throw new InvalidCastException("Bytes can't be converted to a string"));
+        Send(SerialMappings.ConvertBytes(bytes));
         InvokeRequestHandlers(bytes);
     }
 
@@ -56,5 +56,5 @@ public class AvCodersIrAsSerialClient : SerialClient
             );
     }
 
-    public override void Send(char[] chars) => _irPort.SendSerialData(chars.ToString() ?? throw new InvalidCastException("Chars is not a string"));
+    public override void Send(char[] chars) => Send(new string(chars));
 }
